@@ -1,0 +1,39 @@
+﻿@page
+@model NavbarModel
+@{
+}
+<div class="top-header">
+    <div class="dropdown header-bar d-flex border-bottom justify-content-end">
+        <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+            <div>User</div>
+        </a>
+        <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="#">Change Password</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item" data-bs-toggle="modal"
+                   data-bs-target="#logout">Sign out</a>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="logout" tabindex="-1" aria-labelledby="logoutModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-center align-items-center">
+                <h5 class="modal-title" id="exampleModalLabel">Logout</h5>
+            </div>
+            <div class="modal-body d-flex justify-content-center align-items-center">
+                Are you sure you want to log out?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form class="">
+                    <button type="submit" class="btn btn-success">OK</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
