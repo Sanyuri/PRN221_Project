@@ -7,7 +7,7 @@ namespace InterviewManagement.Models
     public class Role
     {
         public Role() { 
-            Employees = new HashSet<Employee>();
+            Users = new HashSet<User>();
         }
 
         [Key]
@@ -18,6 +18,6 @@ namespace InterviewManagement.Models
         [StringLength(50)]
         public string? RoleName { get; set; }
 
-        public virtual ICollection<Employee>? Employees { get; set; }
+        public virtual ICollection<User>? Users { get; set; }
     }
 }

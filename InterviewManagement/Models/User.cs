@@ -31,7 +31,7 @@ namespace InterviewManagement.Models
         public string? Address {  get; set; }
 
         [Required]
-        public bool Gender { get; set; }
+        public string? Gender { get; set; }
 
         [Column(TypeName = "nvarchar(max)")]
         public string? Note {  get; set; }
