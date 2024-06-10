@@ -44,7 +44,7 @@ namespace InterviewManagement.Models
         public virtual Contract? Contract { get; set; }
 
         [ForeignKey("StatusId")]
-        public virtual Status? Status { get; set; }
+        public string? Status { get; set; }
 
         [ForeignKey("DepartmentId")]
         public virtual Department? Department { get; set; }

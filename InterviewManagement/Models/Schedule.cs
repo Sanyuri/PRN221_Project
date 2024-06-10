@@ -39,8 +39,7 @@ namespace InterviewManagement.Models
         [Required]
         public string? ModifiedBy { get; set; }
 
-        [ForeignKey("StatusId")]
-        public virtual Status? Status { get; set; }
+        public string? Status { get; set; }
         [ForeignKey("CandidateId")]
         public virtual Candidate? Candidate { get; set; }
         [ForeignKey("JobId")]

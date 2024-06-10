@@ -26,7 +26,6 @@ namespace InterviewManagement.Models
         [ForeignKey("DepartmentId")]
         public virtual Department? Department { get; set; }
 
-        [ForeignKey("StatusId")]
-        public virtual Status? Status { get; set; }
+        public string? Status { get; set; }
     }
 }

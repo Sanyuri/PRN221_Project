@@ -46,7 +46,7 @@ namespace InterviewManagement.Models
         public string? Description { get; set; }
 
         [ForeignKey("StatusId")]
-        public virtual Status? Status {  get; set; }
+        public string? Status {  get; set; }
 
         [InverseProperty("Jobs")]
         public virtual ICollection<Skill>? Skills { get; set; }

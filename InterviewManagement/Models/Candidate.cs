@@ -33,8 +33,7 @@ namespace InterviewManagement.Models
         [ForeignKey("PositionId")]
         public virtual Position? Position { get; set; }
 
-        [ForeignKey("StatusId")]
-        public virtual Status? Status { get; set; }
+        public string? Status { get; set; }
 
         public virtual ICollection<Schedule>? Schedules { get; set; }
 

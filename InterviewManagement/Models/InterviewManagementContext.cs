@@ -30,8 +30,6 @@ namespace InterviewManagement.Models
 
         public virtual DbSet<Skill> Skill { get; set; } = null!;
 
-        public virtual DbSet<Status> Status { get; set; } = null!;
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetConnectionString("ConnectionName");
