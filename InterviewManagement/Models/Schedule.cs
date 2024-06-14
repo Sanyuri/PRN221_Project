@@ -25,7 +25,7 @@ namespace InterviewManagement.Models
         public DateTime? ScheduleTime { get; set; }
 
         [Required]
-        private string? MeetingURL { get; set; }
+        public string? MeetingURL { get; set; }
 
         [Required]
         public string? Result { get; set; }

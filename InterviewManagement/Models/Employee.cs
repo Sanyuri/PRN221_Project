@@ -16,6 +16,7 @@ namespace InterviewManagement.Models
         [Required]
         public string? UserName { get; set; }
         [Required]
+        [MinLength(7)]
         public string? Password { get; set; }
         public string? ResetPasswordToken { get; set; }
         public DateTime? ExpiredDate { get; set; }

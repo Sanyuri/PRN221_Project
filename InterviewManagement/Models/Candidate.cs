@@ -30,6 +30,9 @@ namespace InterviewManagement.Models
         [ForeignKey("LevelId")]
         public virtual Level? Level { get; set; }
 
+        [ForeignKey("HighestLevelId")]
+        public virtual HighestLevel? HighestLevel { get; set; }
+
         [ForeignKey("PositionId")]
         public virtual Position? Position { get; set; }
 

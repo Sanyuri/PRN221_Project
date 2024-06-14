@@ -21,6 +21,7 @@ namespace InterviewManagement.Models
         public virtual DbSet<Job> Job { get; set; } = null!;
 
         public virtual DbSet<Level> Level { get; set; } = null!;
+        public virtual DbSet<HighestLevel> HighestLevel { get; set; }
         public virtual DbSet<Offer> Offer { get; set; } = null!;
         public virtual DbSet<Position> Position { get; set; } = null!;
 
@@ -42,6 +43,10 @@ namespace InterviewManagement.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Cấu hình bảng Employee
+            modelBuilder.Entity<Employee>().ToTable("Employee");
+            modelBuilder.Entity<Candidate>().ToTable("Candidate");
         }
     }
 }

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InterviewManagement.Models
 {
+    [NotMapped]
     public class User
     {
         [Key]
