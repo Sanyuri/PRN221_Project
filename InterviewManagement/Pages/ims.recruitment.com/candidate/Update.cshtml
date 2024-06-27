@@ -1,0 +1,265 @@
+﻿@page
+@model InterviewManagement.Pages.candidate.UpdateModel
+
+@{
+    ViewData["Title"] = "Update";
+    Layout = "~/Pages/Shared/_Layout1.cshtml";
+
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Update</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
+  
+</head>
+<body>
+
+    <form method="post">
+        <input type="hidden" asp-for="CandidateDTO.CreatedOn" name="CandidateDTO.CreatedOn" value="2003-01-20" />
+        <input type="text" value="test" name="CandidateDTO.ModifiedBy" asp-for="CandidateDTO.ModifiedBy" hidden />
+        <input type="hidden" value="4" name="CandidateDTO.RoleId" asp-for="CandidateDTO.RoleId" />
+        <input type="hidden" value="@Model.CandidateDTO.Id" name="idChanfer" />
+        <div class="row">
+            <strong>I. Personal information</strong>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CandidateDTO.FullName">
+                        Full Name
+                        <span class="text-danger">*</span>
+                    </label><input required type="text"
+                                   class="form-control"
+                                   name="CandidateDTO.FullName"
+                                   asp-for="CandidateDTO.FullName">
+                    <span asp-validation-for="CandidateDTO.FullName" class="text-danger"></span>
+
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CandidateDTO.Email">
+                        Email
+                        <span class="text-danger">*</span>
+                    </label><input required type="text"
+                                   class="form-control"
+                                   name="CandidateDTO.Email"
+                                   asp-for="CandidateDTO.Email">
+                    <span asp-validation-for="CandidateDTO.Email" class="text-danger"></span>
+
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CandidateDTO.Dob">
+                        D.O.B
+                        <span class="text-danger">*</span>
+                    </label><input required type="date"
+                                   class="form-control"
+                                   name="CandidateDTO.dob"
+                                   asp-for="CandidateDTO.Dob">
+                    <span asp-validation-for="CandidateDTO.Dob" class="text-danger"></span>
+
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CandidateDTO.Address">
+                        Address                        <span class="text-danger">*</span>
+                    </label><input required type="text"
+                                   class="form-control"
+                                   name="CandidateDTO.Address"
+                                   asp-for="CandidateDTO.Address">
+                    <span asp-validation-for="CandidateDTO.Address" class="text-danger"></span>
+
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CandidateDTO.PhoneNumber">
+                        Phone Number
+                        <span class="text-danger">*</span>
+                    </label>
+                    <input required type="text"
+                           class="form-control"
+                           name="CandidateDTO.PhoneNumber"
+                           asp-for="CandidateDTO.PhoneNumber">
+                    <span asp-validation-for="CandidateDTO.PhoneNumber" class="text-danger"></span>
+
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CandidateDTO.Gender">
+                        Gender
+                        <span class="text-danger">*</span>
+                    </label>
+                    <select name="CandidateDTO.Gender" asp-for="CandidateDTO.Gender" class="form-select">
+                        <option value="Other">Other</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+
+                    </select>
+                    <span asp-validation-for="CandidateDTO.Gender" class="text-danger"></span>
+
+
+                </div>
+            </div>
+            <strong>
+                II. Professional
+                information
+            </strong>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CandidateDTO.CvLink">
+                        CV attachment
+                        <span class="text-danger">*</span>
+                    </label>
+                    <div class="d-flex h-75">
+                        <input type="text"
+                               class="form-control w-95"
+                               name="CandidateDTO.CvLink"
+                               asp-for="CandidateDTO.CvLink">
+                    </div>
+
+                    <span asp-validation-for="CandidateDTO.CvLink" class="text-danger"></span>
+
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CandidateDTO.Note">
+                        Note
+                    </label>
+
+                    <input type="text"
+                           class="form-control"
+                           name="CandidateDTO.Note"
+                           asp-for="CandidateDTO.Note">
+                    <span asp-validation-for="CandidateDTO.Note" class="text-danger"></span>
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CandidateDTO.PositionId">
+                        Position
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <select required name="CandidateDTO.PositionId"
+                            asp-for="CandidateDTO.PositionId" class="form-select"
+                            asp-items="ViewBag.positionList">
+                    </select>
+                    <span asp-validation-for="CandidateDTO.PositionId" class="text-danger"></span>
+
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CandidateDTO.Status">
+                        Status
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <select required name="CandidateDTO.Status" class="form-control"
+                            asp-for="CandidateDTO.Status" asp-items="ViewBag.statusList"></select>
+                    <span asp-validation-for="CandidateDTO.PositionId" class="text-danger"></span>
+
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CandidateDTO.SkillIds">
+                        Skills
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <select asp-for="CandidateDTO.SkillIds" 
+                    asp-items="ViewBag.skillsList"
+                    name="CandidateDTO.SkillIds" class="form-control" multiple id="skillsDropdown"></select>
+                    <span asp-validation-for="CandidateDTO.SkillIds" class="text-danger"></span>
+
+
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CandidateDTO.ExpYear">
+                        Year of experience
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <input required type="number"
+                           class="form-control"
+                           name="CandidateDTO.ExpYear"
+                           asp-for="CandidateDTO.ExpYear">
+                    <span asp-validation-for="CandidateDTO.ExpYear" class="text-danger"></span>
+
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CandidateDTO.EmployeeId">
+                        Recruiter
+                        <span class="text-danger">*</span>
+                    </label>
+                    <select required class="form-control" asp-for="CandidateDTO.EmployeeId" asp-items="ViewBag.employList"></select>
+                    <span asp-validation-for="CandidateDTO.EmployeeId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label asp-for=CandidateDTO.HighestLevelId class="form-label">
+                        Highest
+                        Level <span class="text-danger">*</span>
+                    </label>
+                    <select required name="CandidateDTO.HighestLevelId"
+                            class="form-select"
+                            asp-for="CandidateDTO.HighestLevelId"
+                            asp-items="ViewBag.levelList">
+                    </select>
+                    <div class="invalid-feedback">Required field</div>
+                </div>
+            </div>
+            <div>
+
+                <button type="submit" class="btn btn-primary">Update</button>
+                <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
+            </div>
+    </form>
+
+    <div>
+
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/lib/select2/js/select2.min.js"></script>
+    @section Scripts {
+            <script>
+                $(document).ready(function () {
+                    $('#skillsDropdown').select2({
+                        placeholder: "Keyword..."
+                    });
+                });
+            </script>
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+        }
+    }
+</body>
+</html>

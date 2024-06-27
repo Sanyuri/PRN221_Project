@@ -62,3 +62,14 @@ body {
     text-decoration: none; /* Bỏ gạch chân mặc định của thẻ <a> */
     display: inline-block; /* Để nút không chiếm toàn bộ width */
 }
+.addfix {
+    border-radius: 20px !important;
+    color: whitesmoke !important;
+}
+.haftScreen {
+    width: 50% !important;
+    display: flex !important;
+}
+.haftScreen div{
+    width: 100% !important;
+}

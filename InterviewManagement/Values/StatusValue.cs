@@ -2,25 +2,26 @@
 {
     public class StatusValue
     {
-        public static ICollection<string> CanidateStatus { get; } = new HashSet<string>() {
-        "Waiting for interview",
-        "Cancelled interview",
-        "Passed",
-        "Failed interview",
-        "Open",
-        "Waiting for approval",
-        "Approved",
-        "Rejected",
-        "Waiting for response",
-        "Accepted offer",
-        "Declined offer",
-        "Cancelled offer",
-        "Banned"
+        public static IDictionary<int, string> CandidateStatus { get; } = new Dictionary<int, string>()
+        {
+            { 1, "Waiting for interview" },
+            { 2, "Cancelled interview" },
+            { 3, "Passed" },
+            { 4, "Failed interview" },
+            { 5, "Open" },
+            { 6, "Waiting for approval" },
+            { 7, "Approved" },
+            { 8, "Rejected" },
+            { 9, "Waiting for response" },
+            { 10, "Accepted offer" },
+            { 11, "Declined offer" },
+            { 12, "Cancelled offer" },
+            { 13, "Banned" }
         };
 
-        public static ICollection<string> UserStatus = new HashSet<string>() {
-        "Active",
-        "InActive"
+        public static IDictionary<int, string> UserStatus = new Dictionary<int, string>() {
+         { 1, "Active" },
+         { 2, "InActive" }
         };
 
         public static ICollection<string> JobStatus = new HashSet<string>()

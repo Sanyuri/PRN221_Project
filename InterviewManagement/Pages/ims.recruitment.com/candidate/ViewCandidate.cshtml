@@ -1,0 +1,160 @@
+﻿@page
+@model InterviewManagement.Pages.candidate.ViewCandidateModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ViewCandidate</title>
+</head>
+<body>
+    @if (Model.Candidate != null)
+    {
+        <div>
+            <div class="row">
+                <div class="d-flex justify-content-between align-content-between">
+                    <strong>I. Personal information</strong>
+                    <div>
+                        Created on <span> @(Model.Candidate.CreatedOn?.ToString("dd-MM-yyyy") ?? "Not available")</span>,
+                        last updated by
+                        <span>@Model.Candidate.ModifiedBy</span>
+                        <form method="post">
+                            <input type="hidden" value="@Model.Candidate.Id" name="idChanfer" />
+
+                            <button class="btn btn-danger" type="submit">
+                                Ban Candidate
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Full Name
+                        </label>
+                        <input required="" type="text" class="form-control" name="fullname" value="@Model.Candidate.FullName" readonly="">
+                    </div>
+                </div><!--end col-->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="text" class="form-control" name="email" value="@Model.Candidate.Email" readonly="">
+                    </div>
+                </div><!--end col-->
+
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">D.O.B</label>
+                        <input type="date" class="form-control" name="dob" value="@Model.Candidate.dob.ToString("yyyy-MM-dd")" readonly>
+                    </div>
+                </div><!--end col-->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Address <span class="text-danger"></span></label>
+                        <input type="text" class="form-control" name="address" value="@Model.Candidate.Address" readonly="">
+                    </div><!--end col-->
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Phone
+                            Number
+                        </label>
+                        <input type="text" class="form-control" name="phone" value="@Model.Candidate.PhoneNumber" readonly="">
+                    </div>
+                </div><!--end col-->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Gender</label>
+                        <input type="text" class="form-control" name="gender" value="@Model.Candidate.Gender" readonly="">
+                    </div>
+                </div><!--end col-->
+                <strong>II. Professional information</strong>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            CV
+                            attachment
+                        </label>
+                        <input type="text" class="form-control mdi-attachment" name="cv_link" value="@Model.Candidate.CvLink" readonly="">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Note</label>
+                        <input type="text" class="form-control" name="note" value="" readonly="">
+                    </div>
+                </div><!--end col-->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Position</label>
+                        <input type="text" class="form-control" name="position" value="@Model.Candidate.Position?.PositionName" readonly="">
+                    </div>
+                </div><!--end col-->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        @if (ViewData["status"] is IDictionary<int, string> status)
+                        {
+                            if (int.TryParse(Model.Candidate.Status, out int statusKey)
+                            && status.TryGetValue(statusKey, out string? statusName))
+                            {
+                                <input type="text" class="form-control" name="status" value="@statusName" readonly="">
+                            }
+                        }
+
+                    </div>
+                </div><!--end col-->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Skill</label>
+                        <div class="form-control d-flex">
+                            @if (Model.Candidate.Skills != null)
+                            {
+                                @foreach (var skill in Model.Candidate.Skills.ToList())
+                                {
+                                    <div class="border mx-1 me-1 rounded-pill p-1" style="background-color: #0dcaf0; color: white" readonly="">@skill.SkillName</div>
+
+                                }
+                            }
+
+                        </div>
+                    </div>
+                </div><!--end col-->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Year of
+                            experience
+                        </label>
+                        <input required="" name="expYear" type="text" class="form-control" value="@Model.Candidate.ExpYear" readonly="">
+                    </div>
+                </div><!--end col-->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Recruiter</label>
+                        <input type="text" class="form-control" name="recruiter" value="@Model.Candidate.Employee?.FullName" readonly="">
+                    </div>
+                </div><!--end col-->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Highest
+                            Level
+                        </label>
+                        <input type="text" class="form-control" name="level" value="@Model.Candidate.HighestLevel?.Name" readonly="">
+                    </div>
+                </div><!--end col-->
+            </div>
+
+        </div>
+    }
+
+
+</body>
+</html>

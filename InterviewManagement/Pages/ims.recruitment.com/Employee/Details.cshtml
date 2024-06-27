@@ -1,0 +1,136 @@
+﻿@page
+@model InterviewManagement.Pages.ims.recruitment.com.user.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Pages/Shared/_Layout1.cshtml";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ViewEmployee</title>
+</head>
+<body>
+    @if (Model.Employee != null)
+    {
+        <div>
+            <div class="row">
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Full Name
+                        </label>
+                        <input required="" type="text" class="form-control" name="fullname" value="@Model.Employee.FullName" readonly="">
+                    </div>
+                </div><!--end col-->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="text" class="form-control" name="email" value="@Model.Employee.Email" readonly="">
+                    </div>
+                </div><!--end col-->
+
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">D.O.B</label>
+                        <input type="date" class="form-control" name="dob" value="@Model.Employee.dob.ToString("yyyy-MM-dd")" readonly>
+                    </div>
+                </div><!--end col-->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Address <span class="text-danger"></span></label>
+                        <input type="text" class="form-control" name="address" value="@Model.Employee.Address" readonly="">
+                    </div><!--end col-->
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Phone
+                            Number
+                        </label>
+                        <input type="text" class="form-control" name="phone" value="@Model.Employee.PhoneNumber" readonly="">
+                    </div>
+                </div><!--end col-->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Gender</label>
+                        <input type="text" class="form-control" name="gender" value="@Model.Employee.Gender" readonly="">
+                    </div>
+                </div><!--end col-->
+ 
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <input type="text" class="form-control" name="role" value="@Model.Employee.Role?.RoleName" readonly="">
+                    </div>
+                </div><!--end col-->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <input type="text" class="form-control" name="department" value="@Model.Employee.Department?.DepertmentName" readonly="">
+                    </div>
+                </div><!--end col-->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <div class="form-control d-flex">
+                            @if (ViewData["status"] is IDictionary<int, string> stcheck)
+                            {
+                                // dua ket qua parse vao bien
+                                if (Model.Employee != null && Model.Employee.Status != null
+                                && int.TryParse(Model.Employee.Status, out int statusKey)
+                                && stcheck.TryGetValue(statusKey, out string? statusName))
+                                {
+                                    @statusName
+                                }
+                                else
+                                {
+                                    <text>N/A</text>
+                                }
+                            }
+                            else
+                            {
+                                <text>N/As</text>
+                            }
+
+                        </div>
+                    </div>
+                </div><!--end col-->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">
+                           Note
+                        </label>
+                        <input required="" name="expYear" type="text" class="form-control" value="@Model.Employee?.Note" readonly="">
+                    </div>
+                </div><!--end col-->
+              
+            </div>
+            <br />
+            <form method="post">
+                <input type="hidden" value="@Model.Employee.Id" name="idChanfer" />
+                @if (Model.Employee.Status.ToString() == "1")
+                {
+                <input type="hidden" value="2" name="active" />
+
+                  <button class="btn btn-danger" type="submit">
+                        De-Active
+                    </button>
+                }  @if (Model.Employee.Status.ToString() == "2")
+                {
+                <input type="hidden" value="1" name="active" />
+
+                <button class="btn btn-outline-primary" type="submit">
+                    Active
+                    </button>
+                }
+               
+            </form>
+        </div>
+    }
+
+</body>
+</html>

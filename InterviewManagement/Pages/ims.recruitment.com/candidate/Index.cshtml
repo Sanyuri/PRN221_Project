@@ -1,0 +1,368 @@
+﻿@page
+@model InterviewManagement.Pages.candidate.IndexModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Update</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
+
+</head>
+<div class="container-fluid">
+    <div class="layout-specing">
+        <div class="row mb-2">
+            <div class="col-xl-9 col-md-6">
+                <h5 class="mb-0">Candidate</h5>
+                <nav aria-label="breadcrumb" class="d-inline-block mt-2">
+                    <ul class="breadcrumb breadcrumb-muted bg-transparent rounded mb-0 p-0">
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <a href="./candidate">
+                                Candidate list
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <div class="card p-4 rounded shadow border-0">
+            <!-- Utils bar -->
+            <div class="row">
+                <div class="row">
+                    <form method="post" class="row">
+
+
+                        <div class="col search-bar p-0 d-none d-md-block ms-2 ">
+                            <div id="search" class="menu-search mb-0 ">
+                                <div>
+                                    <input type="text" class="form-control bg-light border-0 rounded-pill"
+                                           placeholder="'Search Keywords...'" name="searchTerm"
+                                           value="@ViewBag.searchTerm"
+                                           onkeyup="$('#btnSubmit').click()">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col-md" style="width: 100px; ">
+                                    <select class="form-select rounded-pill bg-light border-0"
+                                            style="height: 40px" name="Filter"
+                                            onchange="$('#btnSubmit').click()">
+                                        <option value="All" selected='@(ViewBag.statusFilter!=null
+                                            &&ViewBag.statusFilter.ToString()==("All"))'>All</option>
+                                        @if (ViewData["status"] is IDictionary<int, string> statuses)
+                                        {
+                                            foreach (var status in statuses)
+                                            {
+                                                <option value="@status.Key"
+                                                        selected='@(ViewBag.statusFilter != null
+                                                && status.Key.ToString() == @ViewBag.statusFilter)'>
+                                                    @status.Value
+                                                </option>
+                                            }
+                                        }
+                                    </select>
+                                    <input type="submit" id="btnSubmit" hidden />
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <a href="#" class="btn btn-pills btn-warning addfix add-button" data-bs-toggle="modal" data-bs-target="#addModal">
+                                + Add
+                                Candidate
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-12 mt-4">
+                    <div class="table-responsive shadow rounded">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                   
+
+                                    <th class="border-bottom p-3" style="min-width: 50px;">
+                                        @Html.DisplayNameFor(model => model.Candidate[0].FullName)
+                                    </th>
+                                    <th class="border-bottom p-3" style="min-width: 180px;">
+                                        @Html.DisplayNameFor(model => model.Candidate[0].Email)
+                                    </th>
+                                    <th class="border-bottom p-3">
+                                        Phone No.
+                                    </th>
+                                    <th class="border-bottom p-3">
+                                        Current Position
+                                    </th>
+                                    <th class="border-bottom p-3">
+                                        Owner HR
+                                    </th>
+                                    <th class="border-bottom p-3">
+                                        @Html.DisplayNameFor(model => model.Candidate[0].Status)
+
+                                    <th class="border-bottom p-3 " style="min-width: 100px;">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Candidate)
+                                {
+                                    @if (item.IsDeleted != true)
+                                    {
+
+
+                                        <tr>
+                                           
+
+                                            <td class="p-3">
+                                                @Html.DisplayFor(modelItem => item.FullName)
+                                            </td>
+                                            <td class="p-3">
+                                                @Html.DisplayFor(modelItem => item.Email)
+                                            </td>
+                                            <td class="p-3">
+                                                @Html.DisplayFor(modelItem => item.PhoneNumber)
+                                            </td>
+                                            <td class="p-3">
+                                                @if (item.Position != null)
+                                                {
+                                                    @Html.DisplayFor(modelItem => item.Position.PositionName)
+                                                }
+                                                else
+                                                {
+                                                    <text>N/A</text>
+                                                }
+                                            </td>
+                                            <td class="p-3">
+                                                @if (item.Employee != null)
+                                                {
+                                                    @Html.DisplayFor(modelItem => item.Employee.FullName)
+                                                }
+                                                else
+                                                {
+                                                    <text>N/A</text>
+                                                }
+                                            </td>
+
+                                            <td class="p-3">
+                                                @if (ViewData["status"] is IDictionary<int, string> stcheck)
+                                                {
+                                                    if (item != null && item.Status != null
+                                                    && int.TryParse(item.Status, out int statusKey)
+                                                    && stcheck.TryGetValue(statusKey, out string? statusName))
+                                                    {
+                                                        @statusName
+                                                    }
+                                                    else
+                                                    {
+                                                        <text>N/A</text>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <text>N/A</text>
+                                                }
+                                            </td>
+                                            <td class="p-3">
+                                                <div class="d-flex align-items-center ">
+                                                    <a asp-page="#"
+                                                       data-bs-toggle="modal"
+                                                       class="m-1 btn btn-soft-primary btn-icon btn-pills details-button"
+                                                       data-id="@item?.Id">
+                                                        <i class="uil uil-eye"></i>
+                                                    </a>
+                                                    <a asp-page="#"
+                                                       data-bs-toggle="modal"
+                                                       class="m-1 btn btn-icon btn-pills btn-soft-warning edit-button"
+                                                       data-id="@item?.Id">
+                                                        <i class="uil uil-pen"></i>
+                                                    </a>
+
+                                                    <a asp-page="./Delete"
+                                                       class="m-1 btn btn-icon btn-pills btn-soft-danger"
+                                                       data-id="@item?.Id">
+                                                        <i class="uil uil-multiply"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--View modal-->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Candidate Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="detailsModalBody">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Candidate </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="editModalBody">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Add Candidate </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="addModalBody">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/select2/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Xử lý click vào nút Xem chi tiết
+            $('.details-button').on('click', function () {
+                var candidateId = $(this).data('id');
+                $.ajax({
+                    url: '@Url.Page("./ViewCandidate")',
+                    type: 'GET',
+                    data: { id: candidateId },
+                    success: function (result) {
+                        $('#detailsModalBody').html(result);
+                        $('#detailsModal').modal('show');
+                    }
+                });
+            });
+            $('#detailsModal').on('submit', 'form', function (e) {
+                e.preventDefault(); // Ngăn chặn gửi form mặc định
+                var formData = $(this).serialize(); // Lấy dữ liệu form
+                $.ajax({
+                    url: '@Url.Page("./ViewCandidate")',
+                    type: 'POST',
+                    data: formData,
+                    success: function (result) {
+                        $('#detailsModal').modal('hide'); // Ẩn modal sau khi hoàn tất
+                        location.reload(); // Làm mới trang sau khi chỉnh sửa thành công
+                    },
+                    error: function (xhr, status, error) {
+                        // Xử lý lỗi nếu có
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+            // Xử lý click vào nút Chỉnh sửa
+            $('.edit-button').on('click', function () {
+                var candidateId = $(this).data('id');
+                $.ajax({
+                    url: '@Url.Page("./Update")',
+                    type: 'GET',
+                    data: { id: candidateId },
+                    success: function (result) {
+                        $('#editModalBody').html(result);
+                        $('#editModal').modal('show');
+
+                        // Khởi tạo Select2 sau khi nội dung được tải
+                        $('#editModal').on('shown.bs.modal', function () {
+                            $('#skillsDropdown').select2({
+                                placeholder: "Skill...",
+                                dropdownParent: $('#editModal')
+                            });
+                        });
+                    }
+                });
+            });
+
+            // Xử lý submit form chỉnh sửa ứng viên
+            $('#editModal').on('submit', 'form', function (e) {
+                e.preventDefault(); // Ngăn chặn gửi form mặc định
+                var formData = $(this).serialize(); // Lấy dữ liệu form
+                $.ajax({
+                    url: '@Url.Page("./Update")',
+                    type: 'POST',
+                    data: formData,
+                    success: function (result) {
+                        $('#editModal').modal('hide'); // Ẩn modal sau khi hoàn tất
+                        location.reload(); // Làm mới trang sau khi chỉnh sửa thành công
+                    },
+                    error: function (xhr, status, error) {
+                        // Xử lý lỗi nếu có
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+            // Xử lý click vào nút add
+            $('.add-button').on('click', function () {
+                var candidateId = $(this).data('id');
+                $.ajax({
+                    url: '@Url.Page("./Create")',
+                    type: 'GET',
+                    data: { id: candidateId },
+                    success: function (result) {
+                        $('#addModalBody').html(result);
+                        $('#addModal').modal('show');
+
+                        // Khởi tạo Select2 sau khi nội dung được tải
+                        $('#addModal').on('shown.bs.modal', function () {
+                            $('#skillsDropdown').select2({
+                                placeholder: "Skill...",
+                                dropdownParent: $('#addModal')
+                            });
+                        });
+                    }
+                });
+            });
+
+            // Xử lý submit form add ứng viên
+            $('#addModal').on('submit', 'form', function (e) {
+                e.preventDefault(); // Ngăn chặn gửi form mặc định
+                var formData = $(this).serialize(); // Lấy dữ liệu form
+                $.ajax({
+                    url: '@Url.Page("./Create")',
+                    type: 'POST',
+                    data: formData,
+                    success: function (result) {
+                        $('#addModal').modal('hide'); // Ẩn modal sau khi hoàn tất
+                        location.reload(); // Làm mới trang sau khi chỉnh sửa thành công
+                    },
+                    error: function (xhr, status, error) {
+                        // Xử lý lỗi nếu có
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+</html>
