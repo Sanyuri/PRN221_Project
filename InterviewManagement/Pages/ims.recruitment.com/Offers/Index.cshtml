@@ -1,0 +1,88 @@
+﻿@page
+@model InterviewManagement.Pages.ims.recruitment.com.Offers.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<h1>Offer</h1>
+
+<p>
+    Offer List
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].CandidateName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Approver)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Department)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Note)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Status)
+            </th>
+            <th>
+                @Html.DisplayName("Action")
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Offer)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CandidateName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Approver)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Department)
+                </td>
+                <td>
+                    @(item.Note == "" ? "N/A" : item.Note)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    <div class="d-flex align-items-center ">
+                        <!--modal view details calling (all role)-->
+                        <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-primary"
+                           data-bs-toggle="modal"
+                           title="View details of Offer"
+                           data-bs-target="'#candidateDetails'+${candidate.getCandidateId()}">
+                            <i class="uil uil-eye"></i>
+                        </a>
+                        <!--modal submit result calling (only candidate)-->
+                        <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-warning"
+                           data-bs-toggle="modal"
+                           title="'Edit Offer'"
+                           data-bs-target="'#updateCandidate'+${candidate.getCandidateId()}">
+                            <i class="uil uil-pen"></i>
+                        </a>
+                        <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-warning"
+                           data-bs-toggle="modal"
+                           title="'Delete Offer'"
+                           data-bs-target="'#deleteCandidate'+${candidate.getCandidateId()}">
+                            <i class="uil uil-multiply"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
