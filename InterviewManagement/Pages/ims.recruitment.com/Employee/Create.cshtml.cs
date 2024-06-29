@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using InterviewManagement.Models;
 using InterviewManagement.Dtos;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace InterviewManagement.Pages.ims.recruitment.com.user
 {
@@ -54,13 +55,17 @@ namespace InterviewManagement.Pages.ims.recruitment.com.user
             employeeToAdd.Department = _context.Department.Find(Employee.DepartmentId);
             employeeToAdd.Status=Employee.Status;
             employeeToAdd.Note = Employee.Note;
-            employeeToAdd.UserName = "sa";
+            var lastEmployee = await _context.Employee
+                                             .OrderByDescending(e => e.Id)
+                                             .FirstOrDefaultAsync();
+            employeeToAdd.UserName = GenerateUserName(Employee.FullName)+(lastEmployee?.Id+1);
+            Debug.WriteLine(employeeToAdd.UserName);
             employeeToAdd.Password = "$10$9J9TnpcLedF0edPR1KYnl.6Lyq8lIovTXp7kJ7hwWyV2xdLhb54uW";
             try
             {
                 _context.Employee.Add(employeeToAdd);
                 await _context.SaveChangesAsync();
-                await SendPasswordAsync(employeeToAdd.Email);
+                await SendPasswordAsync(employeeToAdd.Email,employeeToAdd.UserName);
 
             }
             catch (DbUpdateConcurrencyException)
@@ -72,15 +77,36 @@ namespace InterviewManagement.Pages.ims.recruitment.com.user
             return RedirectToPage("./Index");
         }
 
+        private string GenerateUserName(string fullName)
+        {
+            string[] names = fullName.Split(' ');
+            string lastname = names[names.Length-1];
+            Debug.WriteLine(lastname);
 
+            if (names.Length < 2) return fullName;
+            string username = "";
+            string middle = "";
 
-        public async Task SendPasswordAsync(string email)
+            for (int i = 0; i < names.Length-1 ; i++)
+            {
+                middle += names[i][0].ToString().ToUpper();
+            }
+            username = lastname + middle;
+            return username;
+        }
+
+        public async Task SendPasswordAsync(string email,string username)
         {
             string resetLink = Url.Page("/ResetPassword" , Request.Scheme);
 
             // Send the password reset email
-            string subject = "Password Reset";
-            string message = $"Please reset your password by clicking <a href=\"{resetLink}\">here</a>.";
+            string subject = "no-reply-email-IMS-system <Account created>";
+            string message = $"This email is from IMS system," +
+                $"\r\nYour account has been created. Please use the following credential to \r\nlogin: \r\n" +
+                $"• User name: {username}\r\n" +
+                $"• Password: taokobiet123\r\n" +
+                $"If anything wrong, please reach-out recruiter <offer recruiter owner \r\naccount>." +
+                $" We are so sorry for this inconvenience.\r\nThanks & Regards!\r\nIMS Team.";
 
             await _emailService.SendEmailAsync(email, subject, message);
         }

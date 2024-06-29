@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Pages/Shared/_Layout1.cshtml";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
 <div class="container-fluid">
@@ -14,7 +14,7 @@
                 <nav aria-label="breadcrumb" class="d-inline-block mt-2">
                     <ul class="breadcrumb breadcrumb-muted bg-transparent rounded mb-0 p-0">
                         <li class="breadcrumb-item active" aria-current="page">
-                            <a href="./user">
+                            <a href="./employee" class="nomal">
                                 User list
                             </a>
                         </li>
@@ -108,7 +108,9 @@
                                             @Html.DisplayFor(modelItem => item.FullName)
                                         </td>
                                         <td class="p-3">
-                                            @Html.DisplayFor(modelItem => item.Email)
+                                            <a class="nomal">
+                                               @item.Email
+                                            </a>
                                         </td>
                                         <td class="p-3">
                                             @Html.DisplayFor(modelItem => item.PhoneNumber)
@@ -160,7 +162,23 @@
                                 }
                             </tbody>
                         </table>
+                        <div>
+                            @if (ViewBag.SearchTerm == null && ViewBag.StatusFilter == null)
+                            {
+                                @if (Model.CurrentPage != 1)
+                                {
+                                    <a asp-page="./Index" asp-route-pageNumber="@(Model.CurrentPage - 1)" class="btn btn-primary">Previous</a>
 
+                                }
+                                <span>Page @Model.CurrentPage of @Model.TotalPages</span>
+
+                                @if (Model.CurrentPage != Model.TotalPages)
+                                {
+                                    <a asp-page="./Index" asp-route-pageNumber="@(Model.CurrentPage + 1)" class="btn btn-primary">Next</a>
+
+                                }
+                            }
+                        </div>
                     </div>
                 </div>
 

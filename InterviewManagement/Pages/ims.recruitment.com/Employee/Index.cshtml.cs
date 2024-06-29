@@ -20,19 +20,30 @@ namespace InterviewManagement.Pages.ims.recruitment.com.user
             _context = context;
         }
 
-        public IList<Employee> Employee { get;set; } = default!;
+        public IList<Employee> Employee { get; set; } = default!;
         public string SearchTerm { get; set; } = string.Empty;
         public string StatusFilter { get; set; } = "All";
         public IDictionary<int, string> status { get; } = StatusValue.UserStatus;
-
-        public async Task OnGetAsync()
+        // Pagination properties
+        public int CurrentPage { get; set; } = 1;
+        public int TotalPages { get; set; }
+        public int PageSize { get; set; } = 10;
+        public async Task OnGetAsync(int? pageNumber)
         {
+            CurrentPage = pageNumber ?? 1;
+
             ViewData["roleList"] = new SelectList(await _context.Role.ToListAsync(), "Id", "RoleName");
             ViewData["status"] = status;
 
+
             if (_context.Employee != null)
             {
-                Employee = await _context.Employee.ToListAsync();
+                var employee = _context.Employee.AsQueryable();
+                var totalEmployee = await employee.CountAsync();
+                TotalPages = (int)Math.Ceiling(totalEmployee / (double)PageSize);
+                Employee = await employee
+                        .Skip((CurrentPage - 1) * PageSize)
+                        .ToListAsync();
             }
         }
         public void OnPost()
@@ -42,14 +53,14 @@ namespace InterviewManagement.Pages.ims.recruitment.com.user
             SearchTerm = searchTerm;
             StatusFilter = filter;
             LoadData(SearchTerm, StatusFilter);
-            ViewData["roleList"] = new SelectList( _context.Role.ToList(), "Id", "RoleName");
+            ViewData["roleList"] = new SelectList(_context.Role.ToList(), "Id", "RoleName");
             ViewData["status"] = status;
             ViewData["searchTerm"] = SearchTerm;
             ViewData["statusFilter"] = StatusFilter;
         }
         private void LoadData(string searchTerm, string statusFilter)
         {
-            var employeeQuery = _context.Employee              
+            var employeeQuery = _context.Employee
                 .Include(c => c.Role)
                 .AsQueryable();
 

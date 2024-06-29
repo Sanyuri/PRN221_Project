@@ -5,17 +5,17 @@
         public static IDictionary<int, string> CandidateStatus { get; } = new Dictionary<int, string>()
         {
             { 1, "Waiting for interview" },
-            { 2, "Cancelled interview" },
-            { 3, "Passed" },
-            { 4, "Failed interview" },
-            { 5, "Open" },
-            { 6, "Waiting for approval" },
-            { 7, "Approved" },
-            { 8, "Rejected" },
-            { 9, "Waiting for response" },
-            { 10, "Accepted offer" },
-            { 11, "Declined offer" },
-            { 12, "Cancelled offer" },
+            { 2, "Waiting for approval" },
+            { 3, "Waiting for response" },
+            { 4, "Open" },
+            { 5, "Passed" },
+            { 6, "Approved" },
+            { 7, "Rejected" },
+            { 8, "Accepted offer" },
+            { 9, "Declined offer" },
+            { 11, "Failed interview" },
+            { 10, "Cancelled offer" },
+            { 12, "Cancelled interview" },
             { 13, "Banned" }
         };
 

@@ -8,8 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using InterviewManagement.Models;
 using InterviewManagement.Values;
 using InterviewManagement.DTOs;
+using System.Diagnostics;
 
-namespace InterviewManagement.Pages.candidate
+namespace InterviewManagement.Pages.ims.recruitment.com.candidate
 {
     public class ViewCandidateModel : PageModel
     {
@@ -25,6 +26,10 @@ namespace InterviewManagement.Pages.candidate
 
         public async Task<IActionResult> OnGetAsync(long? id)
         {
+            var user = await _context.Employee.Include(c => c.Role).FirstOrDefaultAsync(c => c.Id == 2);
+            ViewData["User"] = user.Role.RoleName;
+
+
             if (id == null || _context.Candidate == null)
             {
                 return NotFound();
@@ -54,7 +59,6 @@ namespace InterviewManagement.Pages.candidate
             long idChan = long.Parse(Request.Form["idChanfer"]);
 
             var candidateToUpdate = _context.Candidate.Find(idChan);
-
             if (candidateToUpdate == null)
             {
                 return NotFound();

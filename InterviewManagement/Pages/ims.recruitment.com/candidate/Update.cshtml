@@ -13,14 +13,13 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Update</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
+ 
   
 </head>
 <body>
 
     <form method="post">
-        <input type="hidden" asp-for="CandidateDTO.CreatedOn" name="CandidateDTO.CreatedOn" value="2003-01-20" />
+        <input type="hidden" asp-for="CandidateDTO.CreatedOn" name="CandidateDTO.CreatedOn" value="@Model.CandidateDTO.CreatedOn" />
         <input type="text" value="test" name="CandidateDTO.ModifiedBy" asp-for="CandidateDTO.ModifiedBy" hidden />
         <input type="hidden" value="4" name="CandidateDTO.RoleId" asp-for="CandidateDTO.RoleId" />
         <input type="hidden" value="@Model.CandidateDTO.Id" name="idChanfer" />
@@ -60,10 +59,12 @@
                         D.O.B
                         <span class="text-danger">*</span>
                     </label><input required type="date"
+                                   id="dob"
                                    class="form-control"
                                    name="CandidateDTO.dob"
                                    asp-for="CandidateDTO.Dob">
                     <span asp-validation-for="CandidateDTO.Dob" class="text-danger"></span>
+                    <span id="dobError" class="text-danger"></span>
 
 
                 </div>
@@ -238,7 +239,7 @@
             </div>
             <div>
 
-                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="submit" id="sm" class="btn btn-primary">Update</button>
                 <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
             </div>
     </form>
@@ -251,15 +252,27 @@
     @section Scripts {
             <script>
                 $(document).ready(function () {
+                    $('#dob').on('change', function () {
+                        var dob = new Date($(this).val());
+                        var today = new Date();
+
+                        if (dob >= today) {
+                            $('#dobError').text(' Date of Birth must be in the past.');
+                            $('#sm').prop('disabled', true);
+                        } else {
+                            $('#dobError').text('');
+                            $('#sm').prop('disabled', false); // Enable submit button
+
+                        }
+                    });
+
+               
                     $('#skillsDropdown').select2({
                         placeholder: "Keyword..."
                     });
                 });
             </script>
-        @{
-            await Html.RenderPartialAsync("_ValidationScriptsPartial");
-
-        }
+        
     }
 </body>
 </html>

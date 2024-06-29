@@ -58,10 +58,12 @@
                             D.O.B
                             <span class="text-danger">*</span>
                         </label><input required type="date"
+                                       id="dob"
                                        class="form-control"
                                        name="Employee.dob"
                                        asp-for="Employee.Dob">
                         <span asp-validation-for="Employee.Dob" class="text-danger"></span>
+                        <span id="dobError" class="text-danger"></span>
 
 
                     </div>
@@ -116,6 +118,9 @@
             <div class="row ">
                 <div class="col-md-6">
                     <label class="form-label">Role:</label>
+                    <span class="text-danger">*</span>
+                    <span class="text-danger" id="role-error"></span>
+
                     @if (ViewBag.roleList is SelectList roleList && roleList != null)
                     {
                         @foreach (var role in ViewBag.roleList)
@@ -133,6 +138,9 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Department:</label>
+                    <span class="text-danger">*</span>
+                    <span class="text-danger" id="department-error"></span>
+
                     @if (ViewBag.DepartmentList is SelectList DepartmentList && DepartmentList != null)
                     {
                         @foreach (var department in ViewBag.DepartmentList)
@@ -183,7 +191,7 @@
 
             <div>
 
-                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="submit" id="sm" class="btn btn-primary">Update</button>
                 <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
             </div>
     </form>
@@ -201,6 +209,44 @@
                     });
                 });
             </script>
+            <script>
+                $(document).ready(function () {
+                    $('#dob').on('change', function () {
+                        var dob = new Date($(this).val());
+                        var today = new Date();
+
+                        if (dob >= today) {
+                            $('#dobError').text(' Date of Birth must be in the past.');
+                            $('#sm').prop('disabled', true);
+                        } else {
+                            $('#dobError').text('');
+                            $('#sm').prop('disabled', false); // Enable submit button
+
+                        }
+                    });
+                    $("form").on("submit", function (event) {
+                        let roleSelected = $("input[name='Employee.RoleId']:checked").length > 0;
+                        let departmentSelected = $("input[name='Employee.DepartmentId']:checked").length > 0;
+
+                        if (!roleSelected) {
+                            $("#role-error").text("Please select a role.");
+                        } else {
+                            $("#role-error").text("");
+                        }
+
+                        if (!departmentSelected) {
+                            $("#department-error").text("Please select a department.");
+                        } else {
+                            $("#department-error").text("");
+                        }
+
+                        if (!roleSelected || !departmentSelected) {
+                            event.preventDefault(); // Prevent form submission
+                        }
+                    });
+                });
+            </script>
+
             @{
                 await Html.RenderPartialAsync("_ValidationScriptsPartial");
 
