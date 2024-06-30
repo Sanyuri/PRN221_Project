@@ -5,309 +5,84 @@
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-<style>
-    table{
-        text-align: center;
-    }
-    th,td{
-        text-align: center
-    }
-</style>
 <h1>Offer</h1>
 
 <p>
     Offer List
 </p>
-<div>
-    @* Filter *@
-</div>
-<div class="col text-end">
-    <a href="#" class="btn btn-pills btn-warning" data-bs-toggle="modal"
-       data-bs-target="#addOfferModal">
-        + Add Offer
-    </a>
-
-    <a href="#"
-       class="btn btn-pills btn-success" data-bs-toggle="modal"
-       data-bs-target="#exportModal">
-        <i class="uil uil-export"></i>
-        Export
-    </a>
-
-    <!--Modal add-->
-    <div class="modal fade text-start" id="addOfferModal" tabindex="-1"
-         aria-labelledby="LabelAddOfferModal" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered w-75">
-            <div class="modal-content">
-                <div class="modal-header border-bottom p-3">
-                    <h5 class="modal-title" id="LabelAddOfferModal">Add new Offer</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                        <form method="post" asp-page-handler="AddOffer">
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">
-                                        Candidate<span class="text-danger">*</span>
-                                        </label>                                  
-                                        <select class="form-select" asp-for="Offer.CandidateId" asp-items="ViewBag.Candidate">
-                                            <option disabled selected>Select Candidate Name</option>
-                                        </select>
-                                        <span asp-validation-for="Offer.CandidateId" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                    <label class="form-label">
-                                        Contract Type <span class="text-danger">*</span>
-                                    </label>
-                                    <select class="form-select" asp-for="Offer.ContractId" asp-items="ViewBag.Contract">
-                                        <option disabled selected>Select a type of contract</option>
-                                    </select>
-                                    <span asp-validation-for="Offer.ContractId" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                    <label class="form-label">
-                                        Position<span class="text-danger">*</span>
-                                    </label>
-                                    <select class="form-select" asp-for="Offer.PositionId" asp-items="ViewBag.Position">
-                                        <option disabled selected>Select a position</option>
-                                    </select>
-                                    <span asp-validation-for="Offer.PositionId" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                    <label class="form-label">
-                                        Level<span class="text-danger">*</span>
-                                    </label>
-                                    <select class="form-select" asp-for="Offer.LevelId" asp-items="ViewBag.Level">
-                                        <option disabled selected>Select a level</option>
-                                    </select>
-                                    <span asp-validation-for="Offer.LevelId" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                    <label class="form-label">
-                                        Approver<span class="text-danger">*</span>
-                                    </label>
-                                    <select class="form-select" asp-for="ApproverId" asp-items="ViewBag.Approver">
-                                        <option disabled selected>Select an approver</option>
-                                    </select>
-                                    <span asp-validation-for="ApproverId" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                    <label class="form-label">
-                                        Department<span class="text-danger">*</span>
-                                    </label>
-                                    <select class="form-select" asp-for="Offer.DepartmentId" asp-items="ViewBag.Department">
-                                        <option disabled selected>Select a department</option>
-                                    </select>
-                                    <span asp-validation-for="Offer.DepartmentId" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">
-                                            Interview Info<span class="text-danger">*</span>
-                                        </label>
-                                    <select class="form-select" asp-for="Offer.ScheduleId" asp-items="ViewBag.InterviewInfo">
-                                        <option disabled selected>Select an interview schedule title</option>
-                                    </select>
-                                    <span asp-validation-for="Offer.ScheduleId" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                    <label class="form-label">
-                                        Recruiter Owner<span class="text-danger">*</span>
-                                    </label>
-                                    <select class="form-select" asp-for="RecruiterId" asp-items="ViewBag.Recruiter"></select>
-                                    <span asp-validation-for="RecruiterId" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">
-                                            Contract Period<span class="text-danger">*</span>
-                                        </label>
-                                        <div class="d-flex justify-content-between">
-                                            <div>
-                                                <div class="d-flex">
-                                                     <label class="form-label" style="text-align:center">
-                                                        From:
-                                                    </label>           
-                                                    <input type="date" class="form-control" asp-for="Offer.ContractFrom"/>
-                                                </div>
-                                                <span asp-validation-for="Offer.ContractFrom" class="text-danger"></span>
-                                            </div>
-                                           <div>
-                                               <div class="d-flex">
-                                                   <label class="form-label" style="text-align:center">
-                                                        To:
-                                                    </label> 
-                                                    <input type="date" class="form-control" asp-for="Offer.ContractTo"/>   
-                                               </div>
-                                                <span asp-validation-for="Offer.ContractTo" class="text-danger"></span>
-                                           </div>
-                                            
-                                        </div> 
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">
-                                            Due Date<span class="text-danger">*</span>
-                                        </label>
-                                        <div>
-                                            <input type="date" class="form-control" asp-for="Offer.DueDate"/> 
-                                            <span asp-validation-for="Offer.DueDate" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                    <label class="form-label">
-                                        Interview Notes
-                                    </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                    <label class="form-label">
-                                        Basic Salary<span class="text-danger">*</span>
-                                    </label>
-                                    <input type="number" class="form-control" placeholder="Enter basic salary" asp-for="Offer.Salary"/>
-                                    <span asp-validation-for="Offer.Salary" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                    <label class="form-label">
-                                        Note
-                                    </label>
-                                    <textarea class="form-control" placeholder="Type a note" asp-for="Offer.Note"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                        <Button type="submit" class="btn btn-primary">Create Offer
-                                        </button>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <table class="table">
-        <thead>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].CandidateName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Approver)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Department)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Note)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Status)
+            </th>
+            <th>
+                @Html.DisplayName("Action")
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Offer)
+        {
             <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.OfferDTOs[0].CandidateName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.OfferDTOs[0].Email)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.OfferDTOs[0].Approver)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.OfferDTOs[0].Department)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.OfferDTOs[0].Note)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.OfferDTOs[0].Status)
-                </th>
-                <th>
-                    @Html.DisplayName("Action")
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.OfferDTOs != null)
-            {
-                @foreach (var item in Model.OfferDTOs)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.CandidateName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Email)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Approver)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Department)
-                        </td>
-                        <td>
-                            @(item.Note == "" ? "N/A" : item.Note)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Status)
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center justify-content-center">
-                                <!--modal view details calling (all role)-->
-                                <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-primary"
-                                data-bs-toggle="modal"
-                                title="View details of Offer"
-                                data-bs-target="#offerDetails-@(item.Id)">
-                                    <i class="uil uil-eye"></i>
-                                </a>
-                                <!--modal submit result calling (only candidate)-->
-                                <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-warning"
-                                data-bs-toggle="modal"
-                                title="'Edit Offer'"
-                                data-bs-target="'#updateOffer-'@(item.Id)">
-                                    <i class="uil uil-pen"></i>
-                                </a>
-                                <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-warning"
-                                data-bs-toggle="modal"
-                                title="'Delete Offer'"
-                                data-bs-target="'#deleteOffer-'@(item.Id)">
-                                    <i class="uil uil-multiply"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <!-- modal offer details  -->
-                    <div class="modal fade text-start"
-                    id="offerDetails-@(item.Id)"
-                    tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-lg modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header border-bottom p-3">
-                                    <h5 class="modal-title"
-                                    id="'offerDetails-'@(item.Id)">
-                                        Offer Details
-                                    </h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                                </div>
-                            </div>
-                        </div>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CandidateName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Approver)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Department)
+                </td>
+                <td>
+                    @(item.Note == "" ? "N/A" : item.Note)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    <div class="d-flex align-items-center ">
+                        <!--modal view details calling (all role)-->
+                        <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-primary"
+                           data-bs-toggle="modal"
+                           title="View details of Offer"
+                           data-bs-target="'#candidateDetails'+${candidate.getCandidateId()}">
+                            <i class="uil uil-eye"></i>
+                        </a>
+                        <!--modal submit result calling (only candidate)-->
+                        <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-warning"
+                           data-bs-toggle="modal"
+                           title="'Edit Offer'"
+                           data-bs-target="'#updateCandidate'+${candidate.getCandidateId()}">
+                            <i class="uil uil-pen"></i>
+                        </a>
+                        <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-warning"
+                           data-bs-toggle="modal"
+                           title="'Delete Offer'"
+                           data-bs-target="'#deleteCandidate'+${candidate.getCandidateId()}">
+                            <i class="uil uil-multiply"></i>
+                        </a>
                     </div>
-                }
-
-            }
-        </tbody>
-    </table>
-
-    @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
