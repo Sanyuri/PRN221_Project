@@ -1,0 +1,109 @@
+﻿@page
+@model InterviewManagement.Pages.ims.recruitment.com.Test.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].ContractFrom)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].ContractTo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].DueDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Salary)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].IsDeleted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Note)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Candidate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Position)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Schedule)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Contract)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Department)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Offer[0].Level)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Offer) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContractFrom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContractTo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DueDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Salary)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsDeleted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Note)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Candidate.Address)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position.PositionName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Schedule.ScheduleName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Contract.ContractName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Department.DepertmentName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Level.LevelName)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
