@@ -373,7 +373,7 @@
             $('.edit-button').on('click', function () {
                 var candidateId = $(this).data('id');
                 $.ajax({
-                    url: '@Url.Page("./Update")',
+                    url: '@Url.Page("./Edit")',
                     type: 'GET',
                     data: { id: candidateId },
                     success: function (result) {
@@ -396,7 +396,7 @@
                 e.preventDefault(); // Ngăn chặn gửi form mặc định
                 var formData = $(this).serialize(); // Lấy dữ liệu form
                 $.ajax({
-                    url: '@Url.Page("./Update")',
+                    url: '@Url.Page("./Edit")',
                     type: 'POST',
                     data: formData,
                     success: function (result) {
@@ -418,7 +418,7 @@
             $('.add-button').on('click', function () {
                 var candidateId = $(this).data('id');
                 $.ajax({
-                    url: '@Url.Page("./Create")',
+                    url: '@Url.Page("./Add")',
                     type: 'GET',
                     data: { id: candidateId },
                     success: function (result) {
@@ -441,7 +441,7 @@
                 e.preventDefault(); // Ngăn chặn gửi form mặc định
                 var formData = $(this).serialize(); // Lấy dữ liệu form
                 $.ajax({
-                    url: '@Url.Page("./Create")',
+                    url: '@Url.Page("./Add")',
                     type: 'POST',
                     data: formData,
                     success: function (result) {

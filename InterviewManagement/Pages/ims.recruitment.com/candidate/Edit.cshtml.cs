@@ -1,31 +1,27 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+using InterviewManagement.DTOs;
+using InterviewManagement.Models;
+using InterviewManagement.Values;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using InterviewManagement.Models;
-using InterviewManagement.DTOs;
-using InterviewManagement.Values;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 
-namespace InterviewManagement.Pages.candidate
+namespace InterviewManagement.Pages.ims.recruitment.com.candidate
 {
-    public class UpdateModel : PageModel
+    public class EditModel : PageModel
     {
         private readonly InterviewManagementContext _context;
 
-        public UpdateModel(InterviewManagementContext context)
+        public EditModel(InterviewManagementContext context)
         {
             _context = context;
         }
 
         [BindProperty]
         public CandidateDTO CandidateDTO { get; set; }
-
         public IDictionary<int, string> StatusList { get; } = StatusValue.CandidateStatus;
+
         public async Task<IActionResult> OnGetAsync(long? id)
         {
             if (id == null)
@@ -46,9 +42,7 @@ namespace InterviewManagement.Pages.candidate
             }
 
             CandidateDTO = CandidateDTO.FromCandidate(candidate);
-
             await SetViewDataAsync();
-
             return Page();
         }
 
@@ -93,8 +87,8 @@ namespace InterviewManagement.Pages.candidate
             ICollection<Skill> skillsAdd = _context.Skill
                                  .Where(skill => CandidateDTO.SkillIds.Contains(skill.Id))
                                  .ToList();
-            AddSkillsToCandidate(idChan, skillsAdd.Select(c=>c.Id).ToList());
-             try
+            AddSkillsToCandidate(idChan, skillsAdd.Select(c => c.Id).ToList());
+            try
             {
                 _context.Attach(candidateToUpdate).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
@@ -122,7 +116,6 @@ namespace InterviewManagement.Pages.candidate
             ViewData["skillsList"] = new SelectList(await _context.Skill.ToListAsync(), "Id", "SkillName");
             ViewData["statusList"] = new SelectList(StatusList.ToDictionary(p => p.Key, p => p.Value), "Key", "Value");
         }
-
         private bool CandidateExists(long id)
         {
             return _context.Candidate.Any(e => e.Id == id);
@@ -195,32 +188,31 @@ namespace InterviewManagement.Pages.candidate
                 _context.SaveChanges();
             }
         }
-            public void RemoveSkillsFromCandidate(long candidateId, List<int> skillIdsToRemove)
+        public void RemoveSkillsFromCandidate(long candidateId, List<int> skillIdsToRemove)
+        {
+            var candidate = _context.Candidate
+                                    .Include(c => c.Skills)
+                                    .FirstOrDefault(c => c.Id == candidateId);
+
+            if (candidate == null)
             {
-                var candidate = _context.Candidate
-                                        .Include(c => c.Skills)
-                                        .FirstOrDefault(c => c.Id == candidateId);
+                Debug.WriteLine($"Candidate with ID {candidateId} not found.");
+                return;
+            }
 
-                if (candidate == null)
-                {
-                    Debug.WriteLine($"Candidate with ID {candidateId} not found.");
-                    return;
-                }
-
-                var skillsToRemove = candidate.Skills?
-                                              .Where(s => skillIdsToRemove.Contains(s.Id))
-                                              .ToList();
-            if (skillIdsToRemove.Any()) { 
+            var skillsToRemove = candidate.Skills?
+                                          .Where(s => skillIdsToRemove.Contains(s.Id))
+                                          .ToList();
+            if (skillIdsToRemove.Any())
+            {
                 foreach (var skill in skillsToRemove)
                 {
                     candidate.Skills?.Remove(skill);
                 }
 
             }
-                
-                _context.SaveChanges();
-            }
+
+            _context.SaveChanges();
         }
-
     }
-
+}

@@ -1,10 +1,8 @@
 ﻿@page
-@model InterviewManagement.Pages.candidate.UpdateModel
-
+@model InterviewManagement.Pages.ims.recruitment.com.candidate.EditModel
 @{
     ViewData["Title"] = "Update";
     Layout = "~/Pages/Shared/_Layout1.cshtml";
-
 }
 
 <!DOCTYPE html>
@@ -13,16 +11,13 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Update</title>
- 
-  
 </head>
 <body>
 
     <form method="post">
-        <input type="hidden" asp-for="CandidateDTO.CreatedOn" name="CandidateDTO.CreatedOn" value="@Model.CandidateDTO.CreatedOn" />
-        <input type="text" value="test" name="CandidateDTO.ModifiedBy" asp-for="CandidateDTO.ModifiedBy" hidden />
-        <input type="hidden" value="4" name="CandidateDTO.RoleId" asp-for="CandidateDTO.RoleId" />
-        <input type="hidden" value="@Model.CandidateDTO.Id" name="idChanfer" />
+        <input type="hidden" asp-for="CandidateDTO.CreatedOn" />
+        <input type="hidden" asp-for="CandidateDTO.ModifiedBy" value="test" />
+        <input type="hidden" asp-for="CandidateDTO.RoleId" value="4" />
         <div class="row">
             <strong>I. Personal information</strong>
             <div class="col-md-6">
@@ -49,8 +44,6 @@
                                    name="CandidateDTO.Email"
                                    asp-for="CandidateDTO.Email">
                     <span asp-validation-for="CandidateDTO.Email" class="text-danger"></span>
-
-
                 </div>
             </div>
             <div class="col-md-6">
@@ -114,6 +107,7 @@
 
                 </div>
             </div>
+
             <strong>
                 II. Professional
                 information
@@ -129,10 +123,10 @@
                                class="form-control w-95"
                                name="CandidateDTO.CvLink"
                                asp-for="CandidateDTO.CvLink">
+
+                        <span asp-validation-for="CandidateDTO.CvLink" class="text-danger"></span>
+
                     </div>
-
-                    <span asp-validation-for="CandidateDTO.CvLink" class="text-danger"></span>
-
 
                 </div>
             </div>
@@ -187,15 +181,14 @@
                         <span class="text-danger">*</span>
                     </label>
 
-                    <select asp-for="CandidateDTO.SkillIds" 
-                    asp-items="ViewBag.skillsList"
-                    name="CandidateDTO.SkillIds" class="form-control" multiple id="skillsDropdown"></select>
+                    <select asp-for="CandidateDTO.SkillIds"
+                            asp-items="ViewBag.skillsList"
+                            name="CandidateDTO.SkillIds" class="form-control" multiple id="skillsDropdown"></select>
                     <span asp-validation-for="CandidateDTO.SkillIds" class="text-danger"></span>
 
 
                 </div>
             </div>
-            
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="form-label" asp-for="CandidateDTO.ExpYear">
@@ -238,41 +231,39 @@
                 </div>
             </div>
             <div>
-
                 <button type="submit" id="sm" class="btn btn-primary">Update</button>
                 <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
             </div>
+        </div>
     </form>
 
-    <div>
-
-        <script src="~/lib/jquery/dist/jquery.min.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="~/lib/select2/js/select2.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/select2/js/select2.min.js"></script>
     @section Scripts {
-            <script>
-                $(document).ready(function () {
-                    $('#dob').on('change', function () {
-                        var dob = new Date($(this).val());
-                        var today = new Date();
+        <partial name="_ValidationScriptsPartial" />
+        <script>
+            $(document).ready(function () {
+                $('#dob').on('change', function () {
+                    var dob = new Date($(this).val());
+                    var today = new Date();
 
-                        if (dob >= today) {
-                            $('#dobError').text(' Date of Birth must be in the past.');
-                            $('#sm').prop('disabled', true);
-                        } else {
-                            $('#dobError').text('');
-                            $('#sm').prop('disabled', false); // Enable submit button
+                    if (dob >= today) {
+                        $('#dobError').text(' Date of Birth must be in the past.');
+                        $('#sm').prop('disabled', true);
+                    } else {
+                        $('#dobError').text('');
+                        $('#sm').prop('disabled', false); // Enable submit button
 
-                        }
-                    });
-
-               
-                    $('#skillsDropdown').select2({
-                        placeholder: "Keyword..."
-                    });
+                    }
                 });
-            </script>
-        
+
+
+                $('#skillsDropdown').select2({
+                    placeholder: "Keyword..."
+                });
+            });
+        </script>
     }
 </body>
 </html>
