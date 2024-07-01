@@ -46,7 +46,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
                 ViewData["Department"] = new SelectList(_context.Department, "Id", "DepertmentName");
                 ViewData["Approver"] = new SelectList(_context.Employee.Where(r => r.Role.RoleName.Equals("Manager")), "Id", "FullName");
                 ViewData["Recruiter"] = new SelectList(_context.Employee.Where(r => r.Role.RoleName.Equals("Recruiter")), "Id", "FullName");
-
+                ViewData["ScheduleNote"] = _context.Schedule.ToDictionary(s => s.Id, s => s.Note);
                 OfferDTOs = await  _context.Offer
                                .Include(o => o.Candidate)
                                .Include(o => o.Department)
@@ -78,6 +78,10 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
             Offer.Status = "Waiting for approval";
             Offer.IsDeleted = false;
                 _context.Add(Offer);
+            //change Candidate's status
+            Candidate candidate = _context.Candidate.Find(Offer.CandidateId);
+            candidate.Status = "Waiting for approval";
+            _context.Update(candidate);
                  _context.SaveChanges();
             return RedirectToPage("./Index");
         }

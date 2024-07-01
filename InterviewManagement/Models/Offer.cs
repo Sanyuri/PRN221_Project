@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using InterviewManagement.CustomValidationAttributes;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InterviewManagement.Models
@@ -17,12 +19,14 @@ namespace InterviewManagement.Models
         public DateTime? ContractFrom { get; set; }
 
         [Required(ErrorMessage ="ContractTo is required")]
+        [ContractValidate("ContractFrom",ErrorMessage = "ContractTo must be greater than ContractFrom.")]
         public DateTime? ContractTo { get; set; }
 
         [Required(ErrorMessage = "DueDate is required")]
-        public DateTime? DueDate { get; set; }
+        public DateTime? DueDate {get; set;}
 
         [Required(ErrorMessage = "Salary is required")]
+        [DateValidate(ErrorMessage = "Due date must be greater than or equal to today")]
         public double? Salary { get; set; }
 
         public bool IsDeleted { get; set; }
