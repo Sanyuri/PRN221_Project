@@ -102,8 +102,26 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
             {
                 return RedirectToPage("./Index");
             }
-            _context.Attach(Offer).State = EntityState.Modified;
             //change Candidate's status
+            if (Offer.Status.Equals("Waiting for Response"))
+            {
+                Candidate candidate = _context.Candidate.Find(Offer.CandidateId);
+                candidate.Status = "Waiting for Response";
+                _context.Update(candidate);
+            }
+            if (Offer.Status.Equals("Accepted"))
+            {
+                Candidate candidate = _context.Candidate.Find(Offer.CandidateId);
+                candidate.Status = "Accepted Offer";
+                _context.Update(candidate);
+            }
+            if (Offer.Status.Equals("Declined"))
+            {
+                Candidate candidate = _context.Candidate.Find(Offer.CandidateId);
+                candidate.Status = "Declined Offer";
+                _context.Update(candidate);
+            }
+            _context.Attach(Offer).State = EntityState.Modified;          
             _context.SaveChanges();
             return RedirectToPage("./Index");
         }
