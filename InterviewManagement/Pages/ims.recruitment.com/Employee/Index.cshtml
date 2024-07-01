@@ -33,9 +33,10 @@
                             <div id="search" class="menu-search mb-0 ">
                                 <div>
                                     <input type="text" class="form-control bg-light border-0 rounded-pill"
-                                           placeholder="'Search Keywords...'" name="searchTerm"
+                                           placeholder="'Search Keywords...'" 
+                                           id="searchInput" name="searchTerm"
                                            value="@Model.SearchTerm"
-                                           onkeyup="$('#btnSubmit').click()">
+                                           >
                                 </div>
                             </div>
                         </div>
@@ -350,6 +351,17 @@
                     }
                 });
             });
+        });
+    </script>
+    <script>
+        let debounceTimeout;
+        const debounceDelay = 1000; // 2 seconds
+
+        document.getElementById('searchInput').addEventListener('keyup', function () {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(function () {
+                document.getElementById('btnSubmit').click();
+            }, debounceDelay);
         });
     </script>
 }
