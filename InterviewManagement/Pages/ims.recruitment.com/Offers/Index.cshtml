@@ -214,22 +214,22 @@
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.OfferDTOs[0].CandidateName)
+                    @Html.DisplayName("Candidate Name")
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.OfferDTOs[0].Email)
+                    @Html.DisplayName("Email")
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.OfferDTOs[0].Approver)
+                    @Html.DisplayName("Approver")
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.OfferDTOs[0].Department)
+                    @Html.DisplayName("Department")
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.OfferDTOs[0].Note)
+                   @Html.DisplayName("Notes")
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.OfferDTOs[0].Status)
+                   @Html.DisplayName("Status")
                 </th>
                 <th>
                     @Html.DisplayName("Action")
@@ -237,22 +237,22 @@
             </tr>
         </thead>
         <tbody>
-            @if (Model.OfferDTOs != null)
+            @if (Model.Offers != null)
             {
-                @foreach (var item in Model.OfferDTOs)
+                @foreach (var item in Model.Offers)
                 {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.CandidateName)
+                            @Html.DisplayFor(modelItem => item.Candidate.FullName)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Email)
+                            @Html.DisplayFor(modelItem => item.Candidate.Email)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Approver)
+                            @(item.Employees.Where(e => e.Role.RoleName.Equals("Manager")).Select(e => e.FullName).FirstOrDefault())
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Department)
+                            @Html.DisplayFor(modelItem => item.Department.DepertmentName)
                         </td>
                         <td>
                             @(item.Note == "" ? "N/A" : item.Note)
@@ -273,13 +273,13 @@
                                 <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-warning"
                                 data-bs-toggle="modal"
                                 title="'Edit Offer'"
-                                data-bs-target="'#updateOffer-'@(item.Id)">
+                                data-bs-target="#updateOffer-@(item.Id)">
                                     <i class="uil uil-pen"></i>
                                 </a>
                                 <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-warning"
                                 data-bs-toggle="modal"
                                 title="'Delete Offer'"
-                                data-bs-target="'#deleteOffer-'@(item.Id)">
+                                data-bs-target="#deleteOffer-@(item.Id)">
                                     <i class="uil uil-multiply"></i>
                                 </a>
                             </div>
@@ -303,8 +303,197 @@
                             </div>
                         </div>
                     </div>
-                }
 
+                    <!--modal edit offer-->
+                    <div class="modal fade text-start" id="updateOffer-@(item.Id)" tabindex="-1"
+                        aria-labelledby="LabelUpdateOfferModal" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered w-75">
+                            <div class="modal-content">
+                                <div class="modal-header border-bottom p-3">
+                                    <h5 class="modal-title" id="LabelUpdateOfferModal">Edit Offer</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                            <div class="modal-body">
+                                <form method="post" asp-page-handler="UpdateOffer">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <input type="hidden" asp-for="Offer.Id" value="@(item.Id)">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                        Candidate<span class="text-danger">*</span>
+                                        </label>                                  
+                                        <select class="form-select" asp-for="Offer.CandidateId" asp-items="ViewBag.Candidate">
+                                            <option selected value="@(item.CandidateId)">@(item.Candidate.FullName)</option>
+                                        </select>
+                                        <span asp-validation-for="Offer.CandidateId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Contract Type <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.ContractId" asp-items="ViewBag.Contract">
+                                        <option selected value="@(item.ContractId)">@(item.Contract.ContractName)</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.ContractId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Position<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.PositionId" asp-items="ViewBag.Position">
+                                        <option selected value="@(item.PositionId)">@(item.Position.PositionName)</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.PositionId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Level<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.LevelId" asp-items="ViewBag.Level">
+                                        <option selected value="@(item.LevelId)">@(item.Level.LevelName)</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.LevelId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Approver<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="ApproverId" asp-items="ViewBag.Approver">
+                                        <option selected value="@(item.Employees.Where(e => e.Role.RoleName.Equals("Manager")).Select(i => i.Id).FirstOrDefault())">
+                                            @(item.Employees.Where(e => e.Role.RoleName.Equals("Manager")).Select(i => i.FullName).FirstOrDefault())</option>
+                                    </select>
+                                    <span asp-validation-for="ApproverId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Department<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.DepartmentId" asp-items="ViewBag.Department">
+                                        <option selected value="@(item.DepartmentId)">@(item.Department.DepertmentName)</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.DepartmentId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Interview Info<span class="text-danger">*</span>
+                                        </label>
+                                    <select id="InterviewInfo" class="form-select" asp-for="Offer.ScheduleId" asp-items="ViewBag.InterviewInfo">
+                                        <option selected value="@(item.ScheduleId)">@(item.Schedule.ScheduleName)</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.ScheduleId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Recruiter Owner<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="RecruiterId" asp-items="ViewBag.Recruiter">
+                                        <option selected value="@(item.Employees.Where(e => e.Role.RoleName.Equals("Recruiter")).Select(i => i.Id).FirstOrDefault())">
+                                            @(item.Employees.Where(e => e.Role.RoleName.Equals("Recruiter")).Select(i => i.FullName).FirstOrDefault())</option>
+                                    </select>
+                                    <span asp-validation-for="RecruiterId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Contract Period<span class="text-danger">*</span>
+                                        </label>
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <div class="d-flex">
+                                                     <label class="form-label" style="text-align:center">
+                                                        From:
+                                                    </label>           
+                                                    <input type="date" class="form-control" asp-for="Offer.ContractFrom" value='@(item.ContractFrom.Value.ToString("yyyy-MM-dd"))'/>
+                                                </div>
+                                                <span asp-validation-for="Offer.ContractFrom" class="text-danger"></span>
+                                            </div>
+                                           <div>
+                                               <div class="d-flex">
+                                                   <label class="form-label" style="text-align:center">
+                                                        To:
+                                                    </label> 
+                                                    <input type="date" class="form-control" asp-for="Offer.ContractTo" value='@(item.ContractTo.Value.ToString("yyyy-MM-dd"))'/>   
+                                               </div>
+                                                <span asp-validation-for="Offer.ContractTo" class="text-danger"></span>
+                                           </div>
+                                            
+                                        </div> 
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Due Date<span class="text-danger">*</span>
+                                        </label>
+                                        <div>
+                                            <input type="date" class="form-control" asp-for="Offer.DueDate" value='@(item.DueDate.Value.ToString("yyyy-MM-dd"))'/> 
+                                            <span asp-validation-for="Offer.DueDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Interview Notes
+                                        </label>
+                                        <textarea id="InterviewNotes" class="form-control" readonly></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Basic Salary<span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" class="form-control" placeholder="@(item.Salary)" value="@(item.Salary)" asp-for="Offer.Salary"/>
+                                    <span asp-validation-for="Offer.Salary" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Status
+                                    </label>
+                                    <p class="form-control" placeholder="@(item.Status)" readonly asp-for="@(item.Status)">@(item.Status)</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Note
+                                    </label>
+                                    <textarea class="form-control" placeholder="@(item.Note)" asp-for="Offer.Note"> @(item.Note)</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                        <Button type="submit" class="btn btn-primary">Create Offer
+                                        </button>
+                                </div><!--end col-->
+                            </div><!--end row-->
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
             }
         </tbody>
     </table>

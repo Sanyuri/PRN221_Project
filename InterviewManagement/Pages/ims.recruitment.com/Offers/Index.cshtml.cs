@@ -29,7 +29,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
         public long RecruiterId { get; set; } = default!;
 
 
-        public IList<OfferDto> OfferDTOs { get;set; } = default!;
+        public IList<Offer> Offers { get;set; } = default!;
 
         [BindProperty]
         public Offer Offer { get; set; } = default!;
@@ -47,20 +47,13 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
                 ViewData["Approver"] = new SelectList(_context.Employee.Where(r => r.Role.RoleName.Equals("Manager")), "Id", "FullName");
                 ViewData["Recruiter"] = new SelectList(_context.Employee.Where(r => r.Role.RoleName.Equals("Recruiter")), "Id", "FullName");
                 ViewData["ScheduleNote"] = _context.Schedule.ToDictionary(s => s.Id, s => s.Note);
-                OfferDTOs = await  _context.Offer
+                Offers = await  _context.Offer
                                .Include(o => o.Candidate)
                                .Include(o => o.Department)
-                               .Include(o => o.Employees)
-                               .Select(o => new OfferDto
-                               {
-                                   Id = o.Id,
-                                   CandidateName = o.Candidate.FullName,
-                                   Email = o.Candidate.Email,
-                                   Approver = o.Employees.FirstOrDefault(e => e.Role.RoleName.Equals("Manager")).FullName,
-                                   Department = o.Department.DepertmentName,
-                                   Note = o.Note,
-                                   Status = o.Status
-                               })
+                               .Include(o => o.Employees).ThenInclude(r => r.Role)
+                               .Include(o => o.Level)
+                               .Include(o => o.Schedule)
+                               .Include(o => o.Contract)
                                .ToListAsync();
                 
             }
@@ -83,6 +76,23 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
             candidate.Status = "Waiting for approval";
             _context.Update(candidate);
                  _context.SaveChanges();
+            return RedirectToPage("./Index");
+        }
+
+        public IActionResult OnPostUpdateOffer()
+        {
+            if (!ModelState.IsValid || _context.Offer == null || Offer == null)
+            {
+                return RedirectToPage("./Index");
+            }
+            Offer.Employees = new List<Employee>();
+            Employee Approver = _context.Employee.Find(ApproverId);
+            Employee Recruiter = _context.Employee.Find(RecruiterId);
+            Offer.Employees.Add(Approver);
+            Offer.Employees.Add(Recruiter);
+            _context.Attach(Offer).State = EntityState.Modified;
+            //change Candidate's status
+            _context.SaveChanges();
             return RedirectToPage("./Index");
         }
     }
