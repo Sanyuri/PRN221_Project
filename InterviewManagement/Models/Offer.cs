@@ -23,7 +23,7 @@ namespace InterviewManagement.Models
         public DateTime? ContractTo { get; set; }
 
         [Required(ErrorMessage = "DueDate is required")]
-        [DateValidate(ErrorMessage = "Due date must be greater than or equal to today")]
+        //[DateValidate(ErrorMessage = "Due date must be greater than or equal to today")]
         public DateTime? DueDate {get; set;}
 
         [Required(ErrorMessage = "Salary is required")]

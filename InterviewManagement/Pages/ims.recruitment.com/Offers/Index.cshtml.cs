@@ -95,5 +95,17 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
             _context.SaveChanges();
             return RedirectToPage("./Index");
         }
+
+        public IActionResult OnPostUpdateOfferStatus()
+        {
+            if (!ModelState.IsValid || _context.Offer == null || Offer == null)
+            {
+                return RedirectToPage("./Index");
+            }
+            _context.Attach(Offer).State = EntityState.Modified;
+            //change Candidate's status
+            _context.SaveChanges();
+            return RedirectToPage("./Index");
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace InterviewManagement.CustomValidationAttributes
         {
             if (value is DateTime date)
             {
-                return date.Date >= DateTime.Now.Date;
+                return !(date.Date < DateTime.Today.Date);
             }
             return false;
         }
