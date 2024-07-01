@@ -34,7 +34,7 @@
                                 <div>
                                     <input type="text" class="form-control bg-light border-0 rounded-pill"
                                            placeholder="'Search Keywords...'" name="searchTerm"
-                                           value="@ViewBag.searchTerm"
+                                           value="@Model.SearchTerm"
                                            onkeyup="$('#btnSubmit').click()">
                                 </div>
                             </div>
@@ -45,14 +45,14 @@
                                     <select class="form-select rounded-pill bg-light border-0"
                                             style="height: 40px" name="Filter"
                                             onchange="$('#btnSubmit').click()">
-                                        <option value="All" selected='@(ViewBag.statusFilter!=null
-                                            &&ViewBag.statusFilter.ToString()==("All"))'>All</option>
+                                        <option value="All" selected='@(Model.StatusFilter!=null
+                                            &&Model.StatusFilter.ToString()==("All"))'>All</option>
                                         @if (ViewData["roleList"] is SelectList statuses)
                                         {
                                             @foreach (var role in statuses)
                                             {
-                                                <option value="@role.Value" selected='@(ViewBag.statusFilter != null
-                                                && role.Value.ToString() == @ViewBag.statusFilter)'>@role.Text</option>
+                                                <option value="@role.Value" selected='@(Model.StatusFilter != null
+                                                && role.Value.ToString() == @Model.StatusFilter)'>@role.Text</option>
                                             }
                                         }
 
@@ -162,23 +162,28 @@
                                 }
                             </tbody>
                         </table>
-                        <div>
-                            @if (ViewBag.SearchTerm == null && ViewBag.StatusFilter == null)
-                            {
-                                @if (Model.CurrentPage != 1)
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center">
+                                @if (Model.CurrentPage > 1)
                                 {
-                                    <a asp-page="./Index" asp-route-pageNumber="@(Model.CurrentPage - 1)" class="btn btn-primary">Previous</a>
-
+                                    <li class="page-item">
+                                        <a class="page-link" asp-page="./Index" asp-route-pageNumber="@(Model.CurrentPage - 1)" asp-route-searchTerm="@Model.SearchTerm" asp-route-statusFilter="@Model.StatusFilter">Previous</a>
+                                    </li>
                                 }
-                                <span>Page @Model.CurrentPage of @Model.TotalPages</span>
-
-                                @if (Model.CurrentPage != Model.TotalPages)
+                                @for (int i = 1; i <= Model.TotalPages; i++)
                                 {
-                                    <a asp-page="./Index" asp-route-pageNumber="@(Model.CurrentPage + 1)" class="btn btn-primary">Next</a>
-
+                                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                        <a class="page-link" asp-page="./Index" asp-route-pageNumber="@i" asp-route-searchTerm="@Model.SearchTerm" asp-route-statusFilter="@Model.StatusFilter">@i</a>
+                                    </li>
                                 }
-                            }
-                        </div>
+                                @if (Model.CurrentPage < Model.TotalPages)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" asp-page="./Index" asp-route-pageNumber="@(Model.CurrentPage + 1)" asp-route-searchTerm="@Model.SearchTerm" asp-route-statusFilter="@Model.StatusFilter">Next</a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
                     </div>
                 </div>
 
