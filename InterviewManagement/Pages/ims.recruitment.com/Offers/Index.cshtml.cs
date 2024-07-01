@@ -28,7 +28,8 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
         [BindProperty]
         public long RecruiterId { get; set; } = default!;
 
-
+        [BindProperty]
+        public int OfferId { get; set; } = default!;
         public IList<Offer> Offers { get;set; } = default!;
 
         [BindProperty]
@@ -54,6 +55,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
                                .Include(o => o.Level)
                                .Include(o => o.Schedule)
                                .Include(o => o.Contract)
+                               .Where(o => o.IsDeleted == false)
                                .ToListAsync();
                 
             }
@@ -122,6 +124,19 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
                 _context.Update(candidate);
             }
             _context.Attach(Offer).State = EntityState.Modified;          
+            _context.SaveChanges();
+            return RedirectToPage("./Index");
+        }
+
+        public IActionResult OnPostCancelOffer()
+        {
+            if (OfferId == null || _context.Offer == null)
+            {
+                return RedirectToPage("./Index");
+            }
+            Offer offer = _context.Offer.Find(OfferId);
+            offer.IsDeleted = true;
+            _context.Update(offer);
             _context.SaveChanges();
             return RedirectToPage("./Index");
         }

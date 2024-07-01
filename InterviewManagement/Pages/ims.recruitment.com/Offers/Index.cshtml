@@ -680,6 +680,35 @@
                         </div>
                     </div>
                 </div>
+
+                <!--modal delete Offer-->
+                <div class="modal fade text-start"
+                    id="deleteOffer-@(item.Id)"
+                    tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-lg" style="width:400px;">
+                                <div class="modal-content p-3">
+                                    <div class="modal-body border-0 text-center p-2">
+                                                <h4 class="modal-title">Are you
+                                                    sure</h4>
+                                                    <p>Do you really want to Cancel this Offer?
+                                                        This process cannot be undone.</p>
+                                     </div>
+                                    <div class="modal-footer border-0 align-items-center justify-content-center">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Cancel
+                                        </button>
+                                        <form method="post" asp-page-handler="CancelOffer">
+                                            <input type="hidden" asp-for="OfferId" value="@(item.Id)"/>
+                                            <button type="submit" class="btn btn-success">
+                                                Submit
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
                 }
             }
         </tbody>
