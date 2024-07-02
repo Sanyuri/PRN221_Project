@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="bootstrap" Version="5.0.0" />
+    <PackageReference Include="EPPlus" Version="7.2.1" />
     <PackageReference Include="Google.Apis.Drive.v3" Version="1.68.0.3428" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.29" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.29" />

@@ -24,9 +24,8 @@
 <div class="col text-end">
     <a href="#" class="btn btn-pills btn-warning" data-bs-toggle="modal"
        data-bs-target="#addOfferModal">
-        + Add Offer
+        Add Offer
     </a>
-
     <a href="#"
        class="btn btn-pills btn-success" data-bs-toggle="modal"
        data-bs-target="#exportModal">
@@ -210,6 +209,48 @@
             </div>
         </div>
     </div>
+                                <!-- modal export-->
+                            <div class="modal fade text-start" id="exportModal" tabindex="-1"
+                                 aria-labelledby="labelExportModal" aria-hidden="true">
+                                <div class="modal-dialog modal-md modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header border-bottom p-3">
+                                            <h5 class="modal-title" id="labelExportModal">Export Offer</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body p-4">
+                                            <form method="post" id="exportForm" asp-page-handler="ExportOffer">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Contract From:<span
+                                                                    class="text-danger">*</span> </label>
+                                                            <input name="contractFrom" type="date"
+                                                                   class="date-picker-excel flatpickr flatpickr-input form-control" asp-for="ContractFrom"
+                                                                   required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Contract To:<span
+                                                                    class="text-danger">*</span> </label>
+                                                            <input name="contractTo" type="date"
+                                                                   class="date-picker-excel flatpickr flatpickr-input form-control" asp-for="ContractTo"
+                                                                   required>
+                                                        </div>
+                                                    </div>
+                                                </div><!--end row-->
+                                                <div class="row">
+                                                    <Button type="submit" th:id="submitExport"
+                                                            name="submitAddOffer" class="btn btn-success">Export
+                                                    </button>
+                                                </div><!--end row-->
+                                            </form><!--end form-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
     <table class="table">
         <thead>
             <tr>
@@ -657,7 +698,7 @@
                                     <label class="form-label">
                                         Status
                                     </label>
-                                    <p class="form-control" placeholder="@(item.Status)" readonly asp-for="@(item.Status)">@(item.Status)</p>
+                                    <input class="form-control" placeholder="@(item.Status)" readonly asp-for="Offer.Status" value="@(item.Status)"/>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -665,13 +706,13 @@
                                     <label class="form-label">
                                         Note
                                     </label>
-                                    <textarea class="form-control" placeholder="@(item.Note)" asp-for="Offer.Note"> @(item.Note)</textarea>
+                                    <textarea class="form-control" placeholder="@(item.Note)" asp-for="Offer.Note">@(item.Note)</textarea>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-sm-12">
-                                        <Button type="submit" class="btn btn-primary">Create Offer
+                                        <Button type="submit" class="btn btn-primary">Edit
                                         </button>
                                 </div><!--end col-->
                             </div><!--end row-->
