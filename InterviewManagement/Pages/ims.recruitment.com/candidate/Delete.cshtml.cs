@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using InterviewManagement.Models;
+using System.Diagnostics;
 
 namespace InterviewManagement.Pages.candidate
 {
@@ -40,6 +41,7 @@ namespace InterviewManagement.Pages.candidate
 
         public async Task<IActionResult> OnPostAsync()
         {
+            Debug.WriteLine(Request.Form["idChanfer"]);
             long id = long.Parse(Request.Form["idChanfer"]);
 
             var candidate = await _context.Candidate.FindAsync(id);

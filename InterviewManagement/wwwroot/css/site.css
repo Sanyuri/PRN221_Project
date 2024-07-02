@@ -77,3 +77,6 @@ body {
     text-decoration: none !important;
     color: black;
 }
+.danger {
+    background-color: tomato !important;
+}
