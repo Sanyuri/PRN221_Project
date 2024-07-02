@@ -21,6 +21,8 @@ namespace InterviewManagement.DTOs
         public DateTime Dob { get; set; }
 
         [Required]
+        [StringLength(11, MinimumLength = 9, ErrorMessage = "Phone number must be between 9 and 11 characters long")]
+        [RegularExpression(@"^\d{9,11}$", ErrorMessage = "Phone number must contain only numbers. And must be have 9 -11 characters")]
         public string PhoneNumber { get; set; }
 
         [Required]
@@ -29,7 +31,7 @@ namespace InterviewManagement.DTOs
         [Required]
         public string Gender { get; set; }
 
-        [Required]
+        [StringLength(500)]
         public string? Note { get; set; }
 
         [Required]
@@ -39,12 +41,13 @@ namespace InterviewManagement.DTOs
 
         public long? EmployeeId { get; set; } // Nullable if Employee is not assigned
 
+        [Range(0, 50, ErrorMessage = "Experience years must be a non-negative value. And below 50")]
         public int ExpYear { get; set; }
 
         public DateTime? CreatedOn { get; set; }
 
         public string ModifiedBy { get; set; }
-
+        [Required]
         public int? HighestLevelId { get; set; }
 
         public int? PositionId { get; set; }
@@ -98,7 +101,7 @@ namespace InterviewManagement.DTOs
             return dto;
         }
 
-
+        
         private static ICollection<int> GetSkillIds(ICollection<Skill> skills)
         {
             var skillIds = new List<int>();

@@ -23,32 +23,45 @@ namespace InterviewManagement.Pages.candidate
 
         public async Task<IActionResult> OnGetAsync(long? id)
         {
-            if (id == null || _context.Candidate == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var candidate = _context.Candidate.Find(id);
+
+            Candidate = await _context.Candidate.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (Candidate == null)
+            {
+                return NotFound();
+            }
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+            long id = long.Parse(Request.Form["idChanfer"]);
+
+            var candidate = await _context.Candidate.FindAsync(id);
 
             if (candidate == null)
             {
                 return NotFound();
             }
-            else 
+
+            candidate.IsDeleted = true;
+
+            try
             {
-                candidate.IsDeleted = true;
-                try
-                {
-                    _context.Attach(candidate).State = EntityState.Modified;
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    return NotFound();
-                }
+                _context.Attach(candidate).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
             }
+            catch (DbUpdateConcurrencyException)
+            {
+                return NotFound();
+            }
+
             return RedirectToPage("./Index");
         }
-
-       
     }
 }

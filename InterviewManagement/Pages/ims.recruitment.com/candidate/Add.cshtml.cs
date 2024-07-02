@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using InterviewManagement.DTOs;
+using InterviewManagement.Models;
+using InterviewManagement.Values;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using InterviewManagement.Models;
-using InterviewManagement.Values;
 using Microsoft.EntityFrameworkCore;
-using InterviewManagement.DTOs;
 using System.Diagnostics;
 
-namespace InterviewManagement.Pages.candidate
+namespace InterviewManagement.Pages.ims.recruitment.com.candidate
 {
-    public class CreateModel : PageModel
+    public class AddModel : PageModel
     {
         private readonly InterviewManagementContext _context;
 
-        public CreateModel(InterviewManagementContext context)
+        public AddModel(InterviewManagementContext context)
         {
             _context = context;
         }
@@ -28,7 +24,7 @@ namespace InterviewManagement.Pages.candidate
         public IDictionary<int, string> StatusList { get; } = StatusValue.CandidateStatus;
         public async Task<IActionResult> OnGetAsync()
         {
-           
+
             await SetViewDataAsync();
 
             return Page();
@@ -47,7 +43,6 @@ namespace InterviewManagement.Pages.candidate
             }
 
             var candidateToAdd = new Candidate();
-            Debug.WriteLine(candidateToAdd, "a");
 
 
             if (candidateToAdd == null)
@@ -80,12 +75,14 @@ namespace InterviewManagement.Pages.candidate
             {
                 _context.Candidate.Add(candidateToAdd);
                 await _context.SaveChangesAsync();
+                Debug.WriteLine(candidateToAdd.Id, "a");
+
             }
             catch (DbUpdateConcurrencyException)
             {
-               
-                    return NotFound();
-              
+
+                return NotFound();
+
             }
 
             return RedirectToPage("./Index");
@@ -100,7 +97,7 @@ namespace InterviewManagement.Pages.candidate
             ViewData["statusList"] = new SelectList(StatusList.ToDictionary(p => p.Key, p => p.Value), "Key", "Value");
         }
 
-      
-    }
-}
 
+    }
+
+}

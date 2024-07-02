@@ -13,59 +13,72 @@ namespace InterviewManagement.Pages.ims.recruitment.com.user
 {
     public class IndexModel : PageModel
     {
-        private readonly InterviewManagement.Models.InterviewManagementContext _context;
+        private readonly InterviewManagementContext _context;
 
-        public IndexModel(InterviewManagement.Models.InterviewManagementContext context)
+        public IndexModel(InterviewManagementContext context)
         {
             _context = context;
         }
 
-        public IList<Employee> Employee { get;set; } = default!;
+        public IList<Employee> Employee { get; set; } = default!;
         public string SearchTerm { get; set; } = string.Empty;
         public string StatusFilter { get; set; } = "All";
-        public IDictionary<int, string> status { get; } = StatusValue.UserStatus;
+        public IDictionary<int, string> Status { get; } = StatusValue.UserStatus;
 
-        public async Task OnGetAsync()
-        {
-            ViewData["roleList"] = new SelectList(await _context.Role.ToListAsync(), "Id", "RoleName");
-            ViewData["status"] = status;
+        public int CurrentPage { get; set; } = 1;
+        public int TotalPages { get; set; }
+        public int PageSize { get; set; } = 5;
 
-            if (_context.Employee != null)
-            {
-                Employee = await _context.Employee.ToListAsync();
-            }
-        }
-        public void OnPost()
+        public async Task OnGetAsync(int? pageNumber, string searchTerm, string statusFilter)
         {
-            string searchTerm = Request.Form["searchTerm"];
-            string filter = Request.Form["filter"];
             SearchTerm = searchTerm;
-            StatusFilter = filter;
-            LoadData(SearchTerm, StatusFilter);
-            ViewData["roleList"] = new SelectList( _context.Role.ToList(), "Id", "RoleName");
-            ViewData["status"] = status;
-            ViewData["searchTerm"] = SearchTerm;
-            ViewData["statusFilter"] = StatusFilter;
+            StatusFilter = statusFilter ?? "All";
+            CurrentPage = pageNumber ?? 1;
+
+            await LoadDataAsync();
         }
-        private void LoadData(string searchTerm, string statusFilter)
+
+        public async Task<IActionResult> OnPostAsync()
         {
-            var employeeQuery = _context.Employee              
-                .Include(c => c.Role)
+            SearchTerm = Request.Form["searchTerm"];
+            StatusFilter = Request.Form["filter"];
+            CurrentPage = 1;
+
+            await LoadDataAsync();
+
+            return Page();
+        }
+
+        private async Task LoadDataAsync()
+        {
+            var employeeQuery = _context.Employee
+                .Include(e => e.Role)
                 .AsQueryable();
 
-            //AsQueryable tao 1 doi tuong truy van va co the soan thao va sua doi trc khi thuc thi
-            // Apply search filter
             if (!string.IsNullOrEmpty(SearchTerm))
             {
-                employeeQuery = employeeQuery.Where(c =>
-            (c.FullName != null && c.FullName.Contains(SearchTerm)) ||
-            (c.Email != null && c.Email.Contains(SearchTerm)));
+                employeeQuery = employeeQuery.Where(e =>
+                    (e.FullName != null && e.FullName.Contains(SearchTerm)) ||
+                    (e.Email != null && e.Email.Contains(SearchTerm)));
             }
+
             if (!string.IsNullOrEmpty(StatusFilter) && StatusFilter != "All")
             {
-                employeeQuery = employeeQuery.Where(c => c.Role.Id.ToString() == StatusFilter);
+                employeeQuery = employeeQuery.Where(e => e.Role.Id.ToString() == StatusFilter);
             }
-            Employee = employeeQuery.ToList();
+
+            var totalEmployee = await employeeQuery.CountAsync();
+            TotalPages = (int)Math.Ceiling(totalEmployee / (double)PageSize);
+
+            Employee = await employeeQuery
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .ToListAsync();
+
+            ViewData["roleList"] = new SelectList(await _context.Role.ToListAsync(), "Id", "RoleName");
+            ViewData["status"] = Status;
+            ViewData["searchTerm"] = SearchTerm;
+            ViewData["statusFilter"] = StatusFilter;
         }
     }
 }

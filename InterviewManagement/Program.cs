@@ -9,6 +9,15 @@ InterviewManagementContext interviewManagementContext = new InterviewManagementC
 interviewManagementContext.Database.EnsureCreated();
 
 
+// Add session services
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout
+    options.Cookie.HttpOnly = true; // Make the session cookie accessible only via HTTP
+    options.Cookie.IsEssential = true; // Make the session cookie essential
+});
+
+
 // Register the EmailService as a transient service
 builder.Services.AddTransient<EmailService>();
 
@@ -28,6 +37,9 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// Add session middleware
+app.UseSession();
 
 app.UseRouting();
 

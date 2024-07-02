@@ -73,3 +73,7 @@ body {
 .haftScreen div{
     width: 100% !important;
 }
+.nomal {
+    text-decoration: none !important;
+    color: black;
+}

@@ -1,0 +1,193 @@
+﻿@page
+@model InterviewManagement.Pages.Schedules.DetailsModel
+
+@{
+    ViewData["Title"] = "Schedule Detail";
+}
+
+<h1>Schedule</h1>
+
+<h4>Detail</h4>
+
+<div class="card bg-light">
+    <div class="card-body">
+        <form class="form-sample" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Schedule.Id" />
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Schedule title</label>
+                        <div class="col-sm-9">
+                            @Html.DisplayFor(model => model.Schedule.ScheduleName)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Job</label>
+                        <div class="col-sm-9">
+                            @Html.DisplayFor(model => model.Schedule.Job.JobName)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Candidate Name</label>
+                        <div class="col-sm-9">
+                            @Html.DisplayFor(model => model.Schedule.Candidate.FullName)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Interviewer</label>
+                        <div class="col-sm-9">
+                            @foreach (var employee in Model.Schedule.Employees)
+                            {
+                                <span>@employee.FullName</span>
+                                @if (employee != Model.Schedule.Employees.Last())
+                                {
+                                    <span>,</span>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Schedule Time</label>
+                        <div class="col-sm-9">
+                            <div class="d-flex">
+                                @* <label class="mr-3">From</label> *@
+                                @Html.DisplayFor(model => model.Schedule.ScheduleTime)
+                                @* <label class="mr-3">To</label>
+                                <input asp-for="Job.SalaryMax" class="form-control" />
+                                <span asp-validation-for="Job.SalaryMax" class="text-danger"></span> *@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Location</label>
+                        <div class="col-sm-9">
+                            @Html.DisplayFor(model => model.Schedule.Location)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Note</label>
+                        <div class="col-sm-9" id="noteInput" style="display: none">
+                            <textarea asp-for="Schedule.Note" class="form-control" placeholder="Type schedule note..."></textarea>
+                            <span asp-validation-for="Schedule.Note" class="text-danger"></span>
+                        </div>
+                        <div class="col-sm-9" id="showNote">
+                            @{
+                                var note = Model.Schedule.Note;
+                                var displayNote = string.IsNullOrEmpty(note) ? "N/A" : note;
+                            }
+                            @Html.DisplayFor(model => displayNote)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Recruiter Owner</label>
+                        <div class="col-sm-9">
+                            @Html.DisplayFor(model => model.Schedule.ModifiedBy)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Result</label>
+                        <div class="col-sm-9" id="showResult">
+                            @Html.DisplayFor(model => model.Schedule.Result)
+                        </div>
+                        <div class="col-sm-9" id="selectResult" style="display: none">
+                            <select asp-for="Schedule.Result" class="form-control">
+                                <option value="Passed">Passed</option>
+                                <option value="Failed">Failed</option>
+                            </select>
+                            <span asp-validation-for="Schedule.Result" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Meeting ID</label>
+                        <div class="col-sm-9">
+                            @{
+                                var meetingUrl = Model.Schedule.MeetingURL;
+                                var displayText = string.IsNullOrEmpty(meetingUrl) ? "N/A" : meetingUrl;
+                            }
+
+                            @Html.DisplayFor(model => displayText)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Status</label>
+                        <div class="col-sm-9">
+                            @Html.DisplayFor(model => model.Schedule.Status)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button class="btn btn-secondary text-white mr-5" id="submit-form-btn" type="submit" style="display: none">Submit</button>
+                <a class="btn btn-secondary text-white mr-5" id="show-submit-form-btn" role="button" onclick="showSubmitResultForm()">Submit result</a>
+                <a class="btn btn-secondary text-white" role="button" asp-page="./Edit" asp-route-id="@Model.Schedule.Id">Edit</a>
+                <a class="btn btn-secondary text-white" role="button" asp-page="Index">Cancel</a>
+                <a class="btn btn-secondary text-white ml-5" id="back-detail-btn" role="button" onclick="backDetailForm()" style="display: none">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+
+        function showSubmitResultForm() {
+            $("#selectResult").show();
+            $("#noteInput").show();
+            $("#submit-form-btn").show();
+            $("#back-detail-btn").show();
+            $("#showNote").hide();
+            $("#showResult").hide();
+            $("#show-submit-form-btn").hide();
+            $("#back-schedule-btn").hide();
+        }
+
+        function backDetailForm() {
+            $("#selectResult").hide();
+            $("#noteInput").hide();
+            $("#submit-form-btn").hide();
+            $("#back-detail-btn").hide();
+            $("#showNote").show();
+            $("#showResult").show();
+            $("#show-submit-form-btn").show();
+            $("#back-schedule-btn").show();
+        }
+
+    </script>
+}

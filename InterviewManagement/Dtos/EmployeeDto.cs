@@ -20,6 +20,8 @@ namespace InterviewManagement.Dtos
         public DateTime Dob { get; set; }
 
         [Required]
+        [StringLength(11, MinimumLength = 9, ErrorMessage = "Phone number must be between 9 and 11 characters long")]
+        [RegularExpression(@"^\d{9,11}$", ErrorMessage = "Phone number must contain only numbers")]
         public string? PhoneNumber { get; set; }
 
         [Required]

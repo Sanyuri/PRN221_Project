@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using InterviewManagement.Models;
 
-namespace InterviewManagement.Pages.ims.recruitment.com.test
+namespace InterviewManagement.Pages.Jobs
 {
     public class EditModel : PageModel
     {
@@ -20,32 +20,43 @@ namespace InterviewManagement.Pages.ims.recruitment.com.test
         }
 
         [BindProperty]
-        public Offer Offer { get; set; } = default!;
+        public Job Job { get; set; } = default!;
+
+        [BindProperty]
+        public IList<int> SelectedSkillIds { get; set; } = new List<int>();
+        [BindProperty]
+        public IList<long> SelectedBenefitIds { get; set; } = new List<long>();
+        [BindProperty]
+        public IList<int> SelectedLevelIds { get; set; } = new List<int>();
+
+        public IList<Skill> Skills { get; set; } = new List<Skill>();
+        public IList<Benefit> Benefits { get; set; } = new List<Benefit>();
+        public IList<Level> Levels { get; set; } = new List<Level>();
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Offer == null)
+            if (id == null || _context.Job == null)
             {
                 return NotFound();
             }
 
-            var offer =  await _context.Offer.FirstOrDefaultAsync(m => m.Id == id);
-            if (offer == null)
+            Skills = await _context.Skill.ToListAsync();
+            Benefits = await _context.Benefit.ToListAsync();
+            Levels = await _context.Level.ToListAsync();
+
+            var job =  await _context.Job.Include(j => j.Skills)
+                                         .Include(j => j.Benefits)
+                                         .Include(j => j.Levels)
+                                         .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (job == null)
             {
                 return NotFound();
             }
-            Offer = offer;
-           ViewData["CandidateId"] = new SelectList(_context.Candidate, "Id", "Address");
-           ViewData["ContractId"] = new SelectList(_context.Contract, "Id", "ContractName");
-           ViewData["DepartmentId"] = new SelectList(_context.Department, "Id", "DepertmentName");
-           ViewData["LevelId"] = new SelectList(_context.Level, "Id", "LevelName");
-           ViewData["PositionId"] = new SelectList(_context.Position, "Id", "PositionName");
-           ViewData["ScheduleId"] = new SelectList(_context.Schedule, "Id", "Location");
+            Job = job;
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -53,7 +64,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.test
                 return Page();
             }
 
-            _context.Attach(Offer).State = EntityState.Modified;
+            _context.Attach(Job).State = EntityState.Modified;
 
             try
             {
@@ -61,7 +72,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.test
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!OfferExists(Offer.Id))
+                if (!JobExists(Job.Id))
                 {
                     return NotFound();
                 }
@@ -74,9 +85,9 @@ namespace InterviewManagement.Pages.ims.recruitment.com.test
             return RedirectToPage("./Index");
         }
 
-        private bool OfferExists(int id)
+        private bool JobExists(int id)
         {
-          return (_context.Offer?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Job?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
