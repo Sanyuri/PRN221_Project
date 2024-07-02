@@ -1,0 +1,167 @@
+﻿@page
+@model InterviewManagement.Pages.ims.recruitment.com.user.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Shared/_Layout1.cshtml";
+}
+
+
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Update</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
+
+</head>
+<body>
+
+    <form method="post">
+
+        <input type="hidden" value="@Model.Employee.Id" name="idChanfer" />
+        <div class="row">
+            <div class="row haftScreen">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="Employee.FullName">
+                            Full Name
+                            <span class="text-danger">*</span>
+                        </label><input required type="text"
+                                       class="form-control"
+                                       name="Employee.FullName"
+                                       asp-for="Employee.FullName">
+                        <span asp-validation-for="Employee.FullName" class="text-danger"></span>
+
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="Employee.Email">
+                            Email
+                            <span class="text-danger">*</span>
+                        </label><input required type="text"
+                                       class="form-control"
+                                       name="Employee.Email"
+                                       asp-for="Employee.Email">
+                        <span asp-validation-for="Employee.Email" class="text-danger"></span>
+
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="Employee.Dob">
+                            D.O.B
+                            <span class="text-danger">*</span>
+                        </label><input required type="date"
+                                       class="form-control"
+                                       name="Employee.dob"
+                                       asp-for="Employee.Dob">
+                        <span asp-validation-for="Employee.Dob" class="text-danger"></span>
+
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="Employee.Address">
+                            Address                        <span class="text-danger">*</span>
+                        </label><input required type="text"
+                                       class="form-control"
+                                       name="Employee.Address"
+                                       asp-for="Employee.Address">
+                        <span asp-validation-for="Employee.Address" class="text-danger"></span>
+
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="Employee.PhoneNumber">
+                            Phone Number
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input required type="text"
+                               class="form-control"
+                               name="Employee.PhoneNumber"
+                               asp-for="Employee.PhoneNumber">
+                        <span asp-validation-for="Employee.PhoneNumber" class="text-danger"></span>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row haftScreen">
+                <div class="col-md-6">
+                    <label class="form-label">Role:</label>
+                    @if (ViewBag.roleList is SelectList roleList && roleList != null)
+                    {
+                        @foreach (var role in ViewBag.roleList)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio"
+                                       name="Employee.RoleId" value="@role.Value"
+                                       id="role-@role.Value"
+                                       checked="@(role.Value.ToString() == Model.Employee.RoleId.ToString())">
+                                <label class="form-check-label" for="role-@role.Value">
+                                    @role.Text
+                                </label>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Department:</label>
+                    @if (ViewBag.DepartmentList is SelectList DepartmentList && DepartmentList != null)
+                    {
+                        @foreach (var department in ViewBag.DepartmentList)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio"
+                                       name="Employee.DepartmentId" value="@department.Value"
+                                       id="department-@department.Value"
+                                       checked="@(department.Value.ToString() == Model.Employee.DepartmentId.ToString())">
+                                <label class="form-check-label" for="department-@department.Value">
+                                    @department.Text
+                                </label>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+
+            <div>
+
+                <button type="submit" class="btn btn-primary">Update</button>
+                <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
+            </div>
+    </form>
+
+    <div>
+
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/lib/select2/js/select2.min.js"></script>
+        @section Scripts {
+            <script>
+                $(document).ready(function () {
+                    $('#skillsDropdown').select2({
+                        placeholder: "Keyword..."
+                    });
+                });
+            </script>
+            @{
+                await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+            }
+        }
+</body>
+</html>

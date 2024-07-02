@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -15,4 +15,65 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+/* Style cho nút xem (Details) */
+.btn-soft-primary {
+    background-color: #007bff !important;
+    color: #fff !important;
+    border: solid !important;
+    transition: background-color 0.3s;
+}
+
+    .btn-soft-primary:hover {
+        background-color: #0069d9 !important;
+    }
+
+/* Style cho nút sửa (Edit) */
+.btn-soft-warning {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+    .btn-soft-warning:hover {
+        background-color: #e0a800 !important;
+    }
+
+/* Style cho nút xóa (Multiply) */
+.btn-soft-danger {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+    .btn-soft-danger:hover {
+        background-color: #c82333 !important;
+    }
+
+/* Các điều chỉnh khác */
+
+.btn.btn-pills {
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    padding: 8px 20px; /* Kích thước padding cho khoảng trống bên trong nút */
+    font-size: 14px; /* Kích thước chữ */
+    text-decoration: none; /* Bỏ gạch chân mặc định của thẻ <a> */
+    display: inline-block; /* Để nút không chiếm toàn bộ width */
+}
+.addfix {
+    border-radius: 20px !important;
+    color: whitesmoke !important;
+}
+.haftScreen {
+    width: 50% !important;
+    display: flex !important;
+}
+.haftScreen div{
+    width: 100% !important;
+}
+.nomal {
+    text-decoration: none !important;
+    color: black;
 }
