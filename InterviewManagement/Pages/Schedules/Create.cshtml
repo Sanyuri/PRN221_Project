@@ -1,0 +1,155 @@
+﻿@page
+@model InterviewManagement.Pages.Schedules.CreateModel
+
+@{
+    ViewData["Title"] = "Create Schedule";
+}
+
+<h1>Create</h1>
+
+<h4>Schedule</h4>
+
+<div class="card bg-light">
+    <div class="card-body">
+        <form class="form-sample" method="post">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Schedule title<span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input asp-for="Schedule.ScheduleName" class="form-control" />
+                            <span asp-validation-for="Schedule.ScheduleName" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Job<span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <select asp-for="SelectedJobId" class="form-control">
+                                @foreach (var job in Model.Jobs)
+                                {
+                                    <option value="@job.Id">@job.JobName</option>
+                                }
+                            </select>
+                            <span asp-validation-for="SelectedJobId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Candidate Name<span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <select asp-for="SelectedCandidateId" class="form-control">
+                                @foreach (var candidate in Model.Candidates)
+                                {
+                                    <option value="@candidate.Id">@candidate.FullName</option>
+                                }
+                            </select>
+                            <span asp-validation-for="SelectedCandidateId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Interviewer<span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <select asp-for="SelectedInterviewerIds" class="form-control js-example-basic-multiple" multiple>
+                                @foreach (var employee in Model.Employees)
+                                {
+                                    <option value="@employee.Id">@employee.FullName</option>
+                                }
+                            </select>
+                            <span asp-validation-for="SelectedInterviewerIds" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Schedule Time<span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <div class="d-flex">
+                                @* <label class="mr-3">From</label> *@
+                                <input asp-for="Schedule.ScheduleTime" class="form-control" />
+                                <span asp-validation-for="Schedule.ScheduleTime" class="text-danger"></span>
+                                @* <label class="mr-3">To</label>
+                                <input asp-for="Job.SalaryMax" class="form-control" />
+                                <span asp-validation-for="Job.SalaryMax" class="text-danger"></span> *@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Location</label>
+                        <div class="col-sm-9">
+                            <input asp-for="Schedule.Location" class="form-control" />
+                            <span asp-validation-for="Schedule.Location" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Note</label>
+                        <div class="col-sm-9">
+                            <textarea asp-for="Schedule.Note" class="form-control"></textarea>
+                            <span asp-validation-for="Schedule.Note" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Recruiter Owner<span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input asp-for="Schedule.ModifiedBy" class="form-control" />
+                            <span asp-validation-for="Schedule.ModifiedBy" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <input type="checkbox" asp-for="Schedule.IsDeleted" value="false" hidden/>
+                    <span asp-validation-for="Schedule.IsDeleted"></span>
+                    <input type="text" asp-for="Schedule.Status" value="Open" hidden />
+                    <span asp-validation-for="Schedule.Status"></span>
+                    <input type="text" asp-for="Schedule.Result" value="N/A" hidden />
+                    <span asp-validation-for="Schedule.Result"></span>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Meeting ID</label>
+                        <div class="col-sm-9">
+                            <input asp-for="Schedule.MeetingURL" class="form-control" />
+                            <span asp-validation-for="Schedule.MeetingURL" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary mr-5">Submit</button>
+                <a class="btn btn-secondary text-white" role="button" asp-page="Index">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $('.js-example-basic-multiple').select2();
+        });
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+}

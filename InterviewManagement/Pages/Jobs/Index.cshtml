@@ -1,0 +1,191 @@
+﻿@page
+@model InterviewManagement.Pages.Jobs.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container ml-2">
+    <h1>Job</h1>
+    <h3>Job list</h3>
+    <br />
+
+    <form method="get" class="form-inline">
+        <div class="container d-flex flex-wrap align-items-center">
+            <div class="col-2 mb-2 mr-3">
+                <input type="text" name="searchString" value="@ViewData["Keyword"]" placeholder="Search" class="form-control">
+            </div>
+
+            <div class="col-2 mb-2 mr-3">
+                <select class="form-control" name="status" id="status">
+                    <option value="">Status</option>
+                    <option value="Draft" selected="@(ViewData["StatusFilter"] as string == "Draft")">Draft</option>
+                    <option value="Open" selected="@(ViewData["StatusFilter"] as string == "Open")">Open</option>
+                    <option value="Closed" selected="@(ViewData["StatusFilter"] as string == "Closed")">Closed</option>
+                </select>
+            </div>
+
+            <div class="mb-2 mr-2">
+                <button type="submit" class="btn btn-primary" id="btnSubmit">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="d-flex justify-content-end">
+        <a class="btn btn-secondary mr-2" role="button" asp-page="Create">Add new</a>
+    </div>
+
+
+    <div>
+        @if (Model.Job.Count == 0)
+        {
+            <p>No job has been found</p>
+        } else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Job[0].JobName)
+                        </th>
+                        <th>
+                            Required Skill
+                        </th>
+                        <th>
+                            <a asp-page="./Index" asp-route-sortOrder="@ViewData["DateSortParm"]">
+                                @Html.DisplayNameFor(model => model.Job[0].StartDate)
+                            </a>
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Job[0].EndDate)
+                        </th>
+                        <th>
+                            Level
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Job[0].Status)
+                        </th>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Job)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.JobName)
+                            </td>
+                            <td>
+                                @if (item.Skills != null && item.Skills.Count > 0)
+                                {
+                                    <ul style="list-style-type: none">
+                                        @foreach (var skill in item.Skills)
+                                        {
+                                            <li>@skill.SkillName</li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <span>No skills required</span>
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.StartDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.EndDate)
+                            </td>
+                            <td>
+                                @if (item.Levels != null && item.Levels.Count > 0)
+                                {
+                                    <ul style="list-style-type: none">
+                                        @foreach (var level in item.Levels)
+                                        {
+                                            <li>@level.LevelName</li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <span>No levels required</span>
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Status)
+                            </td>
+                            <td>
+                                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                                <a asp-page="./Detail" asp-route-id="@item.Id">Details</a> |
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" class="delete" data-jobid="@item.Id">Delete</a>
+                                <input type="hidden" name="jobId" id="jobId" value="@item.Id"/>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        
+    </div>
+
+    <div>
+        @if (Model.Job.HasPreviousPage || Model.Job.HasNextPage)
+        {
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item @(Model.Job.HasPreviousPage ? "" : "disabled")">
+                        <a class="page-link" href="?pageNumber=@(Model.Job.PageIndex - 1)&sortOrder=@ViewData["CurrentSort"]&
+                                                searchString=@ViewData["CurrentFilter"]&status=@ViewData["StatusFilter"]">Previous</a>
+                    </li>
+
+                    @for (int i = 1; i <= Model.Job.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.Job.PageIndex ? "active" : "")">
+                            <a class="page-link" href="?pageNumber=@i&sortOrder=@ViewData["CurrentSort"]&
+                                                    searchString=@ViewData["CurrentFilter"]&status=@ViewData["StatusFilter"]">@i</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(Model.Job.HasNextPage ? "" : "disabled")">
+                        <a class="page-link" href="?pageNumber=@(Model.Job.PageIndex + 1)&sortOrder=@ViewData["CurrentSort"]&
+                                                searchString=@ViewData["CurrentFilter"]&status=@ViewData["StatusFilter"]">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page="Index" asp-page-handler="Delete">
+                <div class="modal-body">
+                    Are you sure you want to delete this job?
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Yes" />
+                    <input type="hidden" name="jobId" id="modalJobId" />
+                    <input type="button" class="btn btn-secondary" data-bs-dismiss="modal" value="No" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('table .delete').on('click', function () {
+                var jobId = $(this).data('jobid');
+                $('#modalJobId').val(jobId);
+            });
+        });
+   
+    </script>
+}
+

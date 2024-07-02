@@ -1,0 +1,157 @@
+﻿@page
+@model InterviewManagement.Pages.Schedules.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container ml-2">
+    <h1>Interview Schedule</h1>
+    <h3>Interview Schedule list</h3>
+    <br />
+
+    <form method="get" class="form-inline">
+        <div class="container d-flex flex-wrap align-items-center">
+            <div class="col-2 mb-2 mr-3">
+                <input type="text" name="searchString" value="@ViewData["Keyword"]" placeholder="Search" class="form-control">
+            </div>
+
+            <div class="col-2 mb-2 mr-3">
+                <select class="form-control" name="interviewer" id="interviewer">
+                    <option value="">Interviewer</option>
+                    @foreach(var interviewer in Model.Employees)
+                    {
+                        <option value="@interviewer.FullName" selected="@(ViewData["InterviewerFilter"] as string == interviewer.FullName)">@interviewer.FullName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-2 mb-2 mr-3">
+                <select class="form-control" name="status" id="status">
+                    <option value="">Status</option>
+                    <option value="New" selected="@(ViewData["StatusFilter"] as string == "New")">New</option>
+                    <option value="Invited" selected="@(ViewData["StatusFilter"] as string == "Invited")">Invited</option>
+                    <option value="Interviewed" selected="@(ViewData["StatusFilter"] as string == "Interviewed")">Interviewed</option>
+                    <option value="Cancelled" selected="@(ViewData["StatusFilter"] as string == "Cancelled")">Cancelled</option>
+                </select>
+            </div>
+
+            <div class="mb-2 mr-2">
+                <button type="submit" class="btn btn-primary" id="btnSubmit">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="d-flex justify-content-end">
+        <a class="btn btn-secondary mr-2" role="button" asp-page="Create">Add new</a>
+    </div>
+
+
+    <div>
+        @if (Model.Schedule.Count == 0)
+        {
+            <p>No job has been found</p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Schedule[0].ScheduleName)
+                        </th>
+                        <th>
+                            Candidate Name
+                        </th>
+                        <th>
+                            Interviewer
+                        </th>
+                        <th>
+                            Schedule
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Schedule[0].Result)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Schedule[0].Status)
+                        </th>
+                        <th>
+                            Job
+                        </th>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Schedule)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ScheduleName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Candidate.FullName)
+                            </td>
+                            <td>
+                                <ul style="list-style-type: none">
+                                    @foreach (var employee in item.Employees)
+                                    {
+                                        <li>@employee.FullName</li>
+                                    }
+                                </ul>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ScheduleTime)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Result)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Status)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Job.JobName)
+                            </td>
+                            
+                            <td>
+                                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                                <a asp-page="./Details" asp-route-id="@item.Id">Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+    </div>
+
+    <div>
+        @if (Model.Schedule.HasPreviousPage || Model.Schedule.HasNextPage)
+        {
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item @(Model.Schedule.HasPreviousPage ? "" : "disabled")">
+                        <a class="page-link" href="?pageNumber=@(Model.Schedule.PageIndex - 1)&
+                                                searchString=@ViewData["CurrentFilter"]&status=@ViewData["StatusFilter"]">Previous</a>
+                    </li>
+
+                    @for (int i = 1; i <= Model.Schedule.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.Schedule.PageIndex ? "active" : "")">
+                            <a class="page-link" href="?pageNumber=@i&
+                                                    searchString=@ViewData["CurrentFilter"]&status=@ViewData["StatusFilter"]">@i</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(Model.Schedule.HasNextPage ? "" : "disabled")">
+                        <a class="page-link" href="?pageNumber=@(Model.Schedule.PageIndex + 1)&
+                                                searchString=@ViewData["CurrentFilter"]&status=@ViewData["StatusFilter"]">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    </div>
+</div>
+
+

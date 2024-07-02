@@ -1,0 +1,142 @@
+﻿@page
+@model InterviewManagement.Pages.Jobs.DetailModel
+
+@{
+    ViewData["Title"] = "Schedule Detail";
+}
+
+<h1>Job</h1>
+
+<h4>Detail</h4>
+
+<div class="card bg-light">
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Job title</label>
+                    <div class="col-sm-9">
+                        @Html.DisplayFor(model => model.Job.JobName)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Skills</label>
+                    <div class="col-sm-9">
+                        @foreach (var skill in Model.Job.Skills)
+                        {
+                            <span>@skill.SkillName</span>
+                            @if (skill != Model.Job.Skills.Last())
+                            {
+                                <span>,</span>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Start Date</label>
+                    <div class="col-sm-9">
+                        @Html.DisplayFor(model => model.Job.StartDate)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">End Date</label>
+                    <div class="col-sm-9">
+                        @Html.DisplayFor(model => model.Job.EndDate)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Salary Range</label>
+                    <div class="col-sm-9">
+                        <div class="d-flex">
+                            <label class="mr-3">from</label>
+                            @Html.DisplayFor(model => model.Job.SalaryMin)
+                            <label class="mr-3">To</label>
+                            @Html.DisplayFor(model => model.Job.SalaryMax)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Benefits</label>
+                    <div class="col-sm-9">
+                        @foreach (var benefit in Model.Job.Benefits)
+                        {
+                            <span>@benefit.BenefitName</span>
+                            @if (benefit != Model.Job.Benefits.Last())
+                            {
+                                <span>,</span>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Working address</label>
+                    <div class="col-sm-9">
+                        @Html.DisplayFor(model => model.Job.WorkingAddress)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Level<span class="text-danger">*</span></label>
+                    <div class="col-sm-9">
+                        @foreach (var level in Model.Job.Levels)
+                        {
+                            <span>@level.LevelName</span>
+                            @if (level != Model.Job.Levels.Last())
+                            {
+                                <span>,</span>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Status</label>
+                    <div class="col-sm-9">
+                        @Html.DisplayFor(model => model.Job.Status)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Description</label>
+                    <div class="col-sm-9">
+                        @{
+                            var des = Model.Job.Description;
+                            var displayText = string.IsNullOrEmpty(des) ? "N/A" : des;
+                        }
+
+                        @Html.DisplayFor(model => displayText)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <a class="btn btn-secondary text-white" role="button" asp-page="./Edit" asp-route-id="@Model.Job.Id">Edit</a>
+            <a class="btn btn-secondary text-white" role="button" asp-page="Index">Cancel</a>
+        </div>
+    </div>
+</div>
+
