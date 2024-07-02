@@ -12,6 +12,7 @@ using NuGet.Packaging;
 using System.ComponentModel.DataAnnotations;
 using InterviewManagement.Values;
 using OfficeOpenXml;
+using System.Drawing.Printing;
 
 namespace InterviewManagement.Pages.ims.recruitment.com.Offers
 {
@@ -48,10 +49,16 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
         [BindProperty(SupportsGet = true)]
         public string? StatusFilter { get; set; } = default!;
 
-        public async Task OnGetAsync()
+        public int PageSize { get; set; } = 3;
+        public int TotalRecords { get; set; }
+        public int CurrentPage { get; set; } = 1;
+
+        public async Task OnGetAsync(int? page)
         {
             if (_context.Offer != null)
             {
+                CurrentPage = page ?? 1;
+
                 ViewData["Candidate"] = new SelectList(_context.Candidate, "Id", "FullName");
                 ViewData["Contract"] = new SelectList(_context.Contract, "Id", "ContractName");
                 ViewData["Position"] = new SelectList(_context.Position, "Id", "PositionName");
@@ -62,26 +69,24 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
                 ViewData["Recruiter"] = new SelectList(_context.Employee.Where(r => r.Role.RoleName.Equals("Recruiter")), "Id", "FullName");
                 ViewData["ScheduleNote"] = _context.Schedule.ToDictionary(s => s.Id, s => s.Note);
 
-                IQueryable<Offer> query = _context.Offer
+                Offers = await _context.Offer
                                             .Include(o => o.Candidate)
                                             .Include(o => o.Department)
                                             .Include(o => o.Employees).ThenInclude(r => r.Role)
                                             .Include(o => o.Level)
                                             .Include(o => o.Schedule)
                                             .Include(o => o.Contract)
-                                            .Where(o => o.IsDeleted == false);
+                                            .Where(o => o.IsDeleted == false)
+                                            .Where(o => !DepartmentFilter.HasValue || o.DepartmentId == DepartmentFilter)
+                                            .Where(o => StatusFilter == null || o.Status.Equals(StatusFilter))
+                                            .ToListAsync();
+                //Pageing
+                int startIndex = (CurrentPage - 1) * PageSize;
+                TotalRecords = Offers.Count;
 
-                if (DepartmentFilter.HasValue)
-                {
-                    query = query.Where(o => o.DepartmentId == DepartmentFilter);
-                }
+                Offers = Offers.Skip(startIndex).Take(PageSize).ToList();
 
-                if (!string.IsNullOrEmpty(StatusFilter))
-                {
-                    query = query.Where(o => o.Status.Equals(StatusFilter));
-                }
-
-                Offers = await query.ToListAsync();
+                
             }
         }
         public async Task<IActionResult> OnPostAddOffer()
