@@ -19,7 +19,31 @@
     Offer List
 </p>
 <div>
-    @* Filter *@
+        <form method="get" class="form-inline">
+    <div class="container d-flex flex-wrap align-items-center">
+        <div class="col-2 mb-2 mr-3">
+            <select class="form-control" asp-for="StatusFilter">
+                <option value="">All</option>
+                <option value="Waiting for approval">Waiting for approval</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Waiting for response">Waiting for response</option>
+                <option value="Accepted">Accepted</option>
+                <option value="Declined">Declined</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+        <div class="col-2 mb-2 mr-3">
+            <select class="form-control" asp-for="DepartmentFilter" asp-items="ViewBag.Department">
+                <option value="">All</option>
+            </select>
+        </div>
+        <div class="mb-2 mr-2">
+            <button type="submit" class="btn btn-primary" id="btnSubmit">Search</button>
+        </div>
+    </div>
+</form>
+
 </div>
 <div class="col text-end">
     <a href="#" class="btn btn-pills btn-warning" data-bs-toggle="modal"

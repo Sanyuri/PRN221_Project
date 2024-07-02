@@ -37,16 +37,22 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
 
         [BindProperty]
         public int OfferId { get; set; } = default!;
-        public IList<Offer> Offers { get;set; } = default!;
+        public IList<Offer> Offers { get; set; } = default!;
 
         [BindProperty]
         public Offer Offer { get; set; } = default!;
+
+        [BindProperty(SupportsGet = true)]
+        public long? DepartmentFilter { get; set; } = default!;
+
+        [BindProperty(SupportsGet = true)]
+        public string? StatusFilter { get; set; } = default!;
 
         public async Task OnGetAsync()
         {
             if (_context.Offer != null)
             {
-                ViewData["Candidate"] = new SelectList(_context.Candidate,"Id","FullName");
+                ViewData["Candidate"] = new SelectList(_context.Candidate, "Id", "FullName");
                 ViewData["Contract"] = new SelectList(_context.Contract, "Id", "ContractName");
                 ViewData["Position"] = new SelectList(_context.Position, "Id", "PositionName");
                 ViewData["Level"] = new SelectList(_context.Level, "Id", "LevelName");
@@ -55,33 +61,44 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
                 ViewData["Approver"] = new SelectList(_context.Employee.Where(r => r.Role.RoleName.Equals("Manager")), "Id", "FullName");
                 ViewData["Recruiter"] = new SelectList(_context.Employee.Where(r => r.Role.RoleName.Equals("Recruiter")), "Id", "FullName");
                 ViewData["ScheduleNote"] = _context.Schedule.ToDictionary(s => s.Id, s => s.Note);
-                Offers = await  _context.Offer
-                               .Include(o => o.Candidate)
-                               .Include(o => o.Department)
-                               .Include(o => o.Employees).ThenInclude(r => r.Role)
-                               .Include(o => o.Level)
-                               .Include(o => o.Schedule)
-                               .Include(o => o.Contract)
-                               .Where(o => o.IsDeleted == false)
-                               .ToListAsync();
-                
+
+                IQueryable<Offer> query = _context.Offer
+                                            .Include(o => o.Candidate)
+                                            .Include(o => o.Department)
+                                            .Include(o => o.Employees).ThenInclude(r => r.Role)
+                                            .Include(o => o.Level)
+                                            .Include(o => o.Schedule)
+                                            .Include(o => o.Contract)
+                                            .Where(o => o.IsDeleted == false);
+
+                if (DepartmentFilter.HasValue)
+                {
+                    query = query.Where(o => o.DepartmentId == DepartmentFilter);
+                }
+
+                if (!string.IsNullOrEmpty(StatusFilter))
+                {
+                    query = query.Where(o => o.Status.Equals(StatusFilter));
+                }
+
+                Offers = await query.ToListAsync();
             }
         }
         public async Task<IActionResult> OnPostAddOffer()
         {
-            if(!ModelState.IsValid || _context.Offer == null || Offer == null)
+            if (!ModelState.IsValid || _context.Offer == null || Offer == null)
             {
                 return RedirectToPage("./Index");
             }
             Employee Approver = _context.Employee.Find(ApproverId);
             Employee Recruiter = _context.Employee.Find(RecruiterId);
 
-                Offer.Employees.Add(Approver);
-                Offer.Employees.Add(Recruiter);
+            Offer.Employees.Add(Approver);
+            Offer.Employees.Add(Recruiter);
 
             Offer.Status = "Waiting for approval";
             Offer.IsDeleted = false;
-                _context.AddAsync(Offer);
+            _context.AddAsync(Offer);
             //change Candidate's status
             Candidate candidate = _context.Candidate.Find(Offer.CandidateId);
             candidate.Status = "2";
@@ -133,7 +150,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
                 candidate.Status = "9";
                 _context.Update(candidate);
             }
-            _context.Attach(Offer).State = EntityState.Modified;          
+            _context.Attach(Offer).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return RedirectToPage("./Index");
         }
@@ -153,7 +170,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
 
         public async Task<IActionResult> OnPostExportOffer()
         {
-            if(ContractFrom > ContractTo || _context.Offer == null)
+            if (ContractFrom > ContractTo || _context.Offer == null)
             {
                 return RedirectToPage("./Index");
             }
