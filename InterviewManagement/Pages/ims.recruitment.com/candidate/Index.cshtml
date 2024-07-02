@@ -331,10 +331,20 @@
                     data: formData,
                     success: function (result) {
                         $('#deleteModal').modal('hide');
-                        location.reload();
+                        $('#alert').html('<strong>Delete successfully!</strong>').fadeIn().delay(1000).fadeOut(function () {
+                            location.reload(); // Làm mới trang sau khi thông báo biến mất
+                        });
                     },
                     error: function (xhr, status, error) {
                         // Xử lý lỗi nếu có
+                        $('#alert').html('<strong>Failed to delete</strong>')
+                            .addClass('danger')
+                            .fadeIn()
+                            .delay(1000)
+                            .fadeOut(function () {
+                                $(this).removeClass('danger');
+                                location.reload(); // Làm mới trang sau khi thông báo biến mất
+                            });
                         console.error(xhr.responseText);
                     }
                 });
@@ -364,10 +374,23 @@
                     success: function (result) {
                         console.log(formData)
                         $('#detailsModal').modal('hide'); // Ẩn modal sau khi hoàn tất
-                        location.reload(); // Làm mới trang sau khi chỉnh sửa thành công
+                        $('#alert').html('<strong>Ban successfully</strong>')
+                            .fadeIn()
+                            .delay(1000)
+                            .fadeOut(function () {
+                                location.reload(); // Làm mới trang sau khi thông báo biến mất
+                            });
                     },
                     error: function (xhr, status, error) {
                         // Xử lý lỗi nếu có
+                        $('#alert').html('<strong>Failed to ban</strong>')
+                            .addClass('danger')
+                            .fadeIn()
+                            .delay(1000)
+                            .fadeOut(function () {
+                                $(this).removeClass('danger');
+                                location.reload(); // Làm mới trang sau khi thông báo biến mất
+                            });
                         console.error(xhr.responseText);
                     }
                 });
@@ -404,15 +427,20 @@
                     data: formData,
                     success: function (result) {
                         $('#editModal').modal('hide'); // Ẩn modal sau khi hoàn tất
-                        $('#alert').html('<strong>Change has been successfully updated!</strong>').fadeIn().delay(2000).fadeOut(function () {
+                        $('#alert').html('<strong>Change has been successfully updated!</strong>').fadeIn().delay(1000).fadeOut(function () {
                             location.reload(); // Làm mới trang sau khi thông báo biến mất
                         });
                     },
                     error: function (xhr, status, error) {
                         // Xử lý lỗi nếu có
-                        $('#alert').html('<strong>Failed to updated change</strong>').fadeIn().delay(2000).fadeOut(function () {
-                            location.reload(); // Làm mới trang sau khi thông báo biến mất
-                        });
+                        $('#alert').html('<strong>Failed to update change</strong>')
+                            .addClass('danger')
+                            .fadeIn()
+                            .delay(1000)
+                            .fadeOut(function () {
+                                $(this).removeClass('danger');
+                                location.reload(); // Làm mới trang sau khi thông báo biến mất
+                            });
                         console.error(xhr.responseText);
                     }
                 });
@@ -449,13 +477,18 @@
                     data: formData,
                     success: function (result) {
                         $('#addModal').modal('hide'); // Ẩn modal sau khi hoàn tất
-                        $('#alert').html('<strong>Successfully created candidate!</strong>').fadeIn().delay(2000).fadeOut(function () {
+                        $('#alert').html('<strong>Successfully created candidate!</strong>').fadeIn().delay(1000).fadeOut(function () {
                             location.reload(); // Làm mới trang sau khi thông báo biến mất
                         });
                     },
                     error: function (xhr, status, error) {
                         // Xử lý lỗi nếu có
-                        $('#alert').html('<strong>Failed to created candidate!</strong>').fadeIn().delay(2000).fadeOut(function () {
+                        $('#alert').html('<strong>Failed to created candidate!</strong>')
+                            .addClass('danger')
+                        .fadeIn()
+                        .delay(1000)
+                        .fadeOut(function () {
+                                $(this).removeClass('danger');
                             location.reload(); // Làm mới trang sau khi thông báo biến mất
                         });
                         console.error(xhr.responseText);
@@ -466,7 +499,7 @@
     </script>
     <script>
         let debounceTimeout;
-        const debounceDelay = 1000; // 2 seconds
+        const debounceDelay = 1000; 
 
         document.getElementById('searchInput').addEventListener('keyup', function () {
             clearTimeout(debounceTimeout);
