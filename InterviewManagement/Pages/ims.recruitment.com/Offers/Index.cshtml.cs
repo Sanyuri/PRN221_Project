@@ -13,9 +13,11 @@ using System.ComponentModel.DataAnnotations;
 using InterviewManagement.Values;
 using OfficeOpenXml;
 using System.Drawing.Printing;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InterviewManagement.Pages.ims.recruitment.com.Offers
 {
+    [Authorize(Policy ="Offer")]
     public class IndexModel : PageModel
     {
         private readonly InterviewManagement.Models.InterviewManagementContext _context;

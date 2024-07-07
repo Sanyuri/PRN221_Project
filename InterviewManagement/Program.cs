@@ -26,6 +26,7 @@ builder.Services.AddAuthorization(option =>
     option.AddPolicy("Recruiter", policy => policy.RequireRole("Recruiter"));
     option.AddPolicy("Manager", policy => policy.RequireRole("Manager"));
     option.AddPolicy("Employee", policy => policy.RequireRole("Admin","Interviewer","Recruiter","Manager"));
+    option.AddPolicy("Offer", policy => policy.RequireRole("Admin", "Recruiter", "Manager"));
 });
 // Register the EmailService as a transient service
 builder.Services.AddTransient<EmailService>();
