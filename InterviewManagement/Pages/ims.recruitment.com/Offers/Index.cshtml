@@ -1,9 +1,20 @@
 ﻿@page
+@using InterviewManagement.Models
+@using System.Security.Claims
 @model InterviewManagement.Pages.ims.recruitment.com.Offers.IndexModel
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    InterviewManagementContext context = new InterviewManagementContext();
+    var AccountId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+    var Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+    Employee? employee = new Employee();
+    if (AccountId != null)
+    {
+        employee = context.Employee.Find(long.Parse(AccountId));
+    }
 }
 <style>
     table{
@@ -304,7 +315,7 @@
         <tbody>
             @if (Model.Offers != null)
             {
-                @foreach (var item in Model.Offers)
+                @foreach (Offer item in Model.Offers)
                 {
                     <tr>
                         <td>
@@ -334,13 +345,16 @@
                                 data-bs-target="#offerDetails-@(item.Id)">
                                     <i class="uil uil-eye"></i>
                                 </a>
-                                <!--modal edit calling-->
+                                @if(item.Status.Equals("Waiting for approval"))
+                                {
+                                 <!--modal edit calling-->
                                 <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-warning"
                                 data-bs-toggle="modal"
                                 title="'Edit Offer'"
                                 data-bs-target="#updateOffer-@(item.Id)">
                                     <i class="uil uil-pen"></i>
                                 </a>
+                                }
                                 <!--modal delete calling-->
                                 <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-warning"
                                 data-bs-toggle="modal"
@@ -354,8 +368,8 @@
 
                     <!-- modal offer details  -->
                     <div class="modal fade text-start"
-                    id="offerDetails-@(item.Id)"
-                    tabindex="-1" aria-hidden="true">
+                        id="offerDetails-@(item.Id)"
+                        tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header border-bottom p-3">
@@ -371,11 +385,25 @@
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <input type="hidden" asp-for="Offer.Id" value="@(item.Id)">
                                     <div class="d-flex justify-content-end">
-                                        <button class="btn-success btn" onclick="changeOfferStatus('Approve')" type="submit">Approve</button>
-                                        <button class="btn btn-danger" onclick="changeOfferStatus('Reject')" type="submit">Reject</button>
-                                        <button class="btn" style="background: #B1CDFC;" onclick="changeOfferStatus('Waiting for Response')" type="submit">Mark as Sent to Candidate</button>
-                                        <button class="btn" style="background: #B1CDFC;" onclick="changeOfferStatus('Accepted')" type="submit">Accepted Offer</button>
-                                        <button class="btn btn-warning" onclick="changeOfferStatus('Declined')" type="submit">Declined Offer</button>
+                                        @if(item.Status.Equals("Waiting for approval"))
+                                        {
+                                            <button class="btn-success btn" onclick="changeOfferStatus('Approve',@(item.Id))" type="submit">Approve</button>
+                                            <button class="btn btn-danger" onclick="changeOfferStatus('Reject',@(item.Id))" type="submit">Reject</button>
+                                        }
+                                        @if (item.Status.Equals("Approve"))
+                                        {
+                                            <button class="btn" style="background: #B1CDFC;" onclick="changeOfferStatus('Waiting for Response',@(item.Id))" type="submit">Mark as Sent to Candidate</button>
+                                        }
+                                        @if (item.Status.Equals("Waiting for Response"))
+                                        {
+                                            <button class="btn" style="background: #B1CDFC;" onclick="changeOfferStatus('Accepted',@(item.Id))" type="submit">Accepted Offer</button>
+                                            <button class="btn btn-warning" onclick="changeOfferStatus('Declined',@(item.Id))" type="submit">Declined Offer</button>
+                                        }  
+                                        @if(item.Status.Equals("Waiting for approval") || item.Status.Equals("Approve") || item.Status.Equals("Waiting for Response")
+                                            || item.Status.Equals("Accepted"))
+                                        {
+                                            <button class="btn btn-danger" onclick="changeOfferStatus('Cancel',@(item.Id))" type="submit">Cancel Offer</button> 
+                                        }
                                     </div>
                                 <div class="row">
                                 <div class="col-md-6">
@@ -529,7 +557,7 @@
                                     <label class="form-label">
                                         Status
                                     </label>
-                                    <input id="OfferStatus" class="form-control" value="@(item.Status)" readonly asp-for="Offer.Status" placeholder="@(item.Status)"/>
+                                    <input id="OfferStatus@(item.Id)" class="form-control" readonly asp-for="Offer.Status" placeholder="@(item.Status)"/>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -542,7 +570,9 @@
                                 </div>
                             </div>
                                 </form>
-                                <div class="row">
+                                    @if (item.Status.Equals("Waiting for approval"))
+                                    {
+                                    <div class="row">
                                     <div class="col-sm-12">
                                         <Button type="submit" class="btn btn-primary"
                                             data-bs-toggle="modal"
@@ -551,6 +581,7 @@
                                     </button>
                                     </div><!--end col-->
                                 </div><!--end row-->
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -745,7 +776,7 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <!--modal delete Offer-->
                 <div class="modal fade text-start"
                     id="deleteOffer-@(item.Id)"
@@ -778,20 +809,6 @@
             }
         </tbody>
     </table>
-    <!--Paging-->
-@if (Model.TotalRecords > Model.PageSize)
-{
-    <nav aria-label="Page navigation">
-        <ul class="pagination">
-            @for (int i = 1; i <= Math.Ceiling((double)Model.TotalRecords / Model.PageSize); i++)
-            {
-                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                    <a class="page-link" asp-page="./Index" asp-route-page="@i">@i</a>
-                </li>
-            }
-        </ul>
-    </nav>
-}
     <script>
         const InterviewNote = @Html.Raw(Json.Serialize(ViewBag.ScheduleNote));
 
@@ -801,10 +818,11 @@
             document.getElementById("InterviewNotes").value = note;
         })
 
-        function changeOfferStatus(status) {
-            var offerStatus = document.getElementById("OfferStatus");
-            offerStatus.value = status;
+        function changeOfferStatus(status, id) {
+            const statusInput = document.getElementById("OfferStatus"+ id);
+            statusInput.value = status; 
             }
+                
     </script>
 
     @section Scripts {

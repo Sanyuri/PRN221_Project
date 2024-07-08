@@ -51,15 +51,10 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
         [BindProperty(SupportsGet = true)]
         public string? StatusFilter { get; set; } = default!;
 
-        public int PageSize { get; set; } = 3;
-        public int TotalRecords { get; set; }
-        public int CurrentPage { get; set; } = 1;
-
         public async Task OnGetAsync(int? page)
         {
             if (_context.Offer != null)
             {
-                CurrentPage = page ?? 1;
 
                 ViewData["Candidate"] = new SelectList(_context.Candidate, "Id", "FullName");
                 ViewData["Contract"] = new SelectList(_context.Contract, "Id", "ContractName");
@@ -82,13 +77,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
                                             .Where(o => !DepartmentFilter.HasValue || o.DepartmentId == DepartmentFilter)
                                             .Where(o => StatusFilter == null || o.Status.Equals(StatusFilter))
                                             .ToListAsync();
-                //Pageing
-                int startIndex = (CurrentPage - 1) * PageSize;
-                TotalRecords = Offers.Count;
-
-                Offers = Offers.Skip(startIndex).Take(PageSize).ToList();
-
-                
+                //Pageing               
             }
         }
         public async Task<IActionResult> OnPostAddOffer()
@@ -157,7 +146,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
                 candidate.Status = "9";
                 _context.Update(candidate);
             }
-            _context.Attach(Offer).State = EntityState.Modified;
+            _context.Offer.Attach(Offer).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return RedirectToPage("./Index");
         }
