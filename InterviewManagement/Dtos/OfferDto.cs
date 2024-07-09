@@ -2,6 +2,7 @@
 {
     public class OfferDto
     {
+        public int? Id { get; set; }
         public string? CandidateName { get; set; }
         public string? Email { get; set; }
         public string? Approver { get; set;}

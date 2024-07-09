@@ -1,0 +1,830 @@
+﻿@page
+@using InterviewManagement.Models
+@using System.Security.Claims
+@model InterviewManagement.Pages.ims.recruitment.com.Offers.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    InterviewManagementContext context = new InterviewManagementContext();
+    var AccountId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+    var Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+    Employee? employee = new Employee();
+    if (AccountId != null)
+    {
+        employee = context.Employee.Find(long.Parse(AccountId));
+    }
+}
+<style>
+    table{
+        text-align: center;
+    }
+    th,td{
+        text-align: center
+    }
+</style>
+<h1>Offer</h1>
+
+<p>
+    Offer List
+</p>
+<div>
+        <form method="get" class="form-inline">
+    <div class="container d-flex flex-wrap align-items-center">
+        <div class="col-2 mb-2 mr-3">
+            <select class="form-control" asp-for="StatusFilter">
+                <option value="">All</option>
+                <option value="Waiting for approval">Waiting for approval</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Waiting for response">Waiting for response</option>
+                <option value="Accepted">Accepted</option>
+                <option value="Declined">Declined</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+        <div class="col-2 mb-2 mr-3">
+            <select class="form-control" asp-for="DepartmentFilter" asp-items="ViewBag.Department">
+                <option value="">All</option>
+            </select>
+        </div>
+        <div class="mb-2 mr-2">
+            <button type="submit" class="btn btn-primary" id="btnSubmit">Search</button>
+        </div>
+    </div>
+</form>
+
+</div>
+<div class="col text-end">
+    <a href="#" class="btn btn-pills btn-warning" data-bs-toggle="modal"
+       data-bs-target="#addOfferModal">
+        Add Offer
+    </a>
+    <a href="#"
+       class="btn btn-pills btn-success" data-bs-toggle="modal"
+       data-bs-target="#exportModal">
+        <i class="uil uil-export"></i>
+        Export
+    </a>
+
+    <!--Modal add-->
+    <div class="modal fade text-start" id="addOfferModal" tabindex="-1"
+         aria-labelledby="LabelAddOfferModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered w-75">
+            <div class="modal-content">
+                <div class="modal-header border-bottom p-3">
+                    <h5 class="modal-title" id="LabelAddOfferModal">Add new Offer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" asp-page-handler="AddOffer">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                        Candidate<span class="text-danger">*</span>
+                                        </label>                                  
+                                        <select class="form-select" asp-for="Offer.CandidateId" asp-items="ViewBag.Candidate">
+                                            <option disabled selected>Select Candidate Name</option>
+                                        </select>
+                                        <span asp-validation-for="Offer.CandidateId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Contract Type <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.ContractId" asp-items="ViewBag.Contract">
+                                        <option disabled selected>Select a type of contract</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.ContractId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Position<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.PositionId" asp-items="ViewBag.Position">
+                                        <option disabled selected>Select a position</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.PositionId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Level<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.LevelId" asp-items="ViewBag.Level">
+                                        <option disabled selected>Select a level</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.LevelId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Approver<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="ApproverId" asp-items="ViewBag.Approver">
+                                        <option disabled selected>Select an approver</option>
+                                    </select>
+                                    <span asp-validation-for="ApproverId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Department<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.DepartmentId" asp-items="ViewBag.Department">
+                                        <option disabled selected>Select a department</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.DepartmentId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Interview Info<span class="text-danger">*</span>
+                                        </label>
+                                    <select id="InterviewInfo" class="form-select" asp-for="Offer.ScheduleId" asp-items="ViewBag.InterviewInfo">
+                                        <option disabled selected>Select an interview schedule title</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.ScheduleId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Recruiter Owner<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="RecruiterId" asp-items="ViewBag.Recruiter"></select>
+                                    <span asp-validation-for="RecruiterId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Contract Period<span class="text-danger">*</span>
+                                        </label>
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <div class="d-flex">
+                                                     <label class="form-label" style="text-align:center">
+                                                        From:
+                                                    </label>           
+                                                    <input type="date" class="form-control" asp-for="Offer.ContractFrom"/>
+                                                </div>
+                                                <span asp-validation-for="Offer.ContractFrom" class="text-danger"></span>
+                                            </div>
+                                           <div>
+                                               <div class="d-flex">
+                                                   <label class="form-label" style="text-align:center">
+                                                        To:
+                                                    </label> 
+                                                    <input type="date" class="form-control" asp-for="Offer.ContractTo"/>   
+                                               </div>
+                                                <span asp-validation-for="Offer.ContractTo" class="text-danger"></span>
+                                           </div>
+                                            
+                                        </div> 
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Due Date<span class="text-danger">*</span>
+                                        </label>
+                                        <div>
+                                            <input type="date" class="form-control" asp-for="Offer.DueDate"/> 
+                                            <span asp-validation-for="Offer.DueDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Interview Notes
+                                        </label>
+                                        <textarea id="InterviewNotes" class="form-control" readonly></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Basic Salary<span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" class="form-control" placeholder="Enter basic salary" asp-for="Offer.Salary"/>
+                                    <span asp-validation-for="Offer.Salary" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Note
+                                    </label>
+                                    <textarea class="form-control" placeholder="Type a note" asp-for="Offer.Note"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                        <Button type="submit" class="btn btn-primary">Create Offer
+                                        </button>
+                                </div><!--end col-->
+                            </div><!--end row-->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+                                <!-- modal export-->
+                            <div class="modal fade text-start" id="exportModal" tabindex="-1"
+                                 aria-labelledby="labelExportModal" aria-hidden="true">
+                                <div class="modal-dialog modal-md modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header border-bottom p-3">
+                                            <h5 class="modal-title" id="labelExportModal">Export Offer</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body p-4">
+                                            <form method="post" id="exportForm" asp-page-handler="ExportOffer">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Contract From:<span
+                                                                    class="text-danger">*</span> </label>
+                                                            <input name="contractFrom" type="date"
+                                                                   class="date-picker-excel flatpickr flatpickr-input form-control" asp-for="ContractFrom"
+                                                                   required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Contract To:<span
+                                                                    class="text-danger">*</span> </label>
+                                                            <input name="contractTo" type="date"
+                                                                   class="date-picker-excel flatpickr flatpickr-input form-control" asp-for="ContractTo"
+                                                                   required>
+                                                        </div>
+                                                    </div>
+                                                </div><!--end row-->
+                                                <div class="row">
+                                                    <Button type="submit" th:id="submitExport"
+                                                            name="submitAddOffer" class="btn btn-success">Export
+                                                    </button>
+                                                </div><!--end row-->
+                                            </form><!--end form-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayName("Candidate Name")
+                </th>
+                <th>
+                    @Html.DisplayName("Email")
+                </th>
+                <th>
+                    @Html.DisplayName("Approver")
+                </th>
+                <th>
+                    @Html.DisplayName("Department")
+                </th>
+                <th>
+                   @Html.DisplayName("Notes")
+                </th>
+                <th>
+                   @Html.DisplayName("Status")
+                </th>
+                <th>
+                    @Html.DisplayName("Action")
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Offers != null)
+            {
+                @foreach (Offer item in Model.Offers)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Candidate.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Candidate.Email)
+                        </td>
+                        <td>
+                            @(item.Employees.Where(e => e.Role.RoleName.Equals("Manager")).Select(e => e.FullName).FirstOrDefault())
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Department.DepertmentName)
+                        </td>
+                        <td>
+                            @(item.Note == "" ? "N/A" : item.Note)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center justify-content-center">
+                                <!--modal view details calling-->
+                                <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-primary"
+                                data-bs-toggle="modal"
+                                title="View details of Offer"
+                                data-bs-target="#offerDetails-@(item.Id)">
+                                    <i class="uil uil-eye"></i>
+                                </a>
+                                @if(item.Status.Equals("Waiting for approval"))
+                                {
+                                 <!--modal edit calling-->
+                                <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-warning"
+                                data-bs-toggle="modal"
+                                title="'Edit Offer'"
+                                data-bs-target="#updateOffer-@(item.Id)">
+                                    <i class="uil uil-pen"></i>
+                                </a>
+                                }
+                                <!--modal delete calling-->
+                                <a href="#" class="m-1 btn btn-icon btn-pills btn-soft-warning"
+                                data-bs-toggle="modal"
+                                title="'Delete Offer'"
+                                data-bs-target="#deleteOffer-@(item.Id)">
+                                    <i class="uil uil-multiply"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- modal offer details  -->
+                    <div class="modal fade text-start"
+                        id="offerDetails-@(item.Id)"
+                        tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header border-bottom p-3">
+                                    <h5 class="modal-title"
+                                    id="'offerDetails-'@(item.Id)">
+                                        Offer Details
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                                    </div>
+                                <div class ="modal-body">
+                                    <form method="post" asp-page-handler="UpdateOfferStatus">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <input type="hidden" asp-for="Offer.Id" value="@(item.Id)">
+                                    <div class="d-flex justify-content-end">
+                                        @if(item.Status.Equals("Waiting for approval"))
+                                        {
+                                            <button class="btn-success btn" onclick="changeOfferStatus('Approve',@(item.Id))" type="submit">Approve</button>
+                                            <button class="btn btn-danger" onclick="changeOfferStatus('Reject',@(item.Id))" type="submit">Reject</button>
+                                        }
+                                        @if (item.Status.Equals("Approve"))
+                                        {
+                                            <button class="btn" style="background: #B1CDFC;" onclick="changeOfferStatus('Waiting for Response',@(item.Id))" type="submit">Mark as Sent to Candidate</button>
+                                        }
+                                        @if (item.Status.Equals("Waiting for Response"))
+                                        {
+                                            <button class="btn" style="background: #B1CDFC;" onclick="changeOfferStatus('Accepted',@(item.Id))" type="submit">Accepted Offer</button>
+                                            <button class="btn btn-warning" onclick="changeOfferStatus('Declined',@(item.Id))" type="submit">Declined Offer</button>
+                                        }  
+                                        @if(item.Status.Equals("Waiting for approval") || item.Status.Equals("Approve") || item.Status.Equals("Waiting for Response")
+                                            || item.Status.Equals("Accepted"))
+                                        {
+                                            <button class="btn btn-danger" onclick="changeOfferStatus('Cancel',@(item.Id))" type="submit">Cancel Offer</button> 
+                                        }
+                                    </div>
+                                <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                        Candidate<span class="text-danger">*</span>
+                                        </label>                                  
+                                        <select class="form-select" asp-for="Offer.CandidateId" asp-items="ViewBag.Candidate">
+                                            <option selected value="@(item.CandidateId)">@(item.Candidate.FullName)</option>
+                                        </select>
+                                        <span asp-validation-for="Offer.CandidateId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Contract Type <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.ContractId" asp-items="ViewBag.Contract">
+                                        <option selected value="@(item.ContractId)">@(item.Contract.ContractName)</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.ContractId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Position<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.PositionId" asp-items="ViewBag.Position">
+                                        <option selected value="@(item.PositionId)">@(item.Position.PositionName)</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.PositionId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Level<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.LevelId" asp-items="ViewBag.Level">
+                                        <option selected value="@(item.LevelId)">@(item.Level.LevelName)</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.LevelId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Approver<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="ApproverId" asp-items="ViewBag.Approver">
+                                        <option selected value="@(item.Employees.Where(e => e.Role.RoleName.Equals("Manager")).Select(i => i.Id).FirstOrDefault())">
+                                            @(item.Employees.Where(e => e.Role.RoleName.Equals("Manager")).Select(i => i.FullName).FirstOrDefault())</option>
+                                    </select>
+                                    <span asp-validation-for="ApproverId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Department<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.DepartmentId" asp-items="ViewBag.Department">
+                                        <option selected value="@(item.DepartmentId)">@(item.Department.DepertmentName)</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.DepartmentId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Interview Info<span class="text-danger">*</span>
+                                        </label>
+                                    <select id="InterviewInfo" class="form-select" asp-for="Offer.ScheduleId" asp-items="ViewBag.InterviewInfo">
+                                        <option selected value="@(item.ScheduleId)">@(item.Schedule.ScheduleName)</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.ScheduleId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Recruiter Owner<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="RecruiterId" asp-items="ViewBag.Recruiter">
+                                        <option selected value="@(item.Employees.Where(e => e.Role.RoleName.Equals("Recruiter")).Select(i => i.Id).FirstOrDefault())">
+                                            @(item.Employees.Where(e => e.Role.RoleName.Equals("Recruiter")).Select(i => i.FullName).FirstOrDefault())</option>
+                                    </select>
+                                    <span asp-validation-for="RecruiterId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Contract Period<span class="text-danger">*</span>
+                                        </label>
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <div class="d-flex">
+                                                     <label class="form-label" style="text-align:center">
+                                                        From:
+                                                    </label>           
+                                                    <input type="date" class="form-control" asp-for="Offer.ContractFrom" value='@(item.ContractFrom.Value.ToString("yyyy-MM-dd"))'/>
+                                                </div>
+                                                <span asp-validation-for="Offer.ContractFrom" class="text-danger"></span>
+                                            </div>
+                                           <div>
+                                               <div class="d-flex">
+                                                   <label class="form-label" style="text-align:center">
+                                                        To:
+                                                    </label> 
+                                                    <input type="date" class="form-control" asp-for="Offer.ContractTo" value='@(item.ContractTo.Value.ToString("yyyy-MM-dd"))'/>   
+                                               </div>
+                                                <span asp-validation-for="Offer.ContractTo" class="text-danger"></span>
+                                           </div>
+                                            
+                                        </div> 
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Due Date<span class="text-danger">*</span>
+                                        </label>
+                                        <div>
+                                            <input type="date" class="form-control" asp-for="Offer.DueDate" value='@(item.DueDate.Value.ToString("yyyy-MM-dd"))'/> 
+                                            <span asp-validation-for="Offer.DueDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Interview Notes
+                                        </label>
+                                        <textarea id="InterviewNotes" class="form-control" readonly></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Basic Salary<span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" class="form-control" placeholder="@(item.Salary)" value="@(item.Salary)" asp-for="Offer.Salary"/>
+                                    <span asp-validation-for="Offer.Salary" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Status
+                                    </label>
+                                    <input id="OfferStatus@(item.Id)" class="form-control" readonly asp-for="Offer.Status" placeholder="@(item.Status)"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Note
+                                    </label>
+                                    <textarea class="form-control" placeholder="@(item.Note)" asp-for="Offer.Note"> @(item.Note)</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                                </form>
+                                    @if (item.Status.Equals("Waiting for approval"))
+                                    {
+                                    <div class="row">
+                                    <div class="col-sm-12">
+                                        <Button type="submit" class="btn btn-primary"
+                                            data-bs-toggle="modal"
+                                            title="'Edit Offer'"
+                                            data-bs-target="#updateOffer-@(item.Id)">Edit
+                                    </button>
+                                    </div><!--end col-->
+                                </div><!--end row-->
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--modal edit offer-->
+                    <div class="modal fade text-start" id="updateOffer-@(item.Id)" tabindex="-1"
+                        aria-labelledby="LabelUpdateOfferModal" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered w-75">
+                            <div class="modal-content">
+                                <div class="modal-header border-bottom p-3">
+                                    <h5 class="modal-title" id="LabelUpdateOfferModal">Edit Offer</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                            <div class="modal-body">
+                                <form method="post" asp-page-handler="UpdateOffer">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <input type="hidden" asp-for="Offer.Id" value="@(item.Id)">
+                                <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                        Candidate<span class="text-danger">*</span>
+                                        </label>                                  
+                                        <select class="form-select" asp-for="Offer.CandidateId" asp-items="ViewBag.Candidate">
+                                            <option selected value="@(item.CandidateId)">@(item.Candidate.FullName)</option>
+                                        </select>
+                                        <span asp-validation-for="Offer.CandidateId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Contract Type <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.ContractId" asp-items="ViewBag.Contract">
+                                        <option selected value="@(item.ContractId)">@(item.Contract.ContractName)</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.ContractId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Position<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.PositionId" asp-items="ViewBag.Position">
+                                        <option selected value="@(item.PositionId)">@(item.Position.PositionName)</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.PositionId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Level<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.LevelId" asp-items="ViewBag.Level">
+                                        <option selected value="@(item.LevelId)">@(item.Level.LevelName)</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.LevelId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Approver<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="ApproverId" asp-items="ViewBag.Approver">
+                                        <option selected value="@(item.Employees.Where(e => e.Role.RoleName.Equals("Manager")).Select(i => i.Id).FirstOrDefault())">
+                                            @(item.Employees.Where(e => e.Role.RoleName.Equals("Manager")).Select(i => i.FullName).FirstOrDefault())</option>
+                                    </select>
+                                    <span asp-validation-for="ApproverId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Department<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="Offer.DepartmentId" asp-items="ViewBag.Department">
+                                        <option selected value="@(item.DepartmentId)">@(item.Department.DepertmentName)</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.DepartmentId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Interview Info<span class="text-danger">*</span>
+                                        </label>
+                                    <select id="InterviewInfo" class="form-select" asp-for="Offer.ScheduleId" asp-items="ViewBag.InterviewInfo">
+                                        <option selected value="@(item.ScheduleId)">@(item.Schedule.ScheduleName)</option>
+                                    </select>
+                                    <span asp-validation-for="Offer.ScheduleId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Recruiter Owner<span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" asp-for="RecruiterId" asp-items="ViewBag.Recruiter">
+                                        <option selected value="@(item.Employees.Where(e => e.Role.RoleName.Equals("Recruiter")).Select(i => i.Id).FirstOrDefault())">
+                                            @(item.Employees.Where(e => e.Role.RoleName.Equals("Recruiter")).Select(i => i.FullName).FirstOrDefault())</option>
+                                    </select>
+                                    <span asp-validation-for="RecruiterId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Contract Period<span class="text-danger">*</span>
+                                        </label>
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <div class="d-flex">
+                                                     <label class="form-label" style="text-align:center">
+                                                        From:
+                                                    </label>           
+                                                    <input type="date" class="form-control" asp-for="Offer.ContractFrom" value='@(item.ContractFrom.Value.ToString("yyyy-MM-dd"))'/>
+                                                </div>
+                                                <span asp-validation-for="Offer.ContractFrom" class="text-danger"></span>
+                                            </div>
+                                           <div>
+                                               <div class="d-flex">
+                                                   <label class="form-label" style="text-align:center">
+                                                        To:
+                                                    </label> 
+                                                    <input type="date" class="form-control" asp-for="Offer.ContractTo" value='@(item.ContractTo.Value.ToString("yyyy-MM-dd"))'/>   
+                                               </div>
+                                                <span asp-validation-for="Offer.ContractTo" class="text-danger"></span>
+                                           </div>
+                                            
+                                        </div> 
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Due Date<span class="text-danger">*</span>
+                                        </label>
+                                        <div>
+                                            <input type="date" class="form-control" asp-for="Offer.DueDate" value='@(item.DueDate.Value.ToString("yyyy-MM-dd"))'/> 
+                                            <span asp-validation-for="Offer.DueDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Interview Notes
+                                        </label>
+                                        <textarea id="InterviewNotes" class="form-control" readonly></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Basic Salary<span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" class="form-control" placeholder="@(item.Salary)" value="@(item.Salary)" asp-for="Offer.Salary"/>
+                                    <span asp-validation-for="Offer.Salary" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Status
+                                    </label>
+                                    <input class="form-control" placeholder="@(item.Status)" readonly asp-for="Offer.Status" value="@(item.Status)"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                    <label class="form-label">
+                                        Note
+                                    </label>
+                                    <textarea class="form-control" placeholder="@(item.Note)" asp-for="Offer.Note">@(item.Note)</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                        <Button type="submit" class="btn btn-primary">Edit
+                                        </button>
+                                </div><!--end col-->
+                            </div><!--end row-->
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!--modal delete Offer-->
+                <div class="modal fade text-start"
+                    id="deleteOffer-@(item.Id)"
+                    tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-lg" style="width:400px;">
+                                <div class="modal-content p-3">
+                                    <div class="modal-body border-0 text-center p-2">
+                                                <h4 class="modal-title">Are you
+                                                    sure</h4>
+                                                    <p>Do you really want to Cancel this Offer?
+                                                        This process cannot be undone.</p>
+                                     </div>
+                                    <div class="modal-footer border-0 align-items-center justify-content-center">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Cancel
+                                        </button>
+                                        <form method="post" asp-page-handler="CancelOffer">
+                                            <input type="hidden" asp-for="OfferId" value="@(item.Id)"/>
+                                            <button type="submit" class="btn btn-success">
+                                                Submit
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                }
+            }
+        </tbody>
+    </table>
+    <script>
+        const InterviewNote = @Html.Raw(Json.Serialize(ViewBag.ScheduleNote));
+
+        document.getElementById("InterviewInfo").addEventListener('change',function(){
+            const Id = this.value;
+            const note = InterviewNote[Id] || "N/A";
+            document.getElementById("InterviewNotes").value = note;
+        })
+
+        function changeOfferStatus(status, id) {
+            const statusInput = document.getElementById("OfferStatus"+ id);
+            statusInput.value = status; 
+            }
+                
+    </script>
+
+    @section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

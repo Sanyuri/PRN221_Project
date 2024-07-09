@@ -1,4 +1,5 @@
 using InterviewManagement.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,18 +7,27 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<InterviewManagementContext>();
 InterviewManagementContext interviewManagementContext = new InterviewManagementContext();
-interviewManagementContext.Database.EnsureCreated();
+//interviewManagementContext.Database.EnsureCreated();
 
 
-// Add session services
-builder.Services.AddSession(options =>
+// Add cookie
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(option =>
+    {
+        option.LoginPath = "/Index";
+        option.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        option.SlidingExpiration = true;
+    });
+//policy
+builder.Services.AddAuthorization(option =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout
-    options.Cookie.HttpOnly = true; // Make the session cookie accessible only via HTTP
-    options.Cookie.IsEssential = true; // Make the session cookie essential
+    option.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+    option.AddPolicy("Interviewer", policy => policy.RequireRole("Interviewer"));
+    option.AddPolicy("Recruiter", policy => policy.RequireRole("Recruiter"));
+    option.AddPolicy("Manager", policy => policy.RequireRole("Manager"));
+    option.AddPolicy("Employee", policy => policy.RequireRole("Admin","Interviewer","Recruiter","Manager"));
+    option.AddPolicy("Offer", policy => policy.RequireRole("Admin", "Recruiter", "Manager"));
 });
-
-
 // Register the EmailService as a transient service
 builder.Services.AddTransient<EmailService>();
 
@@ -39,10 +49,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 // Add session middleware
-app.UseSession();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();

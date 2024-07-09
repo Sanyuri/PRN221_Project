@@ -1,19 +1,54 @@
 ﻿@page
+@using System.Security.Claims
+@using InterviewManagement.Models
 @model NavbarModel
 @{
+    InterviewManagementContext context = new InterviewManagementContext();
+    var AccountId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+    var Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+    Employee? employee = new Employee();
+    if (AccountId != null)
+    {
+        employee = context.Employee.Find(long.Parse(AccountId));
+    }
 }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <div class="top-header">
-    <div class="dropdown header-bar d-flex border-bottom justify-content-end">
-        <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
-            <div>User</div>
-        </a>
-        <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
-            <li><a class="dropdown-item" href="#">Profile</a></li>
-            <li><a class="dropdown-item" href="#">Change Password</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-                <a class="dropdown-item" data-bs-toggle="modal"
-                   data-bs-target="#logout">Sign out</a>
+    <div class="header-bar d-flex justify-content-end border-bottom">
+        <div class="m-1">
+            <div class="h-50 fw-bold">@(employee.UserName)</div>
+            <div class="h-50">@(Role)</div>
+        </div>
+        <ul class="list-unstyled mb-0">
+            <li class="list-inline-item mb-0 ms-1">
+                <div class="dropdown dropdown-primary">
+                    <button type="button" class="btn btn-icon btn-pills btn-soft-primary dropdown-toggle"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="uil uil-user"></i>
+                    </button>
+                    <div class="dropdown-menu dd-menu dropdown-menu-end bg-white shadow border-0 mt-3 py-3"
+                         style="min-width: 200px;">
+                        <a class="dropdown-item text-dark">
+                            <span class="mb-0 d-inline-block me-1">
+                                <i class="uil uil-user align-middle h6"></i>
+                            </span>
+                            <span>@(employee.FullName)</span>
+                        </a>
+                        <a class="dropdown-item text-dark"
+                           href="">
+                            <span class="mb-0 d-inline-block me-1">
+                                <i class="uil uil-lock-alt align-middle h6"></i>
+                            </span> Change Password
+                        </a>
+                        <div class="dropdown-divider border-top"></div>
+                        <a class="dropdown-item text-dark" th:href="'javascript:void(0)'" data-bs-toggle="modal"
+                           data-bs-target="#logout">
+                            <span class="mb-0 d-inline-block me-1">
+                                <i class="uil uil-sign-out-alt align-middle h6"></i>
+                            </span> Logout
+                        </a>
+                    </div>
+                </div>
             </li>
         </ul>
     </div>
@@ -30,9 +65,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form class="">
-                    <button type="submit" class="btn btn-success">OK</button>
-                </form>
+                <button type="submit" class="btn btn-success"><a asp-page="/ims.recruitment.com/Logout" class="text-white">OK</a></button>
             </div>
         </div>
     </div>

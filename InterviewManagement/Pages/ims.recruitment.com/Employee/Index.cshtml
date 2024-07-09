@@ -235,6 +235,10 @@
         </div>
     </div>
 </div>
+
+
+<div id="alert" class="alert alert-success col-2" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999; transition: top 1s ease; font-size: large; display: none;">
+</div>
 @section Scripts {
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -263,10 +267,20 @@
                     data: formData,
                     success: function (result) {
                         $('#detailsModal').modal('hide'); // Ẩn modal sau khi hoàn tất
-                        location.reload(); // Làm mới trang sau khi chỉnh sửa thành công
+                        $('#alert').html('<strong>Successfully Change status!</strong>').fadeIn().delay(1000).fadeOut(function () {
+                            location.reload(); // Làm mới trang sau khi thông báo biến mất
+                        });
                     },
                     error: function (xhr, status, error) {
                         // Xử lý lỗi nếu có
+                        $('#alert').html('<strong>Failed to Change status!</strong>')
+                            .addClass('danger')
+                            .fadeIn()
+                            .delay(1000)
+                            .fadeOut(function () {
+                                $(this).removeClass('danger');
+                                location.reload(); // Làm mới trang sau khi thông báo biến mất
+                            });
                         console.error(xhr.responseText);
                     }
                 });
@@ -303,10 +317,20 @@
                     data: formData,
                     success: function (result) {
                         $('#editModal').modal('hide'); // Ẩn modal sau khi hoàn tất
-                        location.reload(); // Làm mới trang sau khi chỉnh sửa thành công
+                        $('#alert').html('<strong>Change has been successfully updated!</strong>').fadeIn().delay(1000).fadeOut(function () {
+                            location.reload(); // Làm mới trang sau khi thông báo biến mất
+                        });
                     },
                     error: function (xhr, status, error) {
                         // Xử lý lỗi nếu có
+                        $('#alert').html('<strong>Failed to update change</strong>')
+                            .addClass('danger')
+                            .fadeIn()
+                            .delay(1000)
+                            .fadeOut(function () {
+                                $(this).removeClass('danger');
+                                location.reload(); // Làm mới trang sau khi thông báo biến mất
+                            });
                         console.error(xhr.responseText);
                     }
                 });
@@ -343,10 +367,20 @@
                     data: formData,
                     success: function (result) {
                         $('#addModal').modal('hide'); // Ẩn modal sau khi hoàn tất
-                        location.reload(); // Làm mới trang sau khi chỉnh sửa thành công
+                        $('#alert').html('<strong>Successfully created Employee!</strong>').fadeIn().delay(1000).fadeOut(function () {
+                            location.reload(); // Làm mới trang sau khi thông báo biến mất
+                        });
                     },
                     error: function (xhr, status, error) {
                         // Xử lý lỗi nếu có
+                        $('#alert').html('<strong>Failed to add Employee</strong>')
+                            .addClass('danger')
+                            .fadeIn()
+                            .delay(1000)
+                            .fadeOut(function () {
+                                $(this).removeClass('danger');
+                                location.reload(); // Làm mới trang sau khi thông báo biến mất
+                            });
                         console.error(xhr.responseText);
                     }
                 });
