@@ -9,6 +9,13 @@
 
 <h4>Detail</h4>
 
+<form method="post" asp-page-handler="SendReminder">
+    <input type="hidden" name="id" value="@Model.Schedule.Id" />
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary mr-2">Send reminder</button>
+    </div>
+</form>
+
 <div class="card bg-light">
     <div class="card-body">
         <form class="form-sample" method="post">
