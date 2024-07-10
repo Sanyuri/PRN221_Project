@@ -1,8 +1,12 @@
 ﻿@page
+@using InterviewManagement.Models
+@using System.Security.Claims
 @model InterviewManagement.Pages.Jobs.IndexModel
 
 @{
     ViewData["Title"] = "Index";
+
+    var Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 }
 
 <div class="container ml-2">
@@ -31,9 +35,13 @@
         </div>
     </form>
 
-    <div class="d-flex justify-content-end">
-        <a class="btn btn-secondary mr-2" role="button" asp-page="Create">Add new</a>
-    </div>
+    @if (Role != "Interviewer")
+    {
+        <div class="d-flex justify-content-end">
+            <a class="btn btn-secondary mr-2" role="button" asp-page="Create">Add new</a>
+        </div>
+    }                             
+
 
 
     <div>
@@ -52,9 +60,7 @@
                             Required Skill
                         </th>
                         <th>
-                            <a asp-page="./Index" asp-route-sortOrder="@ViewData["DateSortParm"]">
-                                @Html.DisplayNameFor(model => model.Job[0].StartDate)
-                            </a>
+                            @Html.DisplayNameFor(model => model.Job[0].StartDate)
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.Job[0].EndDate)
@@ -78,48 +84,50 @@
                                 @Html.DisplayFor(modelItem => item.JobName)
                             </td>
                             <td>
-                                @if (item.Skills != null && item.Skills.Count > 0)
-                                {
-                                    <ul style="list-style-type: none">
-                                        @foreach (var skill in item.Skills)
+                                @{
+                                    var skills = item.Skills.ToList();
+                                    for (int i = 0; i < skills.Count; i++)
+                                    {
+                                        <span>@skills[i].SkillName</span>
+                                        @if (i < skills.Count - 1)
                                         {
-                                            <li>@skill.SkillName</li>
+                                            <span>, </span>
                                         }
-                                    </ul>
-                                }
-                                else
-                                {
-                                    <span>No skills required</span>
+                                    }
                                 }
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.StartDate)
+                                @(item.StartDate.Value.ToString("dd/MM/yyyy"))
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.EndDate)
+                                @(item.EndDate.Value.ToString("dd/MM/yyyy"))
                             </td>
                             <td>
-                                @if (item.Levels != null && item.Levels.Count > 0)
-                                {
-                                    <ul style="list-style-type: none">
-                                        @foreach (var level in item.Levels)
+                                @{
+                                    var levels = item.Levels.ToList();
+                                    for (int i = 0; i < levels.Count; i++)
+                                    {
+                                        <span>@levels[i].LevelName</span>
+                                        @if (i < levels.Count - 1)
                                         {
-                                            <li>@level.LevelName</li>
+                                            <span>, </span>    
                                         }
-                                    </ul>
-                                }
-                                else
-                                {
-                                    <span>No levels required</span>
-                                }
+                                    }
+                                }                              
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Status)
                             </td>
                             <td>
-                                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                                <a asp-page="./Detail" asp-route-id="@item.Id">Details</a> |
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" class="delete" data-jobid="@item.Id">Delete</a>
+                                <a asp-page="./Detail" asp-route-id="@item.Id" class="btn btn-soft-primary btn-icon btn-pills details-button"><i class="uil uil-eye"></i></a>
+                                @if (Role != "Interviewer")
+                                {
+                                    @if(item.Status != "Closed")
+                                    {
+                                        <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-icon btn-pills btn-soft-warning edit-button"><i class="uil uil-pen"></i></a>
+                                    }
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" class="delete btn btn-icon btn-pills btn-soft-danger delete-button" data-jobid="@item.Id"><i class="uil uil-multiply"></i></a>
+                                }                                                    
                                 <input type="hidden" name="jobId" id="jobId" value="@item.Id"/>
                             </td>
                         </tr>

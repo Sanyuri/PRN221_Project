@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using InterviewManagement.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InterviewManagement.Pages.Jobs
 {
+    [Authorize(Policy = "Job")]
     public class EditModel : PageModel
     {
         private readonly InterviewManagement.Models.InterviewManagementContext _context;
@@ -61,6 +63,24 @@ namespace InterviewManagement.Pages.Jobs
         {
             if (!ModelState.IsValid)
             {
+                return Page();
+            }
+
+            if (Job.EndDate <= Job.StartDate)
+            {
+                ModelState.AddModelError(string.Empty, "End date must be greater than start date.");
+                Skills = await _context.Skill.ToListAsync();
+                Benefits = await _context.Benefit.ToListAsync();
+                Levels = await _context.Level.ToListAsync();
+                return Page();
+            }
+
+            if (Job.SalaryMax <= Job.SalaryMin)
+            {
+                ModelState.AddModelError(string.Empty, "Max salary must be greater than min salary.");
+                Skills = await _context.Skill.ToListAsync();
+                Benefits = await _context.Benefit.ToListAsync();
+                Levels = await _context.Level.ToListAsync();
                 return Page();
             }
 

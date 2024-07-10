@@ -1,20 +1,34 @@
 ﻿@page
+@using InterviewManagement.Models
+@using System.Security.Claims
 @model InterviewManagement.Pages.Schedules.DetailsModel
 
 @{
     ViewData["Title"] = "Schedule Detail";
+
+    InterviewManagementContext context = new InterviewManagementContext();
+    var AccountId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+    var Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+    Employee? employee = new Employee();
+    if (AccountId != null)
+    {
+        employee = context.Employee.Find(long.Parse(AccountId));
+    }
 }
 
 <h1>Schedule</h1>
 
 <h4>Detail</h4>
 
-<form method="post" asp-page-handler="SendReminder">
-    <input type="hidden" name="id" value="@Model.Schedule.Id" />
-    <div class="d-flex justify-content-end">
-        <button type="submit" class="btn btn-primary mr-2">Send reminder</button>
-    </div>
-</form>
+@if (employee != null && employee.Role != null && employee.Role.RoleName != "Interviewer")
+{
+    <form method="post" asp-page-handler="SendReminder">
+        <input type="hidden" name="id" value="@Model.Schedule.Id" />
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary mr-2">Send reminder</button>
+        </div>
+    </form>
+}
 
 <div class="card bg-light">
     <div class="card-body">
@@ -52,10 +66,10 @@
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Interviewer</label>
                         <div class="col-sm-9">
-                            @foreach (var employee in Model.Schedule.Employees)
+                            @foreach (var employees in Model.Schedule.Employees)
                             {
-                                <span>@employee.FullName</span>
-                                @if (employee != Model.Schedule.Employees.Last())
+                                <span>@employees.FullName</span>
+                                @if (employees != Model.Schedule.Employees.Last())
                                 {
                                     <span>,</span>
                                 }
@@ -163,7 +177,10 @@
             <div class="text-center">
                 <button class="btn btn-secondary text-white mr-5" id="submit-form-btn" type="submit" style="display: none">Submit</button>
                 <a class="btn btn-secondary text-white mr-5" id="show-submit-form-btn" role="button" onclick="showSubmitResultForm()">Submit result</a>
-                <a class="btn btn-secondary text-white" role="button" asp-page="./Edit" asp-route-id="@Model.Schedule.Id">Edit</a>
+                @if (employee != null && employee.Role != null && employee.Role.RoleName != "Interviewer")
+                {
+                    <a class="btn btn-secondary text-white" role="button" asp-page="./Edit" asp-route-id="@Model.Schedule.Id">Edit</a>
+                }
                 <a class="btn btn-secondary text-white" role="button" asp-page="Index">Cancel</a>
                 <a class="btn btn-secondary text-white ml-5" id="back-detail-btn" role="button" onclick="backDetailForm()" style="display: none">Cancel</a>
             </div>
