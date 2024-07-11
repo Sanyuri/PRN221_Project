@@ -56,6 +56,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com
                 _context.Attach(employee).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 await SendForgotPasswordLinkAsync(employee.Email,url, employee.FullName);
+                ModelState.AddModelError("success", "We've sent an email with the link to reset your password.");
                 return Page();
             }
         }
