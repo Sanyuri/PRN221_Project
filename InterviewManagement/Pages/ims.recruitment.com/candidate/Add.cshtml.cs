@@ -1,6 +1,7 @@
 using InterviewManagement.DTOs;
 using InterviewManagement.Models;
 using InterviewManagement.Values;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +10,8 @@ using System.Diagnostics;
 
 namespace InterviewManagement.Pages.ims.recruitment.com.candidate
 {
+    [Authorize(Policy = "Employee")]
+
     public class AddModel : PageModel
     {
         private readonly InterviewManagementContext _context;

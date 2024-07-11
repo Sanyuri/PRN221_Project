@@ -8,9 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using InterviewManagement.Models;
 using InterviewManagement.Values;
 using InterviewManagement.Dtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InterviewManagement.Pages.candidate
 {
+    [Authorize(Policy = "Employee")]
+
     public class IndexModel : PageModel
     {
         private readonly InterviewManagement.Models.InterviewManagementContext _context;

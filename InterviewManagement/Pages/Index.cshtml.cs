@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace InterviewManagement.Pages
 {
@@ -39,6 +40,42 @@ namespace InterviewManagement.Pages
 
         }
 
+        //public async Task<IActionResult> OnPostAsync()
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        ModelState.AddModelError(string.Empty, "Invalid Account.");
+        //        return Page();
+        //    }
+        //    else
+        //    {
+        //        var user = await _context.Employee.Include(r => r.Role).FirstOrDefaultAsync(a => a.UserName == loginModel.Username);
+
+        //        if (user != null && BCrypt.Net.BCrypt.Verify(loginModel.Password,user.Password))
+        //        {
+        //            var claims = new List<Claim>
+        //            {
+        //                new Claim(ClaimTypes.Name, user.Id.ToString()),
+        //                new Claim(ClaimTypes.Role, user.Role.RoleName)
+        //            };
+
+        //            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        //            var authProperties = new AuthenticationProperties
+        //            {
+        //                IsPersistent = true,
+        //                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20)
+        //            };
+
+        //            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+        //            return RedirectToPage("/ims.recruitment.com/HomePage");
+        //        }
+        //        else
+        //        {
+        //            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+        //            return Page();
+        //        }
+        //    }          
+        //}
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -46,11 +83,18 @@ namespace InterviewManagement.Pages
                 ModelState.AddModelError(string.Empty, "Invalid Account.");
                 return Page();
             }
-            else
-            {
-                var user = await _context.Employee.Include(r => r.Role).FirstOrDefaultAsync(a => a.UserName == loginModel.Username);
 
-                if (user != null && BCrypt.Net.BCrypt.Verify(loginModel.Password,user.Password))
+            var user = await _context.Employee.Include(r => r.Role).FirstOrDefaultAsync(a => a.UserName == loginModel.Username);
+
+            if (user != null)
+            {
+                _logger.LogInformation("Stored hash for user {Username}: {Password}", user.UserName, user.Password);
+                var EncodedPassword = BCrypt.Net.BCrypt.HashPassword("123456789");
+                _logger.LogInformation(" Mật khẩu đã mã hóa: {HashedPassword}", EncodedPassword);
+                // Verify the password
+                bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password);
+
+                if (isPasswordValid)
                 {
                     var claims = new List<Claim>
                     {
@@ -71,9 +115,14 @@ namespace InterviewManagement.Pages
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
                 }
-            }          
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            }
+
+            return Page();
         }
     }
 }

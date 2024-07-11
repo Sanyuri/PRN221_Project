@@ -8,9 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using InterviewManagement.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using InterviewManagement.Values;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InterviewManagement.Pages.ims.recruitment.com.user
 {
+    [Authorize(Policy = "Admin")]
+
     public class IndexModel : PageModel
     {
         private readonly InterviewManagementContext _context;

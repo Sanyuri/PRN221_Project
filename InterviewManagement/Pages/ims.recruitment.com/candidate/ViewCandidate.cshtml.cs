@@ -9,9 +9,12 @@ using InterviewManagement.Models;
 using InterviewManagement.Values;
 using InterviewManagement.DTOs;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InterviewManagement.Pages.ims.recruitment.com.candidate
 {
+    [Authorize(Policy = "Employee")]
+
     public class ViewCandidateModel : PageModel
     {
         private readonly InterviewManagement.Models.InterviewManagementContext _context;
@@ -57,6 +60,8 @@ namespace InterviewManagement.Pages.ims.recruitment.com.candidate
         public async Task<IActionResult> OnPostAsync()
         {
             long idChan = long.Parse(Request.Form["idChanfer"]);
+            string ModifiedBy = Request.Form["ModifiedBy"].ToString();
+            DateTime CreatedOn = DateTime.Parse(Request.Form["CreatedOn"]);
 
             var candidateToUpdate = _context.Candidate.Find(idChan);
             if (candidateToUpdate == null)
@@ -64,6 +69,10 @@ namespace InterviewManagement.Pages.ims.recruitment.com.candidate
                 return NotFound();
             }
             candidateToUpdate.Status = 13.ToString();
+            candidateToUpdate.ModifiedBy=ModifiedBy;
+            candidateToUpdate.CreatedOn= CreatedOn;
+            Debug.WriteLine(candidateToUpdate.ModifiedBy);
+            
             try
             {
                 _context.Attach(candidateToUpdate).State = EntityState.Modified;

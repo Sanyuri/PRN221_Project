@@ -1,8 +1,19 @@
 ﻿@page
+@using System.Security.Claims
+@using InterviewManagement.Models
 @model InterviewManagement.Pages.ims.recruitment.com.candidate.EditModel
 @{
     ViewData["Title"] = "Update";
     Layout = "~/Pages/Shared/_Layout1.cshtml";
+    InterviewManagementContext context = new InterviewManagementContext();
+    var AccountId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+    var Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+    Employee? employee = new Employee();
+    if (AccountId != null)
+    {
+        employee = context.Employee.Find(long.Parse(AccountId));
+    }
+    var today = DateTime.Now;
 }
 
 <!DOCTYPE html>
@@ -15,8 +26,8 @@
 <body>
 
     <form method="post">
-        <input type="hidden" asp-for="CandidateDTO.CreatedOn" />
-        <input type="hidden" asp-for="CandidateDTO.ModifiedBy" value="test" />
+        <input type="hidden" asp-for="CandidateDTO.CreatedOn" value="@today" />
+        <input type="hidden" asp-for="CandidateDTO.ModifiedBy" value="@employee.FullName" />
         <input type="hidden" asp-for="CandidateDTO.RoleId" value="4" />
         <input type="hidden" value="@Model.CandidateDTO.Id" name="idChanfer" />
 
