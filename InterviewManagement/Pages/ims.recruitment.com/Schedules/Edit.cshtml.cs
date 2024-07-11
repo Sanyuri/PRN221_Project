@@ -39,9 +39,9 @@ namespace InterviewManagement.Pages.Schedules
                 return NotFound();
             }
 
-            Jobs = await _context.Job.ToListAsync();
+            Jobs = await _context.Job.Where(j => j.Status == "Open").ToListAsync();
             Candidates = await _context.Candidate.ToListAsync();
-            Employees = await _context.Employee.ToListAsync();
+            Employees = await _context.Employee.Include(e => e.Role).ToListAsync();
 
             var schedule =  await _context.Schedule
                 .Include(j => j.Job)

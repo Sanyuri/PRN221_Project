@@ -66,7 +66,10 @@
                             <select asp-for="SelectedInterviewerIds" class="form-control js-example-basic-multiple" multiple>
                                 @foreach (var employee in Model.Employees)
                                 {
-                                    <option value="@employee.Id" selected="@(Model.Schedule.Employees.Any(js => js.Id == employee.Id) ? "selected" : null)">@employee.FullName</option>
+                                    @if (employee.Role.Id == 1)
+                                    {
+                                        <option value="@employee.Id" selected="@(Model.Schedule.Employees.Any(js => js.Id == employee.Id) ? "selected" : null)">@employee.FullName</option>
+                                    }                               
                                 }
                             </select>
                             <span asp-validation-for="SelectedInterviewerIds" class="text-danger"></span>
@@ -114,7 +117,15 @@
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Recruiter Owner<span class="text-danger">*</span></label>
                         <div class="col-sm-9">
-                            <input asp-for="Schedule.ModifiedBy" class="form-control" />
+                            <select asp-for="Schedule.ModifiedBy" class="form-control">
+                                @foreach (var employee in Model.Employees)
+                                {
+                                    @if (employee.Role.Id == 2)
+                                    {
+                                        <option value="@employee.FullName" selected="@(Model.Schedule.Employees.Any(js => js.Id == employee.Id) ? "selected" : null)">@employee.FullName</option>
+                                    }
+                                }
+                            </select>
                             <span asp-validation-for="Schedule.ModifiedBy" class="text-danger"></span>
                         </div>
                     </div>

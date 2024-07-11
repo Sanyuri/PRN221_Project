@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using InterviewManagement.Models;
 using InterviewManagement.Utils;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InterviewManagement.Pages.Jobs
 {
+    [Authorize(Policy = "Job")]
     public class IndexModel : PageModel
     {
         private readonly InterviewManagement.Models.InterviewManagementContext _context;
@@ -40,6 +42,8 @@ namespace InterviewManagement.Pages.Jobs
             ViewData["Keyword"] = searchString;
             ViewData["StatusFilter"] = status;
 
+            await UpdateJobStatusesAsync();
+
             IQueryable<Job> jobQuery = _context.Job
                 .Include(j => j.Skills)
                 .Include(j => j.Levels)
@@ -65,13 +69,33 @@ namespace InterviewManagement.Pages.Jobs
                     break;
             }
 
-            int pageSize = 5;
+            int pageSize = 10;
             Job = await PaginatedList<Job>.CreateAsync(jobQuery.AsNoTracking(), pageNumber ?? 1, pageSize);
+        }
+
+        private async Task UpdateJobStatusesAsync()
+        {
+            var jobs = await _context.Job.ToListAsync();
+            var currentDate = DateTime.UtcNow;
+
+            foreach (var job in jobs)
+            {
+                if (job.StartDate <= currentDate && job.EndDate >= currentDate)
+                {
+                    job.Status = "Open";
+                }
+                else if (currentDate > job.EndDate)
+                {
+                    job.Status = "Close";
+                }
+            }
+
+            await _context.SaveChangesAsync();
         }
 
         public IActionResult OnPostDelete(int jobId)
         {
-            var job = _context.Schedule.Find(jobId);
+            var job = _context.Job.Find(jobId);
 
             if (job != null)
             {

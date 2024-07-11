@@ -11,6 +11,7 @@ using Microsoft.Data.SqlClient;
 
 namespace InterviewManagement.Pages.Schedules
 {
+
     public class IndexModel : PageModel
     {
         private readonly InterviewManagement.Models.InterviewManagementContext _context;

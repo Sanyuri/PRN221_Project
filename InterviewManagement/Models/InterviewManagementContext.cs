@@ -5,7 +5,10 @@ namespace InterviewManagement.Models
 {
     public class InterviewManagementContext : DbContext
     {
-        public InterviewManagementContext() { }
+        public InterviewManagementContext()
+        {
+            
+        }
 
         public InterviewManagementContext(DbContextOptions<InterviewManagementContext> options) : base(options) { 
         }
