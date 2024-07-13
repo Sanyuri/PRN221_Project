@@ -114,15 +114,10 @@ namespace InterviewManagement.Pages
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Invalid username/password. Please try again");
+                    return Page();
                 }
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            }
-
-            return Page();
+            }          
         }
     }
 }

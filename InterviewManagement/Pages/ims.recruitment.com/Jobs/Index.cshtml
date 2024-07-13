@@ -9,13 +9,13 @@
     var Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 }
 
-<div class="container ml-2">
+<div class="container-fluid">
     <h1>Job</h1>
     <h3>Job list</h3>
     <br />
 
     <form method="get" class="form-inline">
-        <div class="container d-flex flex-wrap align-items-center">
+        <div class="d-flex flex-wrap align-items-center">
             <div class="col-2 mb-2 mr-3">
                 <input type="text" name="searchString" value="@ViewData["Keyword"]" placeholder="Search" class="form-control">
             </div>

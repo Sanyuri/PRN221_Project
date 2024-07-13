@@ -7,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<InterviewManagementContext>();
 InterviewManagementContext interviewManagementContext = new InterviewManagementContext();
-//interviewManagementContext.Database.EnsureCreated();
 
 
 // Add cookie

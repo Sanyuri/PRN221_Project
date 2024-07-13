@@ -15,7 +15,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com
         public ForgotPasswordModel(InterviewManagementContext context, EmailService emailService)
         {
             this._context = context;
-            _emailService = emailService;
+            this._emailService = emailService;
 
         }
 
@@ -40,7 +40,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com
                 return Page();
             }
 
-            Employee? employee = await _context.Employee.Where(e=> e.Email == forgotPassword.Email).FirstOrDefaultAsync();
+            Employee? employee = await _context.Employee.Where(e=> e.Email.Equals(forgotPassword.Email)).FirstOrDefaultAsync();
             if(employee == null)
             {
                 ModelState.AddModelError(string.Empty, "This Email is not existed");
@@ -48,8 +48,15 @@ namespace InterviewManagement.Pages.ims.recruitment.com
             }
             else
             {
-                string url = "https://localhost:7186/ims.recruitment.com/resetpassword";
+                string token = Guid.NewGuid().ToString();
+                string url = "https://localhost:7186/ims.recruitment.com/resetpassword?token="+token;
+                employee.ResetPasswordToken = token;
+                employee.ExpiredDate = DateTime.Now.AddDays(1);
+                //Update employee
+                _context.Attach(employee).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
                 await SendForgotPasswordLinkAsync(employee.Email,url, employee.FullName);
+                ModelState.AddModelError("success", "We've sent an email with the link to reset your password.");
                 return Page();
             }
         }

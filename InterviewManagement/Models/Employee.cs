@@ -21,6 +21,8 @@ namespace InterviewManagement.Models
         public string? ResetPasswordToken { get; set; }
         public DateTime? ExpiredDate { get; set; }
         public virtual ICollection<Schedule>? Schedules { get; set; }
+
+        [InverseProperty("Employees")]
         public virtual ICollection<Offer>? Offers { get; set; }
         public virtual ICollection<Candidate>? Candidates { get; set; }
 

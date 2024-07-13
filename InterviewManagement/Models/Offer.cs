@@ -50,7 +50,6 @@ namespace InterviewManagement.Models
         [Required(ErrorMessage = "Level is required")]
         public int? LevelId { get; set; }
 
-
         [ForeignKey("CandidateId")]
         public virtual Candidate? Candidate { get; set; }
 

@@ -1,28 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using InterviewManagement.Models;
-using InterviewManagement.Dtos;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using NuGet.Packaging;
-using System.ComponentModel.DataAnnotations;
-using InterviewManagement.Values;
 using OfficeOpenXml;
-using System.Drawing.Printing;
 using Microsoft.AspNetCore.Authorization;
+using InterviewManagement.Utils;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Net.NetworkInformation;
 
 namespace InterviewManagement.Pages.ims.recruitment.com.Offers
 {
     [Authorize(Policy ="Offer")]
     public class IndexModel : PageModel
     {
-        private readonly InterviewManagement.Models.InterviewManagementContext _context;
+        private readonly InterviewManagementContext _context;
 
-        public IndexModel(InterviewManagement.Models.InterviewManagementContext context)
+        public IndexModel(InterviewManagementContext context)
         {
             _context = context;
         }
@@ -40,7 +34,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
 
         [BindProperty]
         public int OfferId { get; set; } = default!;
-        public IList<Offer> Offers { get; set; } = default!;
+        public PaginatedList<Offer> Offers { get; set; } = default!;
 
         [BindProperty]
         public Offer Offer { get; set; } = default!;
@@ -51,8 +45,20 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
         [BindProperty(SupportsGet = true)]
         public string? StatusFilter { get; set; } = default!;
 
-        public async Task OnGetAsync(int? page)
+        [BindProperty(SupportsGet = true)]
+        public int? PageNumber { get; set; } = default!;
+
+        public MessageResult Message { get; set; } = default!;
+
+        public class MessageResult
         {
+            public string? status { get; set; }
+
+            public string? message { get; set; }
+        }
+        public async Task OnGetAsync(MessageResult message)
+        {
+            Message = message;
             if (_context.Offer != null)
             {
 
@@ -66,24 +72,28 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
                 ViewData["Recruiter"] = new SelectList(_context.Employee.Where(r => r.Role.RoleName.Equals("Recruiter")), "Id", "FullName");
                 ViewData["ScheduleNote"] = _context.Schedule.ToDictionary(s => s.Id, s => s.Note);
 
-                Offers = await _context.Offer
+                IQueryable<Offer> query =  _context.Offer
                                             .Include(o => o.Candidate)
                                             .Include(o => o.Department)
                                             .Include(o => o.Employees).ThenInclude(r => r.Role)
+                                            .Include(o=> o.Position)
                                             .Include(o => o.Level)
                                             .Include(o => o.Schedule)
                                             .Include(o => o.Contract)
                                             .Where(o => o.IsDeleted == false)
                                             .Where(o => !DepartmentFilter.HasValue || o.DepartmentId == DepartmentFilter)
-                                            .Where(o => StatusFilter == null || o.Status.Equals(StatusFilter))
-                                            .ToListAsync();
-                //Pageing               
+                                            .Where(o => StatusFilter == null || o.Status.Equals(StatusFilter));
+                //Pageing
+                int pageSize = 5;
+                Offers = await PaginatedList<Offer>.CreateAsync(query.AsNoTracking(), PageNumber ?? 1, pageSize);
             }
         }
         public async Task<IActionResult> OnPostAddOffer()
         {
             if (!ModelState.IsValid || _context.Offer == null || Offer == null)
             {
+                Message.status = "Failed";
+                Message.message = "Failed to created offer";
                 return RedirectToPage("./Index");
             }
             Employee Approver = _context.Employee.Find(ApproverId);
@@ -101,6 +111,8 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
 
             _context.Update(candidate);
             await _context.SaveChangesAsync();
+            Message.status = "Success";
+            Message.message = "Sucessfully created offer";
             return RedirectToPage("./Index");
         }
 
@@ -108,6 +120,8 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
         {
             if (!ModelState.IsValid || _context.Offer == null || Offer == null)
             {
+                Message.status = "Failed";
+                Message.message =  "Failed to updated change";
                 return RedirectToPage("./Index");
             }
             Offer.Employees = new List<Employee>();
@@ -118,6 +132,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
             _context.Attach(Offer).State = EntityState.Modified;
             //change Candidate's status
             await _context.SaveChangesAsync();
+            TempData["success"] = "Change has been successfully updated";
             return RedirectToPage("./Index");
         }
 
