@@ -132,8 +132,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
             _context.Attach(Offer).State = EntityState.Modified;
             //change Candidate's status
             await _context.SaveChangesAsync();
-            Message.status = "Success";
-            Message.message = "Change has been successfully updated";
+            TempData["success"] = "Change has been successfully updated";
             return RedirectToPage("./Index");
         }
 

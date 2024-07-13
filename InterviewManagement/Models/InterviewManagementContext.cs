@@ -7,11 +7,10 @@ namespace InterviewManagement.Models
     {
         public InterviewManagementContext()
         {
-
+            
         }
 
-        public InterviewManagementContext(DbContextOptions<InterviewManagementContext> options) : base(options)
-        {
+        public InterviewManagementContext(DbContextOptions<InterviewManagementContext> options) : base(options) { 
         }
 
         public virtual DbSet<Benefit> Benefit { get; set; } = null!;
@@ -42,6 +41,30 @@ namespace InterviewManagement.Models
             {
                 optionsBuilder.UseSqlServer(config);
             }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Cấu hình bảng Employee
+            modelBuilder.Entity<Employee>().ToTable("Employee");
+            modelBuilder.Entity<Candidate>().ToTable("Candidate");
+
+            modelBuilder.Entity<Employee>()
+    .HasMany(e => e.Offers)
+    .WithMany(o => o.Employees)
+    .UsingEntity<Dictionary<string, object>>(
+        "EmployeeOffer",
+        j => j
+            .HasOne<Offer>()
+            .WithMany()
+            .HasForeignKey("OffersId")
+            .OnDelete(DeleteBehavior.NoAction),
+        j => j
+            .HasOne<Employee>()
+            .WithMany()
+            .HasForeignKey("EmployeesId")
+            .OnDelete(DeleteBehavior.NoAction)
+    );
         }
     }
 }
