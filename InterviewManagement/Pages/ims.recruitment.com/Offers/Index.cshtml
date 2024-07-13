@@ -24,6 +24,12 @@
         text-align: center
     }
 </style>
+
+<div id="alert" class="alert alert-danger col-2" asp-validation-summary="ModelOnly"
+    style="position: fixed; top: 20px; right: 20px; z-index: 9999;transition: top 1s ease;font-size: large">
+</div>
+
+
 <h1>Offer</h1>
 
 <p>
@@ -80,7 +86,6 @@
                 </div>
                 <div class="modal-body">
                     <form method="post" asp-page-handler="AddOffer">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
@@ -382,7 +387,6 @@
                                     </div>
                                 <div class ="modal-body">
                                     <form method="post" asp-page-handler="UpdateOfferStatus">
-                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <input type="hidden" asp-for="Offer.Id" value="@(item.Id)">
                                     <div class="d-flex justify-content-end">
                                         @if(item.Status.Equals("Waiting for approval"))
@@ -599,7 +603,6 @@
                                 </div>
                             <div class="modal-body">
                                 <form method="post" asp-page-handler="UpdateOffer">
-                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <input type="hidden" asp-for="Offer.Id" value="@(item.Id)">
                                 <div class="row">
                                 <div class="col-md-6">
@@ -847,6 +850,13 @@
             }
                 
     </script>
+
+    <script>
+    var alert = document.getElementById("alert");
+    setTimeout(function () {
+        alert.style.top = "-100px";
+    }, 3000);
+</script>
 
     @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

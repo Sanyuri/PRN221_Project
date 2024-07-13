@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using OfficeOpenXml;
 using Microsoft.AspNetCore.Authorization;
 using InterviewManagement.Utils;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Net.NetworkInformation;
 
 namespace InterviewManagement.Pages.ims.recruitment.com.Offers
 {
@@ -46,9 +48,17 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
         [BindProperty(SupportsGet = true)]
         public int? PageNumber { get; set; } = default!;
 
-        public async Task OnGetAsync()
-        {
+        public MessageResult Message { get; set; } = default!;
 
+        public class MessageResult
+        {
+            public string? status { get; set; }
+
+            public string? message { get; set; }
+        }
+        public async Task OnGetAsync(MessageResult message)
+        {
+            Message = message;
             if (_context.Offer != null)
             {
 
@@ -82,6 +92,8 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
         {
             if (!ModelState.IsValid || _context.Offer == null || Offer == null)
             {
+                Message.status = "Failed";
+                Message.message = "Failed to created offer";
                 return RedirectToPage("./Index");
             }
             Employee Approver = _context.Employee.Find(ApproverId);
@@ -99,6 +111,8 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
 
             _context.Update(candidate);
             await _context.SaveChangesAsync();
+            Message.status = "Success";
+            Message.message = "Sucessfully created offer";
             return RedirectToPage("./Index");
         }
 
@@ -106,6 +120,8 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
         {
             if (!ModelState.IsValid || _context.Offer == null || Offer == null)
             {
+                Message.status = "Failed";
+                Message.message =  "Failed to updated change";
                 return RedirectToPage("./Index");
             }
             Offer.Employees = new List<Employee>();
@@ -116,6 +132,8 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
             _context.Attach(Offer).State = EntityState.Modified;
             //change Candidate's status
             await _context.SaveChangesAsync();
+            Message.status = "Success";
+            Message.message = "Change has been successfully updated";
             return RedirectToPage("./Index");
         }
 
