@@ -9,6 +9,7 @@ using InterviewManagement.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using InterviewManagement.Values;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace InterviewManagement.Pages.ims.recruitment.com.user
 {
@@ -54,8 +55,11 @@ namespace InterviewManagement.Pages.ims.recruitment.com.user
 
         private async Task LoadDataAsync()
         {
+            var sessionRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            var user = await _context.Employee.Include(c => c.Role).Where(c => c.Role.RoleName == sessionRole).FirstOrDefaultAsync();
             var employeeQuery = _context.Employee
                 .Include(e => e.Role)
+                .Where(c=>c.Id!=user.Id)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(SearchTerm))
@@ -78,7 +82,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.user
                 .Take(PageSize)
                 .ToListAsync();
 
-            ViewData["roleList"] = new SelectList(await _context.Role.ToListAsync(), "Id", "RoleName");
+            ViewData["roleList"] = new SelectList(await _context.Role.Where(c=>c.RoleName!= "Candidate").ToListAsync(), "Id", "RoleName");
             ViewData["status"] = Status;
             ViewData["searchTerm"] = SearchTerm;
             ViewData["statusFilter"] = StatusFilter;

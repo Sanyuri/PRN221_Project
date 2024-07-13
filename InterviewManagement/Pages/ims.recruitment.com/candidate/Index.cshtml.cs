@@ -9,6 +9,8 @@ using InterviewManagement.Models;
 using InterviewManagement.Values;
 using InterviewManagement.Dtos;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System.Diagnostics;
 
 namespace InterviewManagement.Pages.candidate
 {
@@ -38,8 +40,8 @@ namespace InterviewManagement.Pages.candidate
             CurrentPage = pageNumber ?? 1;
             SearchTerm = searchTerm;
             StatusFilter = statusFilter;
-
-            var user = await _context.Employee.Include(c => c.Role).FirstOrDefaultAsync(c => c.Id == 2);
+            var sessionRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            var user = await _context.Employee.Include(c => c.Role).Where(c => c.Role.RoleName == sessionRole).FirstOrDefaultAsync();
 
             var candidatesQuery = _context.Candidate
                 .Include(c => c.Employee)
@@ -73,8 +75,47 @@ namespace InterviewManagement.Pages.candidate
                 .Skip((CurrentPage - 1) * PageSize)
                 .Take(PageSize)
                 .ToListAsync();
+            if (user.Role?.RoleName == "Recruiter")
+            {
+                IDictionary<int, string> a = new Dictionary<int, string>()
+                 {
+            { 1, "Waiting for interview" },
+            { 2, "Waiting for approval" },
+            { 3, "Waiting for response" },
+            { 4, "Open" },
+            { 8, "Accepted offer" },
+            { 9, "Declined offer" },
+            { 10, "Cancelled offer" },
+            { 13, "Banned" }
+                 };
+                ViewData["statuss"] = a;
+            }
+            else if (user.Role?.RoleName == "Manager")
+            {
+                IDictionary<int, string> a = new Dictionary<int, string>()
+                 {
+            { 8, "Accepted offer" },
+            { 9, "Declined offer" },
+                 };
+                ViewData["statuss"] = a;
+            }else if(user.Role?.RoleName == "Interviewer")
+            {
+                IDictionary<int, string> a = new Dictionary<int, string>()
+                 {
+                       { 5, "Passed" },
+                       { 11, "Failed interview" },
+                       { 12, "Cancelled interview" },
 
+                 };
+                ViewData["statuss"] = a;
+            }
+            else
+            {
+                ViewData["statuss"] = status;
+
+            }
             ViewData["status"] = status;
+
             ViewData["User"] = user?.Role?.RoleName;
         }
 

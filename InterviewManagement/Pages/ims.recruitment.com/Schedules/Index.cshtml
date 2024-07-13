@@ -1,8 +1,19 @@
 ﻿@page
+@using InterviewManagement.Models
+@using System.Security.Claims
 @model InterviewManagement.Pages.Schedules.IndexModel
 
 @{
     ViewData["Title"] = "Index";
+
+    InterviewManagementContext context = new InterviewManagementContext();
+    var AccountId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+    var Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+    Employee? employee = new Employee();
+    if (AccountId != null)
+    {
+        employee = context.Employee.Find(long.Parse(AccountId));
+    }
 }
 
 <div class="container ml-2">
@@ -19,7 +30,7 @@
             <div class="col-2 mb-2 mr-3">
                 <select class="form-control" name="interviewer" id="interviewer">
                     <option value="">Interviewer</option>
-                    @foreach(var interviewer in Model.Employees)
+                    @foreach (var interviewer in Model.Employees)
                     {
                         <option value="@interviewer.FullName" selected="@(ViewData["InterviewerFilter"] as string == interviewer.FullName)">@interviewer.FullName</option>
                     }
@@ -42,9 +53,12 @@
         </div>
     </form>
 
-    <div class="d-flex justify-content-end">
-        <a class="btn btn-secondary mr-2" role="button" asp-page="Create">Add new</a>
-    </div>
+    @if (employee != null && employee.Role != null && employee.Role.RoleName != "Interviewer")
+    {
+        <div class="d-flex justify-content-end">
+            <a class="btn btn-secondary mr-2" role="button" asp-page="Create">Add new</a>
+        </div>
+    }
 
 
     <div>
@@ -95,9 +109,9 @@
                             </td>
                             <td>
                                 <ul style="list-style-type: none">
-                                    @foreach (var employee in item.Employees)
+                                    @foreach (var employees in item.Employees)
                                     {
-                                        <li>@employee.FullName</li>
+                                        <li>@employees.FullName</li>
                                     }
                                 </ul>
                             </td>
@@ -113,10 +127,11 @@
                             <td>
                                 @Html.DisplayFor(modelItem => item.Job.JobName)
                             </td>
-                            
+
                             <td>
-                                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                                <a asp-page="./Details" asp-route-id="@item.Id">Details</a>
+                                <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-icon btn-pills btn-soft-warning edit-buttons"><i class="uil uil-upload-alt"></i></a>
+                                <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-icon btn-pills btn-soft-warning edit-buttons"><i class="uil uil-pen"></i></a> 
+                                <a asp-page="./Details" asp-route-id="@item.Id" class="btn btn-soft-primary btn-icon btn-pills details-button"><i class="uil uil-eye"></i></a>
                             </td>
                         </tr>
                     }

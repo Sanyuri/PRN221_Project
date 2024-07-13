@@ -1,8 +1,12 @@
 ﻿@page
+@using InterviewManagement.Models
+@using System.Security.Claims
 @model InterviewManagement.Pages.Jobs.DetailModel
 
 @{
-    ViewData["Title"] = "Schedule Detail";
+    ViewData["Title"] = "Job Detail";
+
+    var Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 }
 
 <h1>Job</h1>
@@ -134,7 +138,14 @@
         </div>
 
         <div class="text-center">
-            <a class="btn btn-secondary text-white" role="button" asp-page="./Edit" asp-route-id="@Model.Job.Id">Edit</a>
+            @if (Role != "Interviewer")
+            {
+                @if (Model.Job.Status != "Closed")
+                {
+                    <a class="btn btn-secondary text-white" role="button" asp-page="./Edit" asp-route-id="@Model.Job.Id">Edit</a>
+                }
+                
+            }
             <a class="btn btn-secondary text-white" role="button" asp-page="Index">Cancel</a>
         </div>
     </div>

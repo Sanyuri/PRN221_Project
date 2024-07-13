@@ -180,8 +180,10 @@
                         <span class="text-danger">*</span>
                     </label>
 
+                    <select required name="CandidateDTO.Status" class="form-control" 
+                            asp-for="CandidateDTO.Status" asp-items="ViewBag.statusList" disabled></select>
                     <select required name="CandidateDTO.Status" class="form-control"
-                            asp-for="CandidateDTO.Status" asp-items="ViewBag.statusList"></select>
+                            asp-for="CandidateDTO.Status" asp-items="ViewBag.statusList" hidden></select>
                     <span asp-validation-for="CandidateDTO.PositionId" class="text-danger"></span>
 
 

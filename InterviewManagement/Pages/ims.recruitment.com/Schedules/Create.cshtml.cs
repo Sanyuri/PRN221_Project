@@ -34,9 +34,9 @@ namespace InterviewManagement.Pages.Schedules
 
         public async Task<IActionResult> OnGetAsync()
         {
-            Jobs = await _context.Job.ToListAsync();
+            Jobs = await _context.Job.Where(j => j.Status == "Open").ToListAsync();
             Candidates = await _context.Candidate.ToListAsync();
-            Employees = await _context.Employee.ToListAsync();
+            Employees = await _context.Employee.Include(e => e.Role).ToListAsync();
             return Page();
         }
 

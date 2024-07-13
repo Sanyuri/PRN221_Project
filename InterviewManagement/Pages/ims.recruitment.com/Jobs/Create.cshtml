@@ -1,8 +1,18 @@
 ﻿@page
+@using InterviewManagement.Models
+@using System.Security.Claims
 @model InterviewManagement.Pages.Jobs.CreateModel
 
 @{
     ViewData["Title"] = "Create Job";
+
+    InterviewManagementContext context = new InterviewManagementContext();
+    var AccountId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+    Employee? employee = new Employee();
+    if (AccountId != null)
+    {
+        employee = context.Employee.Find(long.Parse(AccountId));
+    }
 }
 
 <h1>Create</h1>
@@ -12,6 +22,7 @@
 <div class="card bg-light">
     <div class="card-body">
         <form class="form-sample" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <div class="form-group row">
@@ -44,6 +55,7 @@
                         <div class="col-sm-9">
                             <input asp-for="Job.StartDate" class="form-control" />
                             <span asp-validation-for="Job.StartDate" class="text-danger"></span>
+                            
                         </div>
                     </div>
                 </div>
@@ -117,7 +129,7 @@
                 <div class="col-md-6">
                     <input type="checkbox" asp-for="Job.IsDeleted" hidden/>
                     <span asp-validation-for="Job.IsDeleted"></span>
-                    <input type="text" asp-for="Job.ModifiedBy" value="Admin" hidden/>
+                    <input type="text" asp-for="Job.ModifiedBy" value="@(employee.FullName)" hidden/>
                     <span asp-validation-for="Job.ModifiedBy"></span>
                 </div>
                 <div class="col-md-6">

@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using InterviewManagement.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InterviewManagement.Pages.Jobs
 {
+    [Authorize(Policy = "Job")]
     public class DetailModel : PageModel
     {
         private readonly InterviewManagement.Models.InterviewManagementContext _context;

@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
+
 }
 <!DOCTYPE html>
 
@@ -56,7 +57,7 @@
                                             onchange="$('#btnSubmit').click()">
                                         <option value="All" selected='@(Model.StatusFilter!=null
                                             &&Model.StatusFilter.ToString()==("All"))'>All</option>
-                                        @if (ViewData["status"] is IDictionary<int, string> statuses)
+                                        @if (ViewData["statuss"] is IDictionary<int, string> statuses)
                                         {
                                             foreach (var status in statuses)
                                             {
