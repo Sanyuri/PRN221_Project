@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using InterviewManagement.Models;
 using InterviewManagement.Utils;
-using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InterviewManagement.Pages.Schedules
 {
+    [Authorize(Policy = "Employee")]
 
     public class IndexModel : PageModel
     {
@@ -65,10 +62,10 @@ namespace InterviewManagement.Pages.Schedules
                 scheduleQuery = scheduleQuery.Where(j => j.Employees.Any(e => e.FullName == InterviewerFilter));
             }
 
-            int pageSize = 5;
+            int pageSize = 10;
             Schedule = await PaginatedList<Schedule>.CreateAsync(scheduleQuery.AsNoTracking(), pageNumber ?? 1, pageSize);
         }
 
-        
+
     }
 }

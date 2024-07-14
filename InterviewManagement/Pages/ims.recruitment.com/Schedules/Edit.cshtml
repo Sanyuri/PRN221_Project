@@ -3,16 +3,31 @@
 
 @{
     ViewData["Title"] = "Edit Schedule";
+    var successMessage = ViewData.ModelState["success"]?.Errors.FirstOrDefault()?.ErrorMessage;
 }
 
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div id="alertSuccess" class="alert alert-success col-2" style="position: fixed; top: 20px; right: 20px; z-index: 9999; transition: top 1s ease; font-size: large">
+        @successMessage
+    </div>
+}
+
+<div id="alert" class="alert alert-danger col-2" asp-validation-summary="ModelOnly"
+     style="position: fixed; top: 20px; right: 20px; z-index: 9999;transition: top 1s ease;font-size: large">
+</div>
 <h1>Edit</h1>
 
 <h4>Schedule</h4>
 
-<div class="d-flex justify-content-end">
-    <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" class="delete" data-scheduleid="@Model.Schedule.Id">Cancel</a>
-    <input type="hidden" name="scheduleId" id="scheduleId" value="@Model.Schedule.Id" />
-</div>
+@if (Model.Schedule.Status == "Open")
+{
+    <div class="d-flex justify-content-end">
+        <button class="btn btn-danger"><a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" class="delete" data-scheduleid="@Model.Schedule.Id" style="text-decoration: none;color: white">Cancel</a></button>
+        <input type="hidden" name="scheduleId" id="scheduleId" value="@Model.Schedule.Id" />
+    </div>
+}
+
 
 <div class="card bg-light">
     <div class="card-body">
@@ -69,7 +84,7 @@
                                     @if (employee.Role.Id == 1)
                                     {
                                         <option value="@employee.Id" selected="@(Model.Schedule.Employees.Any(js => js.Id == employee.Id) ? "selected" : null)">@employee.FullName</option>
-                                    }                               
+                                    }
                                 }
                             </select>
                             <span asp-validation-for="SelectedInterviewerIds" class="text-danger"></span>
@@ -133,9 +148,9 @@
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <input type="checkbox" asp-for="Schedule.IsDeleted" hidden/>
+                    <input type="checkbox" asp-for="Schedule.IsDeleted" hidden />
                     <span asp-validation-for="Schedule.IsDeleted"></span>
-                    <input type="text" asp-for="Schedule.Status" hidden/>
+                    <input type="text" asp-for="Schedule.Status" hidden />
                     <span asp-validation-for="Schedule.Status"></span>
                     <input type="text" asp-for="Schedule.Result" hidden />
                     <span asp-validation-for="Schedule.Status"></span>

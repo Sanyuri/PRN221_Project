@@ -15,6 +15,7 @@
         <form class="form-sample" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Job.Id" />
+
             <div class="row mb-3">
                 <div class="col-md-6">
                     <div class="form-group row">
@@ -40,6 +41,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="row mb-3">
                 <div class="col-md-6">
                     <div class="form-group row">
@@ -60,6 +62,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="row mb-3">
                 <div class="col-md-6">
                     <div class="form-group row">
@@ -91,6 +94,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="row mb-3">
                 <div class="col-md-6">
                     <div class="form-group row">
@@ -116,13 +120,14 @@
                     </div>
                 </div>
             </div>
+
             <div class="row mb-3">
                 <div class="col-md-6">
                     <input type="text" asp-for="Job.Status" hidden />
                     <span asp-validation-for="Job.Status"></span>
                     <input type="checkbox" asp-for="Job.IsDeleted" hidden />
                     <span asp-validation-for="Job.IsDeleted"></span>
-                    <input type="text" asp-for="Job.ModifiedBy" hidden/>
+                    <input type="text" asp-for="Job.ModifiedBy" hidden />
                     <span asp-validation-for="Job.ModifiedBy"></span>
                 </div>
                 <div class="col-md-6">
@@ -145,7 +150,9 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
         $(document).ready(function () {
             $('.js-example-basic-multiple').select2();

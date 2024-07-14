@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using InterviewManagement.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InterviewManagement.Pages.Schedules
 {
+    [Authorize(Policy = "Employee")]
     public class CreateModel : PageModel
     {
         private readonly InterviewManagement.Models.InterviewManagementContext _context;
@@ -35,7 +32,7 @@ namespace InterviewManagement.Pages.Schedules
         public async Task<IActionResult> OnGetAsync()
         {
             Jobs = await _context.Job.Where(j => j.Status == "Open").ToListAsync();
-            Candidates = await _context.Candidate.ToListAsync();
+            Candidates = await _context.Candidate.Where(c => c.Status == "4").ToListAsync();
             Employees = await _context.Employee.Include(e => e.Role).ToListAsync();
             return Page();
         }
@@ -49,7 +46,6 @@ namespace InterviewManagement.Pages.Schedules
                 Employees = await _context.Employee.ToListAsync();
                 return Page();
             }
-
 
             Schedule.Employees = new List<Employee>();
             foreach (var interviewerId in SelectedInterviewerIds)
@@ -65,6 +61,7 @@ namespace InterviewManagement.Pages.Schedules
             if (candidate != null)
             {
                 Schedule.Candidate = candidate;
+                candidate.Status = "1";
             }
 
             var job = await _context.Job.FindAsync(SelectedJobId);

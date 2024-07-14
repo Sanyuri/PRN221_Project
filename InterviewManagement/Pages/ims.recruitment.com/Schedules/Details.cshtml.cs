@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using InterviewManagement.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InterviewManagement.Pages.Schedules
 {
+    [Authorize(Policy = "Employee")]
     public class DetailsModel : PageModel
     {
         private readonly InterviewManagement.Models.InterviewManagementContext _context;
         private readonly EmailService _emailService;
 
-        public DetailsModel(InterviewManagement.Models.InterviewManagementContext context)
+        public DetailsModel(InterviewManagement.Models.InterviewManagementContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         [BindProperty]
@@ -45,79 +44,79 @@ namespace InterviewManagement.Pages.Schedules
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public IActionResult OnPostSubmitResult()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            var schedule = _context.Schedule
+                       .Include(s => s.Candidate)
+                       .FirstOrDefault(s => s.Id == Schedule.Id);
 
-            var scheduleToUpdate = await _context.Schedule.FirstOrDefaultAsync(s => s.Id == Schedule.Id);
+            if (schedule != null)
+            {
+                schedule.Note = Schedule.Note;
+                schedule.Result = Schedule.Result;
 
-            if (scheduleToUpdate == null)
-            {
-                return NotFound();
-            }
-          
-            scheduleToUpdate.Note = Schedule.Note;
-            scheduleToUpdate.Result = Schedule.Result;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ScheduleExists(Schedule.Id))
+                if (schedule.Result == "Passed")
                 {
-                    return NotFound();
+                    schedule.Candidate.Status = "5";
                 }
-                else
+                else if (schedule.Result == "Failed")
                 {
-                    throw;
+                    schedule.Candidate.Status = "11";
                 }
+
+                schedule.Status = "Closed";
+                _context.SaveChanges();
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details", new { Schedule.Id });
         }
 
         private bool ScheduleExists(long id)
         {
-            return (_context.Schedule?.Any(e => e.Id == id)).GetValueOrDefault();
+            return _context.Schedule.Any(e => e.Id == id);
         }
 
         public async Task<IActionResult> OnPostSendReminderAsync(long id)
         {
             var schedule = await _context.Schedule
-                .Include(j => j.Candidate)
+                .Include(s => s.Candidate)
+                .Include(s => s.Employees)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (schedule == null)
             {
                 return NotFound();
             }
-           
+
             var title = schedule.ScheduleName;
-            foreach(var employee in Schedule.Employees)
+            var date = schedule.ScheduleTime;
+            var url = "https://localhost:7186/ims.recruitment.com/Schedules/Details?id=" + schedule.Id;
+            foreach (var employee in schedule.Employees)
             {
                 var email = employee.Email;
-                await SendReminderAsync(email, title, id);
+                await SendReminderAsync(email, title, date, url, schedule.Id);              
             }
-         
-            return RedirectToPage("./Details", new { id });
+
+            schedule.Status = "Invited";
+            await _context.SaveChangesAsync();
+
+            ModelState.AddModelError("success", "We've sent reminder for all interviewer of this schedule.");
+            return RedirectToPage("./Details", new { id = schedule.Id });
         }
 
-        public async Task SendReminderAsync(string email, string title, long scheduleId)
+        private async Task SendReminderAsync(string? email, string? title, DateTime? date, string url, long scheduleId)
         {
-            string resetLink = Url.Page("/Schedules/Details", null, new { id = scheduleId }, Request.Scheme);
-
-            // Send the password reset email
             string subject = "no-reply-email-IMS-system <Reminder Schedule>";
-            string message = $"This email is from IMS system," +
-                $"\r\nRemind for the incoming interview schedule of you: \r\n" +
-                $"• Title: {title}\r\n" +
-                $"If anything wrong, please reach-out recruiter <offer recruiter owner \r\naccount>." +
-                $" We are so sorry for this inconvenience.\r\nThanks & Regards!\r\nIMS Team.";
+            string message = "<p>This email is from IMS system</p>" +
+                "<p>Remind for the incoming interview schedule of you: </p>" +
+                "<p>• Title: " + title + "</p>" +
+                "<p>• Date: " + date + "</p>" +
+                "<p>Click " +
+                "<a href='" + url +"'>here</a> " +
+                " to see details</p>" +
+                "<p>If anything wrong, please reach out to the recruiter. We are so sorry for this inconvenience.</p>" +
+                "<p>Thanks & Regards!</p>" +
+                "<p>IMS Team.</p>";
 
             await _emailService.SendEmailAsync(email, subject, message);
         }

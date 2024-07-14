@@ -6,33 +6,42 @@
 @{
     ViewData["Title"] = "Schedule Detail";
 
-    InterviewManagementContext context = new InterviewManagementContext();
-    var AccountId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
     var Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-    Employee? employee = new Employee();
-    if (AccountId != null)
-    {
-        employee = context.Employee.Find(long.Parse(AccountId));
-    }
+    var successMessage = ViewData.ModelState["success"]?.Errors.FirstOrDefault()?.ErrorMessage;
 }
 
 <h1>Schedule</h1>
 
 <h4>Detail</h4>
 
-@if (employee != null && employee.Role != null && employee.Role.RoleName != "Interviewer")
+@if (!string.IsNullOrEmpty(successMessage))
 {
-    <form method="post" asp-page-handler="SendReminder">
-        <input type="hidden" name="id" value="@Model.Schedule.Id" />
-        <div class="d-flex justify-content-end">
-            <button type="submit" class="btn btn-primary mr-2">Send reminder</button>
-        </div>
-    </form>
+    <div id="alertSuccess" class="alert alert-success col-2" style="position: fixed; top: 20px; right: 20px; z-index: 9999; transition: top 1s ease; font-size: large">
+        @successMessage
+    </div>
+}
+
+<div id="alert" class="alert alert-danger col-2" asp-validation-summary="ModelOnly"
+     style="position: fixed; top: 20px; right: 20px; z-index: 9999;transition: top 1s ease;font-size: large">
+</div>
+
+@if (Role != "Interviewer" || Role != "Admin")
+{
+    if (Model.Schedule.Status == "Open")
+    {
+        <form method="post" asp-page-handler="SendReminder">
+            <input name="id" type="hidden" asp-for="Schedule.Id" />
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary mr-2">Send Reminder</button>
+            </div>
+        </form>
+    }
+
 }
 
 <div class="card bg-light">
     <div class="card-body">
-        <form class="form-sample" method="post">
+        <form class="form-sample" method="post" asp-page="Details" asp-page-handler="SubmitResult">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Schedule.Id" />
             <div class="row mb-3">
@@ -84,11 +93,7 @@
                         <label class="col-sm-3 col-form-label">Schedule Time</label>
                         <div class="col-sm-9">
                             <div class="d-flex">
-                                @* <label class="mr-3">From</label> *@
                                 @Html.DisplayFor(model => model.Schedule.ScheduleTime)
-                                @* <label class="mr-3">To</label>
-                                <input asp-for="Job.SalaryMax" class="form-control" />
-                                <span asp-validation-for="Job.SalaryMax" class="text-danger"></span> *@
                             </div>
                         </div>
                     </div>
@@ -169,19 +174,30 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group row">
-                        
                     </div>
                 </div>
             </div>
 
+            <input type="hidden" id="flag" value="">
+
             <div class="text-center">
                 <button class="btn btn-secondary text-white mr-5" id="submit-form-btn" type="submit" style="display: none">Submit</button>
-                <a class="btn btn-secondary text-white mr-5" id="show-submit-form-btn" role="button" onclick="showSubmitResultForm()">Submit result</a>
-                @if (employee != null && employee.Role != null && employee.Role.RoleName != "Interviewer")
+
+                @if (Model.Schedule.Status == "Open" || Model.Schedule.Status == "Invited")
                 {
-                    <a class="btn btn-secondary text-white" role="button" asp-page="./Edit" asp-route-id="@Model.Schedule.Id">Edit</a>
+                    @if (Role == "Interviewer")
+                    {
+
+                        <a class="btn btn-secondary text-white mr-5" id="show-submit-form-btn" role="button" onclick="showSubmitResultForm()">Submit result</a>
+
+                    }
+                    else
+                    {
+                        <a class="btn btn-secondary text-white" role="button" asp-page="./Edit" asp-route-id="@Model.Schedule.Id">Edit</a>
+                    }
                 }
-                <a class="btn btn-secondary text-white" role="button" asp-page="Index">Cancel</a>
+
+                <a class="btn btn-secondary text-white" id="back-index-btn" role="button" asp-page="Index">Cancel</a>
                 <a class="btn btn-secondary text-white ml-5" id="back-detail-btn" role="button" onclick="backDetailForm()" style="display: none">Cancel</a>
             </div>
         </form>
@@ -196,6 +212,7 @@
             $("#noteInput").show();
             $("#submit-form-btn").show();
             $("#back-detail-btn").show();
+            $("#back-index-btn").hide();
             $("#showNote").hide();
             $("#showResult").hide();
             $("#show-submit-form-btn").hide();
@@ -207,11 +224,23 @@
             $("#noteInput").hide();
             $("#submit-form-btn").hide();
             $("#back-detail-btn").hide();
+            $("#back-index-btn").show();
             $("#showNote").show();
             $("#showResult").show();
             $("#show-submit-form-btn").show();
             $("#back-schedule-btn").show();
         }
+
+        var alertSuccess = document.getElementById("alertSuccess");
+        var alertError = document.getElementById("alertError");
+
+        setTimeout(function () {
+            alertSuccess.style.top = "-100px";
+        }, 3000);
+
+        setTimeout(function () {
+            alertError.style.top = "-100px";
+        }, 3000);
 
     </script>
 }

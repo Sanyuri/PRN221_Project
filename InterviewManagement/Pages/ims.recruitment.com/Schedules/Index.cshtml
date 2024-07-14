@@ -6,14 +6,7 @@
 @{
     ViewData["Title"] = "Index";
 
-    InterviewManagementContext context = new InterviewManagementContext();
-    var AccountId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
     var Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-    Employee? employee = new Employee();
-    if (AccountId != null)
-    {
-        employee = context.Employee.Find(long.Parse(AccountId));
-    }
 }
 
 <div class="container ml-2">
@@ -53,7 +46,7 @@
         </div>
     </form>
 
-    @if (employee != null && employee.Role != null && employee.Role.RoleName != "Interviewer")
+    @if (Role != "Interviewer")
     {
         <div class="d-flex justify-content-end">
             <a class="btn btn-secondary mr-2" role="button" asp-page="Create">Add new</a>
@@ -64,7 +57,7 @@
     <div>
         @if (Model.Schedule.Count == 0)
         {
-            <p>No job has been found</p>
+            <p>No schedule has been found</p>
         }
         else
         {
@@ -129,8 +122,17 @@
                             </td>
 
                             <td>
-                                <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-icon btn-pills btn-soft-warning edit-buttons"><i class="uil uil-upload-alt"></i></a>
-                                <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-icon btn-pills btn-soft-warning edit-buttons"><i class="uil uil-pen"></i></a> 
+                                @if (item.Status == "Open" || item.Status == "Invited")
+                                {
+                                    @if (Role == "Interviewer")
+                                    {
+                                        <a asp-page="./Details" asp-route-id="@item.Id" class="btn btn-icon btn-pills btn-soft-warning edit-buttons"><i class="uil uil-upload-alt"></i></a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-icon btn-pills btn-soft-warning edit-buttons"><i class="uil uil-pen"></i></a>
+                                    }
+                                }
                                 <a asp-page="./Details" asp-route-id="@item.Id" class="btn btn-soft-primary btn-icon btn-pills details-button"><i class="uil uil-eye"></i></a>
                             </td>
                         </tr>

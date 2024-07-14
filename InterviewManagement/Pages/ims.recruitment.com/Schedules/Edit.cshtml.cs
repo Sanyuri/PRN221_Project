@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using InterviewManagement.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InterviewManagement.Pages.Schedules
 {
+    [Authorize(Policy = "Employee")]
     public class EditModel : PageModel
     {
-        private readonly InterviewManagement.Models.InterviewManagementContext _context;
+        private readonly InterviewManagementContext _context;
 
-        public EditModel(InterviewManagement.Models.InterviewManagementContext context)
+        public EditModel(InterviewManagementContext context)
         {
             _context = context;
         }
@@ -26,11 +23,11 @@ namespace InterviewManagement.Pages.Schedules
         public IList<Employee> Employees { get; set; } = new List<Employee>();
 
         [BindProperty]
-        public int SelectedJobId { get; set; } = new int();
+        public int SelectedJobId { get; set; }
         [BindProperty]
-        public int SelectedCandidateId { get; set; } = new int();
+        public long SelectedCandidateId { get; set; }
         [BindProperty]
-        public IList<int> SelectedInterviewerIds { get; set; } = new List<int>();
+        public IList<long> SelectedInterviewerIds { get; set; } = new List<long>();
 
         public async Task<IActionResult> OnGetAsync(long? id)
         {
@@ -39,21 +36,24 @@ namespace InterviewManagement.Pages.Schedules
                 return NotFound();
             }
 
-            Jobs = await _context.Job.Where(j => j.Status == "Open").ToListAsync();
-            Candidates = await _context.Candidate.ToListAsync();
-            Employees = await _context.Employee.Include(e => e.Role).ToListAsync();
+            await LoadDataAsync();
 
-            var schedule =  await _context.Schedule
-                .Include(j => j.Job)
-                .Include(j => j.Candidate)
-                .Include(j => j.Employees)
+            var schedule = await _context.Schedule
+                .Include(s => s.Job)
+                .Include(s => s.Candidate)
+                .Include(s => s.Employees)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (schedule == null)
             {
                 return NotFound();
             }
+
             Schedule = schedule;
+            SelectedJobId = schedule.Job?.Id ?? 0;
+            SelectedCandidateId = schedule.Candidate?.Id ?? 0;
+            SelectedInterviewerIds = schedule.Employees.Select(e => e.Id).ToList();
+
             return Page();
         }
 
@@ -61,14 +61,63 @@ namespace InterviewManagement.Pages.Schedules
         {
             if (!ModelState.IsValid)
             {
+                await LoadDataAsync();
                 return Page();
             }
 
-            _context.Attach(Schedule).State = EntityState.Modified;
+            var scheduleToUpdate = await _context.Schedule
+                .Include(s => s.Job)
+                .Include(s => s.Candidate)
+                .Include(s => s.Employees)
+                .FirstOrDefaultAsync(m => m.Id == Schedule.Id);
+
+            if (scheduleToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            scheduleToUpdate.ScheduleName = Schedule.ScheduleName;
+            scheduleToUpdate.ScheduleTime = Schedule.ScheduleTime;
+            scheduleToUpdate.Note = Schedule.Note;
+            scheduleToUpdate.MeetingURL = Schedule.MeetingURL;
+            scheduleToUpdate.ModifiedBy = Schedule.ModifiedBy;
+            scheduleToUpdate.Result = Schedule.Result;
+            scheduleToUpdate.Location = Schedule.Location;
+            scheduleToUpdate.IsDeleted = Schedule.IsDeleted;
+            scheduleToUpdate.Status = Schedule.Status;
+
+            if (SelectedJobId != scheduleToUpdate.Job?.Id)
+            {
+                var job = await _context.Job.FindAsync(SelectedJobId);
+                if (job != null)
+                {
+                    scheduleToUpdate.Job = job;
+                }
+            }
+
+            if (SelectedCandidateId != scheduleToUpdate.Candidate?.Id)
+            {
+                var candidate = await _context.Candidate.FindAsync(SelectedCandidateId);
+                if (candidate != null)
+                {
+                    scheduleToUpdate.Candidate = candidate;
+                }
+            }
+
+            scheduleToUpdate.Employees.Clear();
+            foreach (var interviewerId in SelectedInterviewerIds)
+            {
+                var employee = await _context.Employee.FindAsync(interviewerId);
+                if (employee != null)
+                {
+                    scheduleToUpdate.Employees.Add(employee);
+                }
+            }
 
             try
             {
                 await _context.SaveChangesAsync();
+                ModelState.AddModelError("success", "Edit successfully!");
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -82,12 +131,12 @@ namespace InterviewManagement.Pages.Schedules
                 }
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("Details", new { id = Schedule.Id });
         }
 
         private bool ScheduleExists(long id)
         {
-          return (_context.Schedule?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Schedule?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         public IActionResult OnPostDelete(long scheduleId)
@@ -100,8 +149,14 @@ namespace InterviewManagement.Pages.Schedules
                 _context.SaveChanges();
             }
 
-            return RedirectToPage("Edit", new { id = scheduleId });
+            return RedirectToPage("Details", new { id = scheduleId });
         }
 
+        private async Task LoadDataAsync()
+        {
+            Jobs = await _context.Job.Where(j => j.Status == "Open").ToListAsync();
+            Candidates = await _context.Candidate.ToListAsync();
+            Employees = await _context.Employee.Include(e => e.Role).ToListAsync();
+        }
     }
 }
