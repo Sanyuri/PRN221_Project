@@ -73,6 +73,8 @@ namespace InterviewManagement.Pages.Schedules
             _context.Schedule.Add(Schedule);
             await _context.SaveChangesAsync();
 
+            TempData["SuccessMessage"] = "Schedule added successfully!";
+
             return RedirectToPage("./Index");
         }
     }

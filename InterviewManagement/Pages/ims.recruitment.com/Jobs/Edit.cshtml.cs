@@ -102,45 +102,43 @@ namespace InterviewManagement.Pages.Jobs
             jobToUpdate.ModifiedBy = Job.ModifiedBy;
             jobToUpdate.Description = Job.Description;
 
+            jobToUpdate.Skills.Clear();
             foreach (var skillId in SelectedSkillIds)
             {
                 var skill = await _context.Skill.FindAsync(skillId);
                 if (skill != null)
                 {
-                    if (!jobToUpdate.Skills.Contains(skill))
-                    {
-                        jobToUpdate.Skills.Add(skill);
-                    }
+                    // Add the skill to the job's skills collection if it's not already present
+                    jobToUpdate.Skills.Add(skill);
                 }
             }
 
+            jobToUpdate.Benefits.Clear();
             foreach (var benefitId in SelectedBenefitIds)
             {
                 var benefit = await _context.Benefit.FindAsync(benefitId);
                 if (benefit != null)
                 {
-                    if (!jobToUpdate.Benefits.Contains(benefit))
-                    {
-                        jobToUpdate.Benefits.Add(benefit);
-                    }
+                    // Add the benefit to the job's benefits collection if it's not already present
+                    jobToUpdate.Benefits.Add(benefit);
                 }
             }
 
+            jobToUpdate.Levels.Clear();
             foreach (var levelId in SelectedLevelIds)
             {
                 var level = await _context.Level.FindAsync(levelId);
                 if (level != null)
                 {
-                    if (!jobToUpdate.Levels.Contains(level))
-                    {
-                        jobToUpdate.Levels.Add(level);
-                    }
+                    // Add the level to the job's levels collection if it's not already present
+                    jobToUpdate.Levels.Add(level);
                 }
             }
 
             try
             {
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Job edited successfully!";
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -154,7 +152,7 @@ namespace InterviewManagement.Pages.Jobs
                 }
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("Detail", new { id = Job.Id });
         }
 
         private bool JobExists(int id)

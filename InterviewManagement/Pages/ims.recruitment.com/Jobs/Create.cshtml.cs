@@ -122,6 +122,9 @@ namespace InterviewManagement.Pages.Jobs
             _context.Job.Add(Job);
             await _context.SaveChangesAsync();
 
+            TempData["SuccessMessage"] = "Job added successfully!";
+
+
             return RedirectToPage("./Index");
         }
 

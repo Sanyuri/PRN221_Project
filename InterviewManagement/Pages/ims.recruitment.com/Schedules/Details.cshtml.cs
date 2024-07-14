@@ -68,6 +68,8 @@ namespace InterviewManagement.Pages.Schedules
                 _context.SaveChanges();
             }
 
+            TempData["SuccessMessage"] = "Schedule result have been submited ";
+
             return RedirectToPage("./Details", new { Schedule.Id });
         }
 

@@ -101,8 +101,9 @@ namespace InterviewManagement.Pages.Jobs
             {
                 job.IsDeleted = true;
                 _context.SaveChanges();
+                TempData["SuccessMessage"] = "Job deleted successfully!";
             }
-
+            
             return RedirectToPage("Index");
         }
     

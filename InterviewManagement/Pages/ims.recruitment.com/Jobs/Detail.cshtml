@@ -8,6 +8,12 @@
 
     var Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 }
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
 
 <h1>Job</h1>
 

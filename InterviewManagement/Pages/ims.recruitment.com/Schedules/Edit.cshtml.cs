@@ -117,7 +117,7 @@ namespace InterviewManagement.Pages.Schedules
             try
             {
                 await _context.SaveChangesAsync();
-                ModelState.AddModelError("success", "Edit successfully!");
+                TempData["SuccessMessage"] = "Schedule edited successfully!";
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -148,6 +148,8 @@ namespace InterviewManagement.Pages.Schedules
                 schedule.Status = "Cancelled";
                 _context.SaveChanges();
             }
+
+            TempData["SuccessMessage"] = "Schedule have been cancelled";
 
             return RedirectToPage("Details", new { id = scheduleId });
         }

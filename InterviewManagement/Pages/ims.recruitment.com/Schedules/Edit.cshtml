@@ -3,19 +3,15 @@
 
 @{
     ViewData["Title"] = "Edit Schedule";
-    var successMessage = ViewData.ModelState["success"]?.Errors.FirstOrDefault()?.ErrorMessage;
 }
 
-@if (!string.IsNullOrEmpty(successMessage))
+@if (TempData["SuccessMessage"] != null)
 {
-    <div id="alertSuccess" class="alert alert-success col-2" style="position: fixed; top: 20px; right: 20px; z-index: 9999; transition: top 1s ease; font-size: large">
-        @successMessage
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
     </div>
 }
 
-<div id="alert" class="alert alert-danger col-2" asp-validation-summary="ModelOnly"
-     style="position: fixed; top: 20px; right: 20px; z-index: 9999;transition: top 1s ease;font-size: large">
-</div>
 <h1>Edit</h1>
 
 <h4>Schedule</h4>

@@ -7,23 +7,19 @@
     ViewData["Title"] = "Schedule Detail";
 
     var Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-    var successMessage = ViewData.ModelState["success"]?.Errors.FirstOrDefault()?.ErrorMessage;
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
 }
 
 <h1>Schedule</h1>
 
 <h4>Detail</h4>
 
-@if (!string.IsNullOrEmpty(successMessage))
-{
-    <div id="alertSuccess" class="alert alert-success col-2" style="position: fixed; top: 20px; right: 20px; z-index: 9999; transition: top 1s ease; font-size: large">
-        @successMessage
-    </div>
-}
-
-<div id="alert" class="alert alert-danger col-2" asp-validation-summary="ModelOnly"
-     style="position: fixed; top: 20px; right: 20px; z-index: 9999;transition: top 1s ease;font-size: large">
-</div>
 
 @if (Role != "Interviewer" || Role != "Admin")
 {
