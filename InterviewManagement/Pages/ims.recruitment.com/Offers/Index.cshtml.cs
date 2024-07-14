@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using OfficeOpenXml;
 using Microsoft.AspNetCore.Authorization;
 using InterviewManagement.Utils;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Net.NetworkInformation;
 
 namespace InterviewManagement.Pages.ims.recruitment.com.Offers
 {
@@ -48,17 +46,8 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
         [BindProperty(SupportsGet = true)]
         public int? PageNumber { get; set; } = default!;
 
-        public MessageResult Message { get; set; } = default!;
-
-        public class MessageResult
+        public async Task OnGetAsync()
         {
-            public string? status { get; set; }
-
-            public string? message { get; set; }
-        }
-        public async Task OnGetAsync(MessageResult message)
-        {
-            Message = message;
             if (_context.Offer != null)
             {
 
@@ -84,17 +73,18 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
                                             .Where(o => !DepartmentFilter.HasValue || o.DepartmentId == DepartmentFilter)
                                             .Where(o => StatusFilter == null || o.Status.Equals(StatusFilter));
                 //Pageing
-                int pageSize = 5;
+                int pageSize = 5; 
                 Offers = await PaginatedList<Offer>.CreateAsync(query.AsNoTracking(), PageNumber ?? 1, pageSize);
+               
             }
         }
         public async Task<IActionResult> OnPostAddOffer()
         {
             if (!ModelState.IsValid || _context.Offer == null || Offer == null)
             {
-                Message.status = "Failed";
-                Message.message = "Failed to created offer";
-                return RedirectToPage("./Index");
+                TempData["MessageType"] = "danger";
+                TempData["Message"] = "Cannot add new Offer";
+                return RedirectToPage();
             }
             Employee Approver = _context.Employee.Find(ApproverId);
             Employee Recruiter = _context.Employee.Find(RecruiterId);
@@ -111,18 +101,19 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
 
             _context.Update(candidate);
             await _context.SaveChangesAsync();
-            Message.status = "Success";
-            Message.message = "Sucessfully created offer";
-            return RedirectToPage("./Index");
+
+            TempData["MessageType"] = "success";
+            TempData["Message"] = "New offer has been added";
+            return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostUpdateOffer()
         {
             if (!ModelState.IsValid || _context.Offer == null || Offer == null)
             {
-                Message.status = "Failed";
-                Message.message =  "Failed to updated change";
-                return RedirectToPage("./Index");
+                TempData["MessageType"] = "danger";
+                TempData["Message"] = "Cannot update Offer";
+                return RedirectToPage();
             }
             Offer.Employees = new List<Employee>();
             Employee Approver = _context.Employee.Find(ApproverId);
@@ -132,15 +123,18 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
             _context.Attach(Offer).State = EntityState.Modified;
             //change Candidate's status
             await _context.SaveChangesAsync();
-            TempData["success"] = "Change has been successfully updated";
-            return RedirectToPage("./Index");
+            TempData["MessageType"] = "success";
+            TempData["Message"] = "Change has been successfully updated";
+            return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostUpdateOfferStatus()
         {
             if (!ModelState.IsValid || _context.Offer == null || Offer == null)
             {
-                return RedirectToPage("./Index");
+                TempData["MessageType"] = "danger";
+                TempData["Message"] = "Cannot update this Offer's status";
+                return RedirectToPage();
             }
             //change Candidate's status
             if (Offer.Status.Equals("Waiting for Response"))
@@ -163,27 +157,38 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
             }
             _context.Offer.Attach(Offer).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            return RedirectToPage("./Index");
+
+            TempData["MessageType"] = "success";
+            TempData["Message"] = "This Offer's status has been updated";
+            return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostCancelOffer()
         {
             if (OfferId == null || _context.Offer == null)
             {
-                return RedirectToPage("./Index");
+                TempData["MessageType"] = "danger";
+                TempData["Message"] = "Cannot delete this Offer";
+                return RedirectToPage();
             }
             Offer offer = _context.Offer.Find(OfferId);
             offer.IsDeleted = true;
             _context.Update(offer);
             await _context.SaveChangesAsync();
-            return RedirectToPage("./Index");
+
+
+            TempData["MessageType"] = "success";
+            TempData["Message"] = "Offer has been removed";
+            return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostExportOffer()
         {
             if (ContractFrom > ContractTo || _context.Offer == null)
             {
-                return RedirectToPage("./Index");
+                TempData["MessageType"] = "danger";
+                TempData["Message"] = "Cannot export to excel";
+                return RedirectToPage();
             }
             IList<Offer> OffersExport = await _context.Offer
                                .Include(o => o.Candidate)
@@ -250,7 +255,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.Offers
                     return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
                 }
             }
-            return RedirectToPage("./Index");
+            return RedirectToPage();
         }
     }
 }
