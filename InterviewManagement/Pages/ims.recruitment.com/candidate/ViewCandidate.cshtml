@@ -34,7 +34,16 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <strong>I. Personal information</strong>
                     <div>
-                        Created on <span>@(Model.Candidate.CreatedOn?.ToString("dd-MM-yyyy") ?? "Not available")</span>,
+                        Created on
+                        @if(today == Model.Candidate.CreatedOn)
+                        {
+                            <span>Today</span>
+                        }
+                        else
+                        {
+                            <span>@(Model.Candidate.CreatedOn?.ToString("dd-MM-yyyy") ?? "Not available")</span>
+                        }
+                        ,
                         last updated by <span>@Model.Candidate.ModifiedBy</span>
 
                         @if (ViewBag.User != "Interviewer" && Model.Candidate.Status!="13")
