@@ -35,9 +35,13 @@ namespace InterviewManagement.Pages
             public string? Password { get; set; }
         }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
-
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToPage("/ims.recruitment.com/HomePage");
+            }
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
