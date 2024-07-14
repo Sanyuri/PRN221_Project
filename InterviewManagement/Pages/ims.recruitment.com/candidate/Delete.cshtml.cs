@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using InterviewManagement.Models;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InterviewManagement.Pages.candidate
 {
+    [Authorize(Policy = "Employee")]
+
     public class DeleteModel : PageModel
     {
         private readonly InterviewManagement.Models.InterviewManagementContext _context;

@@ -10,9 +10,12 @@ using InterviewManagement.Models;
 using System.Diagnostics;
 using InterviewManagement.Dtos;
 using InterviewManagement.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InterviewManagement.Pages.ims.recruitment.com.user
 {
+    [Authorize(Policy = "Admin")]
+
     public class EditModel : PageModel
     {
         private readonly InterviewManagement.Models.InterviewManagementContext _context;

@@ -1,8 +1,19 @@
 ﻿@page
+@using System.Security.Claims
+@using InterviewManagement.Models
 @model InterviewManagement.Pages.ims.recruitment.com.candidate.AddModel
 @{
     ViewData["Title"] = "Add";
     Layout = "~/Pages/Shared/_Layout1.cshtml";
+    InterviewManagementContext context = new InterviewManagementContext();
+    var AccountId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+    var Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+    Employee? employee = new Employee();
+    if (AccountId != null)
+    {
+        employee = context.Employee.Find(long.Parse(AccountId));
+    }
+    var today = DateTime.Now;
 }
 
 <!DOCTYPE html>
@@ -14,8 +25,8 @@
 </head>
 <body>
     <form method="post">
-        <input type="hidden" asp-for="CandidateDTO.CreatedOn" name="CandidateDTO.CreatedOn" value="2003-01-20" />
-        <input type="hidden" asp-for="CandidateDTO.ModifiedBy" value="test" />
+        <input type="hidden" asp-for="CandidateDTO.CreatedOn" name="CandidateDTO.CreatedOn" value="@today" />
+        <input type="hidden" asp-for="CandidateDTO.ModifiedBy" value="@employee.FullName" />
         <input type="hidden" asp-for="CandidateDTO.RoleId" value="4" />
         <div class="row">
             <strong>I. Personal information</strong>

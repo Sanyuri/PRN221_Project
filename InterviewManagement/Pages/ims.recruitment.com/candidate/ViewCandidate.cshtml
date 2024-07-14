@@ -1,9 +1,20 @@
 ﻿@page
+@using System.Security.Claims
+@using InterviewManagement.Models
 @model InterviewManagement.Pages.ims.recruitment.com.candidate.ViewCandidateModel
 
 @{
     ViewData["Title"] = "View Candidate";
     Layout = "~/Pages/Shared/_Layout1.cshtml";
+    InterviewManagementContext context = new InterviewManagementContext();
+    var AccountId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+    var Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+    Employee? employee = new Employee();
+    if (AccountId != null)
+    {
+        employee = context.Employee.Find(long.Parse(AccountId));
+    }
+    var today = DateTime.Now;
 }
 
 <!DOCTYPE html>
@@ -17,6 +28,7 @@
 <body>
     @if (Model.Candidate != null)
     {
+       
         <div>
             <div class="row">
                 <div class="d-flex justify-content-between align-items-center">
@@ -131,6 +143,8 @@
                 <div class="modal-body" id="addModalBody">
                     <!-- Content will be loaded here -->
                     <form method="post">
+                        <input type="hidden" name="CreatedOn" value="@today" />
+                        <input type="hidden" name="ModifiedBy" value="@employee.FullName" />
                         <input type="hidden" value="@Model.Candidate.Id" name="idChanfer" />
 
                         <input type="submit" value="Yes" class="btn btn-danger" /> |

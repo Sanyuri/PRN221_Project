@@ -1,14 +1,18 @@
 using InterviewManagement.DTOs;
 using InterviewManagement.Models;
 using InterviewManagement.Values;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace InterviewManagement.Pages.ims.recruitment.com.candidate
 {
+    [Authorize(Policy = "Employee")]
+
     public class AddModel : PageModel
     {
         private readonly InterviewManagementContext _context;
@@ -94,7 +98,18 @@ namespace InterviewManagement.Pages.ims.recruitment.com.candidate
             ViewData["levelList"] = new SelectList(await _context.HighestLevel.ToListAsync(), "Id", "Name");
             ViewData["employList"] = new SelectList(await _context.Employee.ToListAsync(), "Id", "FullName");
             ViewData["skillsList"] = new SelectList(await _context.Skill.ToListAsync(), "Id", "SkillName");
-            ViewData["statusList"] = new SelectList(StatusList.ToDictionary(p => p.Key, p => p.Value), "Key", "Value");
+            var sessionRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            var user = await _context.Employee.Include(c => c.Role).Where(c => c.Role.RoleName == sessionRole).FirstOrDefaultAsync();
+
+            IDictionary<int, string> a = new Dictionary<int, string>()
+                 {
+
+            { 4, "Open" },
+            { 13, "Banned" }
+                 };
+            ViewData["statusList"] = new SelectList(a.ToDictionary(p => p.Key, p => p.Value), "Key", "Value");
+
+
         }
 
 
