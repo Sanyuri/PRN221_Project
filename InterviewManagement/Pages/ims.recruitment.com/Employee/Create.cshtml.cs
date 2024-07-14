@@ -9,9 +9,12 @@ using InterviewManagement.Models;
 using InterviewManagement.Dtos;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InterviewManagement.Pages.ims.recruitment.com.user
 {
+    [Authorize(Policy = "Admin")]
+
     public class CreateModel : PageModel
     {
         private readonly InterviewManagement.Models.InterviewManagementContext _context;
@@ -60,12 +63,14 @@ namespace InterviewManagement.Pages.ims.recruitment.com.user
                                              .FirstOrDefaultAsync();
             employeeToAdd.UserName = GenerateUserName(Employee.FullName)+(lastEmployee?.Id+1);
             Debug.WriteLine(employeeToAdd.UserName);
-            employeeToAdd.Password = "$10$9J9TnpcLedF0edPR1KYnl.6Lyq8lIovTXp7kJ7hwWyV2xdLhb54uW";
+            string randomPassword = GenerateRandomPassword(7);
+            employeeToAdd.Password = BCrypt.Net.BCrypt.HashPassword(randomPassword);
+
             try
             {
                 _context.Employee.Add(employeeToAdd);
                 await _context.SaveChangesAsync();
-                await SendPasswordAsync(employeeToAdd.Email,employeeToAdd.UserName);
+                await SendPasswordAsync(employeeToAdd.Email,employeeToAdd.UserName,randomPassword);
 
             }
             catch (DbUpdateConcurrencyException)
@@ -76,7 +81,13 @@ namespace InterviewManagement.Pages.ims.recruitment.com.user
             }
             return RedirectToPage("./Index");
         }
-
+        private string GenerateRandomPassword(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random();
+            return new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
         private string GenerateUserName(string fullName)
         {
             string[] names = fullName.Split(' ');
@@ -95,18 +106,17 @@ namespace InterviewManagement.Pages.ims.recruitment.com.user
             return username;
         }
 
-        public async Task SendPasswordAsync(string email,string username)
+        public async Task SendPasswordAsync(string email,string username, string password)
         {
-            string resetLink = Url.Page("/ResetPassword" , Request.Scheme);
 
             // Send the password reset email
             string subject = "no-reply-email-IMS-system <Account created>";
-            string message = $"This email is from IMS system," +
-                $"\r\nYour account has been created. Please use the following credential to \r\nlogin: \r\n" +
-                $"• User name: {username}\r\n" +
-                $"• Password: taokobiet123\r\n" +
-                $"If anything wrong, please reach-out recruiter <offer recruiter owner \r\naccount>." +
-                $" We are so sorry for this inconvenience.\r\nThanks & Regards!\r\nIMS Team.";
+            string message = $"This email is from IMS system, <br/>" +
+                $"\r\nYour account has been created. Please use the following credential to login:<br/> " +
+                $"• User name: {username}\r\n  <br/>" +
+                $"• Password: {password}\r\n  <br/>" +
+                $"If anything wrong, please reach-out recruiter <offer recruiter owner \r\naccount>.  <br/>" +
+                $" We are so sorry for this inconvenience.\r\nThanks & Regards!\r\nIMS Team.  <br/>";
 
             await _emailService.SendEmailAsync(email, subject, message);
         }

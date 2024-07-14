@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace InterviewManagement.Pages
 {
@@ -34,9 +35,13 @@ namespace InterviewManagement.Pages
             public string? Password { get; set; }
         }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
-
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToPage("/ims.recruitment.com/HomePage");
+            }
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -50,7 +55,7 @@ namespace InterviewManagement.Pages
             {
                 var user = await _context.Employee.Include(r => r.Role).FirstOrDefaultAsync(a => a.UserName == loginModel.Username);
 
-                if (user != null && BCrypt.Net.BCrypt.Verify(loginModel.Password,user.Password))
+                if (user != null && BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
                 {
                     var claims = new List<Claim>
                     {
@@ -73,7 +78,7 @@ namespace InterviewManagement.Pages
                     ModelState.AddModelError(string.Empty, "Invalid username/password. Please try again");
                     return Page();
                 }
-            }          
+            }
         }
     }
 }
