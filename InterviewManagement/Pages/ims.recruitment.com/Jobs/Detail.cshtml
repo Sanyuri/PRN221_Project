@@ -70,10 +70,18 @@
                     <label class="col-sm-3 col-form-label">Salary Range</label>
                     <div class="col-sm-9">
                         <div class="d-flex">
-                            <label class="mr-3">from</label>
-                            @Html.DisplayFor(model => model.Job.SalaryMin)
-                            <label class="mr-3">To</label>
-                            @Html.DisplayFor(model => model.Job.SalaryMax)
+                            <div class="col-6 d-flex">
+                                <label class="col-3">From:</label>
+                                <div class="col-4">
+                                    @Html.DisplayFor(model => model.Job.SalaryMin)
+                                </div>
+                            </div>
+                            <div class="col-6 d-flex">
+                                <label class="col-2">To:</label>
+                                <div class="col-5">
+                                    @Html.DisplayFor(model => model.Job.SalaryMax)
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
