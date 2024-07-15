@@ -102,7 +102,7 @@ namespace InterviewManagement.Pages.Schedules
             schedule.Status = "Invited";
             await _context.SaveChangesAsync();
 
-            ModelState.AddModelError("success", "We've sent reminder for all interviewer of this schedule.");
+            TempData["SuccessMessage"] = "Mail sent successfully!";
             return RedirectToPage("./Details", new { id = schedule.Id });
         }
 

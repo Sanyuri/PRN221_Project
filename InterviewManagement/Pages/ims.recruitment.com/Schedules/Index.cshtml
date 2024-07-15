@@ -11,7 +11,7 @@
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success">
+    <div id="alert" class="alert alert-success">
         @TempData["SuccessMessage"]
     </div>
 }
@@ -177,5 +177,12 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $('#alert').fadeIn().delay(1000).fadeOut();
+    </script>
+}
+
 
 

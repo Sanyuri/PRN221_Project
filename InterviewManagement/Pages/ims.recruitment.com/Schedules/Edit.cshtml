@@ -7,7 +7,7 @@
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success">
+    <div id="alert" class="alert alert-success">
         @TempData["SuccessMessage"]
     </div>
 }
@@ -16,7 +16,7 @@
 
 <h4>Schedule</h4>
 
-@if (Model.Schedule.Status == "Open")
+@if (Model.Schedule.Status == "Open" || Model.Schedule.Status == "Invited")
 {
     <div class="d-flex justify-content-end">
         <button class="btn btn-danger"><a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" class="delete" data-scheduleid="@Model.Schedule.Id" style="text-decoration: none;color: white">Cancel</a></button>
@@ -202,6 +202,9 @@
             });
 
         });
+    </script>
+    <script>
+        $('#alert').fadeIn().delay(1000).fadeOut();
     </script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
