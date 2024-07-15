@@ -116,7 +116,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.candidate
         {
             ViewData["positionList"] = new SelectList(await _context.Position.ToListAsync(), "Id", "PositionName");
             ViewData["levelList"] = new SelectList(await _context.HighestLevel.ToListAsync(), "Id", "Name");
-            ViewData["employList"] = new SelectList(await _context.Employee.ToListAsync(), "Id", "FullName");
+            ViewData["employList"] = new SelectList(await _context.Employee.Include(c=>c.Role).Where(c=>c.Role.RoleName== "Recruiter").ToListAsync(), "Id", "FullName");
             ViewData["skillsList"] = new SelectList(await _context.Skill.ToListAsync(), "Id", "SkillName");
 
             var sessionRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
