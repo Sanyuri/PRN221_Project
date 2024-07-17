@@ -1,7 +1,8 @@
-using InterviewManagement.DTOs;
+﻿using InterviewManagement.DTOs;
 using InterviewManagement.Models;
 using InterviewManagement.Values;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -24,6 +25,8 @@ namespace InterviewManagement.Pages.ims.recruitment.com.candidate
 
         [BindProperty]
         public CandidateDTO CandidateDTO { get; set; }
+        [BindProperty]
+        public IFormFile? CvFile { get; set; }
         public IDictionary<int, string> StatusList { get; } = StatusValue.CandidateStatus;
 
         public async Task<IActionResult> OnGetAsync(long? id)
@@ -46,6 +49,24 @@ namespace InterviewManagement.Pages.ims.recruitment.com.candidate
             }
 
             CandidateDTO = CandidateDTO.FromCandidate(candidate);
+            if (candidate.CvLink != null)
+            {
+                try {
+                    var absolutePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\uploads", candidate.CvLink.TrimStart('/'));
+
+                
+                    var relativePath = Path.Combine("uploads", candidate.CvLink.TrimStart('/'));
+                    if (System.IO.File.Exists(absolutePath))
+                    {
+                        Debug.WriteLine(relativePath);
+                        ViewData["filePath"] = $"/{relativePath}"; // Use a relative URL for the web
+                        ViewData["filename"] = Path.GetFileNameWithoutExtension(candidate.CvLink);
+                    }
+                } catch (Exception e) { }
+              
+             
+
+            }
             await SetViewDataAsync();
             return Page();
         }
@@ -61,6 +82,25 @@ namespace InterviewManagement.Pages.ims.recruitment.com.candidate
                 await SetViewDataAsync();
                 return Page();
             }
+            try {
+                if (CvFile != null)
+                {
+                    var fileName = Path.GetFileNameWithoutExtension(CvFile.FileName);
+                    var extension = Path.GetExtension(CvFile.FileName);
+                    var uniqueFileName = fileName + "_" + CandidateDTO.Email + "_" + DateTime.Now.ToString("dd-MM-yyyy") + extension;
+                    var filePath = Path.Combine("wwwroot", "uploads", uniqueFileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await CvFile.CopyToAsync(stream);
+                    }
+
+                    CandidateDTO.CvLink = uniqueFileName;
+                }
+            }
+            catch(Exception e) { }
+            
+
             long idChan = long.Parse(Request.Form["idChanfer"]);
 
             var candidateToUpdate = _context.Candidate.Find(idChan);
@@ -79,7 +119,10 @@ namespace InterviewManagement.Pages.ims.recruitment.com.candidate
             candidateToUpdate.Gender = CandidateDTO.Gender;
             candidateToUpdate.Note = CandidateDTO.Note;
             candidateToUpdate.Role = _context.Role.Find(CandidateDTO.RoleId);
-            candidateToUpdate.CvLink = CandidateDTO.CvLink;
+            if(CvFile != null)
+            {
+                candidateToUpdate.CvLink = CandidateDTO.CvLink;
+            }
             candidateToUpdate.Status = CandidateDTO.Status;
             candidateToUpdate.ExpYear = CandidateDTO.ExpYear;
             candidateToUpdate.CreatedOn = CandidateDTO.CreatedOn;

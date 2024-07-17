@@ -24,7 +24,8 @@ namespace InterviewManagement.Pages.ims.recruitment.com.candidate
 
         [BindProperty]
         public CandidateDTO CandidateDTO { get; set; }
-
+        [BindProperty]
+        public IFormFile? CvFile { get; set; }
         public IDictionary<int, string> StatusList { get; } = StatusValue.CandidateStatus;
         public async Task<IActionResult> OnGetAsync()
         {
@@ -45,7 +46,24 @@ namespace InterviewManagement.Pages.ims.recruitment.com.candidate
                 await SetViewDataAsync();
                 return Page();
             }
+            try
+            {
+                if (CvFile != null)
+                {
+                    var fileName = Path.GetFileNameWithoutExtension(CvFile.FileName);
+                    var extension = Path.GetExtension(CvFile.FileName);
+                    var uniqueFileName = fileName + "_" + CandidateDTO.Email + "_" + DateTime.Now.ToString("dd-MM-yyyy") + extension;
+                    var filePath = Path.Combine("wwwroot", "uploads", uniqueFileName);
 
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await CvFile.CopyToAsync(stream);
+                    }
+
+                    CandidateDTO.CvLink = uniqueFileName;
+                }
+            }
+            catch (Exception e) { }
             var candidateToAdd = new Candidate();
 
 

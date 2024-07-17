@@ -37,7 +37,7 @@ namespace InterviewManagement.DTOs
         [Required]
         public long RoleId { get; set; }
 
-        public string CvLink { get; set; }
+        public string? CvLink { get; set; }
 
         public long? EmployeeId { get; set; } // Nullable if Employee is not assigned
 

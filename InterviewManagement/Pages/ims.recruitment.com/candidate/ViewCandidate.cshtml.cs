@@ -23,8 +23,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.candidate
         {
             _context = context;
         }
-
-      public Candidate Candidate { get; set; } = default!;
+        public Candidate Candidate { get; set; } = default!;
         public IDictionary<int, string> status { get; } = StatusValue.CandidateStatus;
 
         public async Task<IActionResult> OnGetAsync(long? id)
@@ -53,7 +52,24 @@ namespace InterviewManagement.Pages.ims.recruitment.com.candidate
                 Candidate = candidate;
             }
             ViewData["status"] = status;
+            if (candidate.CvLink != null)
+            {
+                try
+                {
+                    var absolutePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\uploads", candidate.CvLink.TrimStart('/'));                
+                    var relativePath = Path.Combine("uploads", candidate.CvLink.TrimStart('/'));
+                    if (System.IO.File.Exists(absolutePath))
+                    {
+                        Debug.WriteLine(relativePath);
+                        ViewData["filePath"] = $"/{relativePath}"; // Use a relative URL for the web
+                        ViewData["filename"] = Path.GetFileNameWithoutExtension(candidate.CvLink);
+                    }
+                }
+                catch (Exception e) { }
 
+
+
+            }
             return Page();
         }
 

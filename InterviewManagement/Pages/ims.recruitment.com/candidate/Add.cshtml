@@ -24,7 +24,7 @@
     <title>Update</title>
 </head>
 <body>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="CandidateDTO.CreatedOn" name="CandidateDTO.CreatedOn" value="@today" />
         <input type="hidden" asp-for="CandidateDTO.ModifiedBy" value="@employee.FullName" />
         <input type="hidden" asp-for="CandidateDTO.RoleId" value="4" />
@@ -129,15 +129,15 @@
                         CV attachment
                         <span class="text-danger">*</span>
                     </label>
+                    
                     <div class="d-flex h-75">
-                        <input type="text"
+                        <input type="file" required
                                class="form-control w-95"
-                               name="CandidateDTO.CvLink"
-                               asp-for="CandidateDTO.CvLink">
-                        <span asp-validation-for="CandidateDTO.CvLink" class="text-danger"></span>
+                               name="CvFile"
+                               accept=".pdf"  asp-for="CvFile"/>
+                        <span asp-validation-for="CvFile" class="text-danger"></span>
 
                     </div>
-
                 </div>
             </div>
             <div class="col-md-6">
@@ -260,9 +260,7 @@
     </form>
    
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/select2/js/select2.min.js"></script>
+  
     @section Scripts {
         <partial name="_ValidationScriptsPartial" />
         <script>

@@ -25,7 +25,7 @@
 </head>
 <body>
 
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="CandidateDTO.CreatedOn" value="@today" />
         <input type="hidden" asp-for="CandidateDTO.ModifiedBy" value="@employee.FullName" />
         <input type="hidden" asp-for="CandidateDTO.RoleId" value="4" />
@@ -125,22 +125,44 @@
                 II. Professional
                 information
             </strong>
+            <!-- Modal pdf -->
+            <div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="pdfModalLabel">PDF Preview</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <embed id="pdfViewer" type="application/pdf" width="100%" height="600px" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- -->
+
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="form-label" asp-for="CandidateDTO.CvLink">
                         CV attachment
                         <span class="text-danger">*</span>
                     </label>
+                    @if(Model.CandidateDTO.CvLink != null)
+                    {
+                        <div class="d-flex h-75">
+                            <input type="text" readonly
+                                   class="form-control w-95 fixWid" value="@ViewBag.filename" />
+                            <a href="#" class="btn-primary btn-soft-primary" data-bs-toggle="modal" 
+                            data-file-path="@ViewBag.filePath" 
+                            data-bs-target="#pdfModal">Show</a>
+                        </div>
+                    }
                     <div class="d-flex h-75">
-                        <input type="text"
+                        <input type="file"
                                class="form-control w-95"
-                               name="CandidateDTO.CvLink"
-                               asp-for="CandidateDTO.CvLink">
-
-                        <span asp-validation-for="CandidateDTO.CvLink" class="text-danger"></span>
-
+                               name="CvFile"
+                               accept=".pdf" />
                     </div>
-
                 </div>
             </div>
             <div class="col-md-6">
@@ -259,6 +281,12 @@
         <partial name="_ValidationScriptsPartial" />
         <script>
             $(document).ready(function () {
+                $('#pdfModal').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget); 
+                    var filePath = button.data('file-path'); // Extract info from data-* attributes
+                    var modal = $(this);
+                    modal.find('.modal-body #pdfViewer').attr('src', filePath);
+                });
                 $('#dob').on('change', function () {
                     var dob = new Date($(this).val());
                     var today = new Date();
@@ -278,7 +306,9 @@
                     placeholder: "Keyword..."
                 });
             });
+          
         </script>
+     
     }
 </body>
 </html>

@@ -80,3 +80,12 @@ body {
 .danger {
     background-color: tomato !important;
 }
+.fixWid{
+    width:80% !important;
+}
+.btn-primary {
+    border-radius: 10px !important;
+    width: 20% !important;
+    text-decoration: none !important; /* Bỏ gạch chân mặc định của thẻ <a> */
+    text-align: center !important;
+}

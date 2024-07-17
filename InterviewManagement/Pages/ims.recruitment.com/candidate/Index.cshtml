@@ -354,6 +354,7 @@
             $('.details-button').on('click', function () {
                 var candidateId = $(this).data('id');
                 $.ajax({
+                    enctype: 'multipart/form-data',
                     url: '@Url.Page("./ViewCandidate")',
                     type: 'GET',
                     data: { id: candidateId },
@@ -400,6 +401,7 @@
             $('.edit-button').on('click', function () {
                 var candidateId = $(this).data('id');
                 $.ajax({
+                    enctype: 'multipart/form-data',
                     url: '@Url.Page("./Edit")',
                     type: 'GET',
                     data: { id: candidateId },
@@ -421,28 +423,36 @@
             // Xử lý submit form chỉnh sửa ứng viên
             $('#editModal').on('submit', 'form', function (e) {
                 e.preventDefault(); // Ngăn chặn gửi form mặc định
-                var formData = $(this).serialize(); // Lấy dữ liệu form
+                var formData = new FormData(this);
                 $.ajax({
+                    enctype: 'multipart/form-data',
                     url: '@Url.Page("./Edit")',
                     type: 'POST',
                     data: formData,
+                    contentType: false,
+                    processData: false,
                     success: function (result) {
+                        console.log(formData)
                         $('#editModal').modal('hide'); // Ẩn modal sau khi hoàn tất
                         $('#alert').html('<strong>Change has been successfully updated!</strong>').fadeIn().delay(1000).fadeOut(function () {
-                            location.reload(); // Làm mới trang sau khi thông báo biến mất
+                            location.reload(); 
+                            // Làm mới trang sau khi thông báo biến mất
                         });
                     },
                     error: function (xhr, status, error) {
-                        // Xử lý lỗi nếu có
+                        // Xử lý lỗi nếu có            
+                        console.error(xhr.responseText);
+
                         $('#alert').html('<strong>Failed to update change</strong>')
                             .addClass('danger')
+                            
                             .fadeIn()
                             .delay(1000)
                             .fadeOut(function () {
                                 $(this).removeClass('danger');
-                                location.reload(); // Làm mới trang sau khi thông báo biến mất
+                                location.reload(); 
+                                // Làm mới trang sau khi thông báo biến mất
                             });
-                        console.error(xhr.responseText);
                     }
                 });
             });
@@ -470,9 +480,12 @@
 
             // Xử lý submit form add ứng viên
             $('#addModal').on('submit', 'form', function (e) {
-                e.preventDefault(); // Ngăn chặn gửi form mặc định
-                var formData = $(this).serialize(); // Lấy dữ liệu form
+                e.preventDefault(); 
+                var formData =  new FormData(this);
                 $.ajax({
+                    enctype: 'multipart/form-data',
+                    contentType: false,
+                    processData: false,
                     url: '@Url.Page("./Add")',
                     type: 'POST',
                     data: formData,
