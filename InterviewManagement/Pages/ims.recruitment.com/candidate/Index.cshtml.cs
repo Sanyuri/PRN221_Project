@@ -24,6 +24,8 @@ namespace InterviewManagement.Pages.candidate
         {
             _context = context;
         }
+        [BindProperty]
+        public IFormFile ExcelFile { get; set; } = default!;
 
         public IList<Candidate> Candidate { get; set; } = default!;
         public IDictionary<int, string> status { get; } = StatusValue.CandidateStatus;
@@ -125,6 +127,11 @@ namespace InterviewManagement.Pages.candidate
             string statusFilter = Request.Form["filter"];
 
             return RedirectToPage(new { pageNumber = 1, searchTerm, statusFilter });
+        }
+
+        public async Task<IActionResult> OnPostImportCandidate()
+        {
+            return RedirectToPage();
         }
     }
 }

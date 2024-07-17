@@ -54,80 +54,105 @@ namespace InterviewManagement.Pages.Jobs
                 Levels = await _context.Level.ToListAsync();
                 return Page();
             }
+            Skills = await _context.Skill.ToListAsync();
+            Benefits = await _context.Benefit.ToListAsync();
+            Levels = await _context.Level.ToListAsync();
+            //var currentDate = DateTime.UtcNow;
 
-            var currentDate = DateTime.UtcNow;
+            //if (Job.StartDate < currentDate)
+            //{
+            //    ModelState.AddModelError(string.Empty, "Start date must be greater than now");
+            //    Skills = await _context.Skill.ToListAsync();
+            //    Benefits = await _context.Benefit.ToListAsync();
+            //    Levels = await _context.Level.ToListAsync();
+            //    return Page();
+            //}
 
-            if (Job.StartDate < currentDate)
+            //if (Job.EndDate <= Job.StartDate)
+            //{
+            //    ModelState.AddModelError(string.Empty, "End date must be greater than start date.");
+            //    Skills = await _context.Skill.ToListAsync();
+            //    Benefits = await _context.Benefit.ToListAsync();
+            //    Levels = await _context.Level.ToListAsync();
+            //    return Page();
+            //}
+
+            //if (Job.SalaryMax <= Job.SalaryMin)
+            //{
+            //    ModelState.AddModelError(string.Empty, "Max salary must be greater than min salary.");
+            //    Skills = await _context.Skill.ToListAsync();
+            //    Benefits = await _context.Benefit.ToListAsync();
+            //    Levels = await _context.Level.ToListAsync();
+            //    return Page();
+            //}
+            bool result = ValidateJob(Job.StartDate, Job.EndDate, Job.SalaryMin, Job.SalaryMax);
+            if (result)
             {
-                ModelState.AddModelError(string.Empty, "Start date must be greater than now");
-                Skills = await _context.Skill.ToListAsync();
-                Benefits = await _context.Benefit.ToListAsync();
-                Levels = await _context.Level.ToListAsync();
-                return Page();
-            }
+                Job.IsDeleted = false;
+                Job.Status = "Draft";
 
-            if (Job.EndDate <= Job.StartDate)
-            {
-                ModelState.AddModelError(string.Empty, "End date must be greater than start date.");
-                Skills = await _context.Skill.ToListAsync();
-                Benefits = await _context.Benefit.ToListAsync();
-                Levels = await _context.Level.ToListAsync();
-                return Page();
-            }
-
-            if (Job.SalaryMax <= Job.SalaryMin)
-            {
-                ModelState.AddModelError(string.Empty, "Max salary must be greater than min salary.");
-                Skills = await _context.Skill.ToListAsync();
-                Benefits = await _context.Benefit.ToListAsync();
-                Levels = await _context.Level.ToListAsync();
-                return Page();
-            }
-
-            Job.IsDeleted = false;
-            Job.Status = "Draft";           
-
-            Job.Skills = new List<Skill>();
-            foreach (var skillId in SelectedSkillIds)
-            {
-                var skill = await _context.Skill.FindAsync(skillId);
-                if (skill != null)
+                Job.Skills = new List<Skill>();
+                foreach (var skillId in SelectedSkillIds)
                 {
-                    Job.Skills.Add(skill);
+                    var skill = await _context.Skill.FindAsync(skillId);
+                    if (skill != null)
+                    {
+                        Job.Skills.Add(skill);
+                    }
                 }
-            }        
 
-            Job.Benefits = new List<Benefit>();
-            foreach (var benefitId in SelectedBenefitIds)
-            {
-                var benefit = await _context.Benefit.FindAsync(benefitId);
-                if (benefit != null)
+                Job.Benefits = new List<Benefit>();
+                foreach (var benefitId in SelectedBenefitIds)
                 {
-                    Job.Benefits.Add(benefit);
+                    var benefit = await _context.Benefit.FindAsync(benefitId);
+                    if (benefit != null)
+                    {
+                        Job.Benefits.Add(benefit);
+                    }
                 }
-            }
 
-            Job.Levels = new List<Level>();
-            foreach (var levelId in SelectedLevelIds)
-            {
-                var level = await _context.Level.FindAsync(levelId);
-                if (level != null)
+                Job.Levels = new List<Level>();
+                foreach (var levelId in SelectedLevelIds)
                 {
-                    Job.Levels.Add(level);
+                    var level = await _context.Level.FindAsync(levelId);
+                    if (level != null)
+                    {
+                        Job.Levels.Add(level);
+                    }
                 }
+                _context.Job.Add(Job);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Job added successfully!";
+
+
+                return RedirectToPage("./Index");
             }
-
-            
-
-            _context.Job.Add(Job);
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "Job added successfully!";
-
-
-            return RedirectToPage("./Index");
+            return Page();
         }
 
-       
+        public  bool ValidateJob(DateTime? startDate, DateTime? endDate, double? salaryMin, double salaryMax)
+        {
+            var currentDate = DateTime.UtcNow;
+
+            if (startDate < currentDate)
+            {
+                ModelState.AddModelError(string.Empty, "Start date must be greater than now");
+                return false;
+            }
+
+            if (endDate <= startDate)
+            {
+                ModelState.AddModelError(string.Empty, "End date must be greater than start date.");
+                return false;
+            }
+
+            if (salaryMax <= salaryMin)
+            {
+                ModelState.AddModelError(string.Empty, "Max salary must be greater than min salary.");
+                return false;
+            }
+            return true;
+        }
     }
 }

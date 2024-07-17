@@ -76,6 +76,11 @@
                         </div>@if (ViewBag.User != "Interviewer")
                         {
                             <div class="col-md-3 text-end">
+                                <div>
+                                    <a href="#" class="btn btn-pills btn-warning" data-bs-toggle="modal" data-bs-target="#importModal">
+                                        Import Candidate
+                                    </a>
+                                </div>
                                 <a href="#" class="btn btn-pills btn-warning addfix add-button" data-bs-toggle="modal" data-bs-target="#addModal">
                                     + Add
                                     Candidate
@@ -296,8 +301,27 @@
         </div>
     </div>
 </div>
-
-
+<!--Import modal-->
+<div class="modal fade text-start" id="importModal" tabindex="-1"
+     aria-labelledby="LabelimportJobModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered w-75">
+        <div class="modal-content">
+            <div class="modal-header border-bottom p-3">
+                <h5 class="modal-title" id="LabelimportJobModal">Import Job</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" asp-page-handler="ImportCandidate">
+                    <div class="form-group">
+                        <input type="file" name="excelFile" id="excelFile" asp-for="ExcelFile" class="form-control" readonly />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Import</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <div id="alert" class="alert alert-success col-2" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999; transition: top 1s ease; font-size: large; display: none;">

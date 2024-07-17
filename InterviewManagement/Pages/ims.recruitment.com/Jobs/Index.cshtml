@@ -16,6 +16,14 @@
     </div>
 }
 
+@if (TempData["Message"] != null)
+{
+    <div id="alert" class="alert alert-@TempData["MessageType"] col-2"
+         style="position: fixed; top: 20px; right: 20px; z-index: 9999;transition: top 1s ease;font-size: large">
+        @TempData["Message"]
+    </div>
+}
+
 <div class="container-fluid">
     <h1>Job</h1>
     <h3>Job list</h3>
@@ -45,7 +53,12 @@
     @if (Role != "Interviewer")
     {
         <div class="d-flex justify-content-end">
-            <a class="btn btn-secondary mr-2" role="button" asp-page="Create">Add new</a>
+            <div>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#importModal" class="btn btn-secondary">Import Job</a>
+            </div>
+            <div>
+                <a class="btn btn-secondary mr-2" role="button" asp-page="Create">Add new</a>
+            </div>
         </div>
     }                             
 
@@ -190,7 +203,27 @@
         </div>
     </div>
 </div>
-
+<!--import modal-->
+<div class="modal fade text-start" id="importModal" tabindex="-1"
+    aria-labelledby="LabelimportJobModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered w-75">
+        <div class="modal-content">
+            <div class="modal-header border-bottom p-3">
+                <h5 class="modal-title" id="LabelimportJobModal">Import Job</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+             </div>
+             <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" asp-page-handler="ImportJob">
+                    <div class="form-group">
+                        <input type="file" name="excelFile" id="excelFile" asp-for="ExcelFile" class="form-control" readonly />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Import</button>
+                </form>
+             </div>
+        </div>
+    </div>
+</div>
 @section Scripts {
     <script type="text/javascript">
         $(document).ready(function () {
