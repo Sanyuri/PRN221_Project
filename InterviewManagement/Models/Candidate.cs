@@ -10,7 +10,6 @@ namespace InterviewManagement.Models
             Offers = new HashSet<Offer>();
             Skills = new HashSet<Skill>();
         }
-        [Required]
         public string? CvLink { get; set; }
 
         [InverseProperty("Candidates")]

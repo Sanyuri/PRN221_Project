@@ -15,6 +15,15 @@
     <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
 
 </head>
+
+@if (TempData["Message"] != null)
+{
+    <div id="alert" class="alert alert-@TempData["MessageType"] col-2"
+         style="position: fixed; top: 20px; right: 20px; z-index: 9999;transition: top 1s ease;font-size: large">
+        @TempData["Message"]
+    </div>
+}
+
 <div class="container-fluid">
     <div class="layout-specing">
         <div class="row mb-2">
@@ -75,14 +84,14 @@
                             </div>
                         </div>@if (ViewBag.User != "Interviewer")
                         {
-                            <div class="col-md-3 text-end">
+                            <div class="col-md-3 text-end d-flex">
                                 <div>
-                                    <a href="#" class="btn btn-pills btn-warning" data-bs-toggle="modal" data-bs-target="#importModal">
+                                    <a href="#" class="btn btn-pills btn-warning addfix text-black" data-bs-toggle="modal" data-bs-target="#importModal">
                                         Import Candidate
                                     </a>
                                 </div>
-                                <a href="#" class="btn btn-pills btn-warning addfix add-button" data-bs-toggle="modal" data-bs-target="#addModal">
-                                    + Add
+                                <a href="#" class="btn btn-pills btn-warning addfix add-button text-black" data-bs-toggle="modal" data-bs-target="#addModal">
+                                    Add
                                     Candidate
                                 </a>
                             </div>
@@ -307,7 +316,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered w-75">
         <div class="modal-content">
             <div class="modal-header border-bottom p-3">
-                <h5 class="modal-title" id="LabelimportJobModal">Import Job</h5>
+                <h5 class="modal-title" id="LabelimportJobModal">Import Candidate</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                         aria-label="Close"></button>
             </div>
@@ -545,6 +554,12 @@
                 document.getElementById('btnSubmit').click();
             }, debounceDelay);
         });
+
+        var alert = document.getElementById("alert");
+        setTimeout(function () {
+            alert.style.top = "-100px";
+        }, 3000);
+
     </script>
 }
 

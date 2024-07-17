@@ -117,6 +117,7 @@ namespace InterviewManagement.Pages.Jobs
             {
                 TempData["MessageType"] = "danger";
                 TempData["Message"] = "File is not existed";
+                return RedirectToPage();
             }
             List<Job> jobs = new List<Job>();
             var AccountId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
