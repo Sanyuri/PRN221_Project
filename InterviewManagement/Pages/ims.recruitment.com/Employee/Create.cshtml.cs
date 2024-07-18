@@ -32,7 +32,7 @@ namespace InterviewManagement.Pages.ims.recruitment.com.user
             {
                 return NotFound();
             }
-            ViewData["roleList"] = new SelectList(_context.Role.ToList(), "Id", "RoleName");
+            ViewData["roleList"] = new SelectList(_context.Role.Where(c=>c.RoleName!="Candidate").ToList(), "Id", "RoleName");
             ViewData["DepartmentList"] = new SelectList(_context.Department.ToList(), "Id", "DepertmentName");
             return Page();
         }
