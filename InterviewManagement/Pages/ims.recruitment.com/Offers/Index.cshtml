@@ -403,7 +403,7 @@
                                         {
                                             <button class="btn" style="background: #B1CDFC;" onclick="changeOfferStatus('Waiting for Response',@(item.Id))" type="submit">Mark as Sent to Candidate</button>
                                         }
-                                        @if (item.Status.Equals("Waiting for Response") && (Role.Equals("Recruiter"))|| Role.Equals("Admin"))
+                                        @if (item.Status.Equals("Waiting for Response") && (Role.Equals("Recruiter")|| Role.Equals("Admin")))
                                         {
                                             <button class="btn" style="background: #B1CDFC;" onclick="changeOfferStatus('Accepted',@(item.Id))" type="submit">Accepted Offer</button>
                                             <button class="btn btn-warning" onclick="changeOfferStatus('Declined',@(item.Id))" type="submit">Declined Offer</button>

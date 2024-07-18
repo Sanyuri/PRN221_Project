@@ -21,7 +21,7 @@
 <h4>Detail</h4>
 
 
-@if (Role != "Interviewer" || Role != "Admin")
+@if (Role != "Interviewer" && Role != "Admin")
 {
     if (Model.Schedule.Status == "Open")
     {
