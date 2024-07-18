@@ -394,7 +394,7 @@
                                     <form method="post" asp-page-handler="UpdateOfferStatus">
                                     <input type="hidden" asp-for="Offer.Id" value="@(item.Id)">
                                     <div class="d-flex justify-content-end">
-                                        @if(item.Status.Equals("Waiting for approval"))
+                                        @if(item.Status.Equals("Waiting for approval") && Role.Equals("Manager"))
                                         {
                                             <button class="btn-success btn" onclick="changeOfferStatus('Approve',@(item.Id))" type="submit">Approve</button>
                                             <button class="btn btn-danger" onclick="changeOfferStatus('Reject',@(item.Id))" type="submit">Reject</button>
@@ -403,13 +403,13 @@
                                         {
                                             <button class="btn" style="background: #B1CDFC;" onclick="changeOfferStatus('Waiting for Response',@(item.Id))" type="submit">Mark as Sent to Candidate</button>
                                         }
-                                        @if (item.Status.Equals("Waiting for Response"))
+                                        @if (item.Status.Equals("Waiting for Response") && (Role.Equals("Recruiter"))|| Role.Equals("Admin"))
                                         {
                                             <button class="btn" style="background: #B1CDFC;" onclick="changeOfferStatus('Accepted',@(item.Id))" type="submit">Accepted Offer</button>
                                             <button class="btn btn-warning" onclick="changeOfferStatus('Declined',@(item.Id))" type="submit">Declined Offer</button>
                                         }  
-                                        @if(item.Status.Equals("Waiting for approval") || item.Status.Equals("Approve") || item.Status.Equals("Waiting for Response")
-                                            || item.Status.Equals("Accepted"))
+                                        @if((item.Status.Equals("Waiting for approval") || item.Status.Equals("Approve") || item.Status.Equals("Waiting for Response")
+                                            || item.Status.Equals("Accepted")) && Role.Equals("Recruiter"))
                                         {
                                             <button class="btn btn-danger" onclick="changeOfferStatus('Cancel',@(item.Id))" type="submit">Cancel Offer</button> 
                                         }
