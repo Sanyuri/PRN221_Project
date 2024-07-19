@@ -43,6 +43,7 @@ namespace InterviewManagement.Pages.candidate
             CurrentPage = pageNumber ?? 1;
             SearchTerm = searchTerm;
             StatusFilter = statusFilter;
+            long accountId = long.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value);
             var sessionRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
             var user = await _context.Employee.Include(c => c.Role).Where(c => c.Role.RoleName == sessionRole).FirstOrDefaultAsync();
 
@@ -54,7 +55,7 @@ namespace InterviewManagement.Pages.candidate
 
             if (user.Role?.RoleName == "Interviewer")
             {
-                candidatesQuery = candidatesQuery.Where(c => c.Employee.Id == user.Id);
+                candidatesQuery = candidatesQuery.Include(s => s.Schedules).ThenInclude(e => e.Employees).Where(c => c.Schedules.Any(s => s.Employees.Any(e => e.Id == accountId)));
             }
 
             if (!string.IsNullOrEmpty(SearchTerm))

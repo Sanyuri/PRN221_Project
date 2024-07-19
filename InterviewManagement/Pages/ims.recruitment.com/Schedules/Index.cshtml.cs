@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using InterviewManagement.Models;
 using InterviewManagement.Utils;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace InterviewManagement.Pages.Schedules
 {
@@ -32,6 +33,9 @@ namespace InterviewManagement.Pages.Schedules
 
         public async Task OnGetAsync(string searchString, string status, string interviewer, int? pageNumber)
         {
+            long accountId = long.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value);
+            var sessionRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
             Keyword = searchString;
             StatusFilter = status;
             InterviewerFilter = interviewer;
@@ -46,6 +50,11 @@ namespace InterviewManagement.Pages.Schedules
                 .Include(j => j.Employees)
                 .Where(j => j.IsDeleted == false);
             Employees = _context.Employee.ToList();
+
+            if (sessionRole.Equals("Interviewer"))
+            {
+                scheduleQuery = scheduleQuery.Include(e => e.Employees).Where(e => e.Employees.Any(i => i.Id == accountId));
+            }
 
             if (!String.IsNullOrEmpty(Keyword))
             {
@@ -65,7 +74,6 @@ namespace InterviewManagement.Pages.Schedules
             int pageSize = 10;
             Schedule = await PaginatedList<Schedule>.CreateAsync(scheduleQuery.AsNoTracking(), pageNumber ?? 1, pageSize);
         }
-
 
     }
 }
