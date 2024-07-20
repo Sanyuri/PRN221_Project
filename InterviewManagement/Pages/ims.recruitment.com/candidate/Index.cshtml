@@ -18,7 +18,7 @@
 
 @if (TempData["Message"] != null)
 {
-    <div id="alert" class="alert alert-@TempData["MessageType"] col-2"
+    <div id="msg" class="alert alert-@TempData["MessageType"] col-2"
          style="position: fixed; top: 20px; right: 20px; z-index: 9999;transition: top 1s ease;font-size: large">
         @TempData["Message"]
     </div>
@@ -555,7 +555,7 @@
             }, debounceDelay);
         });
 
-        var alert = document.getElementById("alert");
+        var alert = document.getElementById("msg");
         setTimeout(function () {
             alert.style.top = "-100px";
         }, 3000);
