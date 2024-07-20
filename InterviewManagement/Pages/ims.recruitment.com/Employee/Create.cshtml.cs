@@ -61,7 +61,8 @@ namespace InterviewManagement.Pages.ims.recruitment.com.user
             var lastEmployee = await _context.Employee
                                              .OrderByDescending(e => e.Id)
                                              .FirstOrDefaultAsync();
-            employeeToAdd.UserName = GenerateUserName(Employee.FullName)+(lastEmployee?.Id+1);
+            var s = _context.Employee.Where(e => e.FullName == employeeToAdd.FullName);
+            employeeToAdd.UserName = GenerateUserName(Employee.FullName)+(s.Count()+1);
             Debug.WriteLine(employeeToAdd.UserName);
             string randomPassword = GenerateRandomPassword(7);
             employeeToAdd.Password = BCrypt.Net.BCrypt.HashPassword(randomPassword);
