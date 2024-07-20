@@ -89,3 +89,6 @@ body {
     text-decoration: none !important; /* Bỏ gạch chân mặc định của thẻ <a> */
     text-align: center !important;
 }
+.fixdd{
+    width:100px !important
+}
