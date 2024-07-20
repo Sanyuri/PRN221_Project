@@ -57,21 +57,29 @@ namespace InterviewManagement.Pages
 
                 if (user != null && BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
                 {
-                    var claims = new List<Claim>
+                    if (user.Status.Equals("1"))
                     {
-                        new Claim(ClaimTypes.Name, user.Id.ToString()),
-                        new Claim(ClaimTypes.Role, user.Role.RoleName)
-                    };
+                        var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Name, user.Id.ToString()),
+                            new Claim(ClaimTypes.Role, user.Role.RoleName)
+                        };
 
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    var authProperties = new AuthenticationProperties
+                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        var authProperties = new AuthenticationProperties
+                        {
+                            IsPersistent = true,
+                            ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20)
+                        };
+
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+                        return RedirectToPage("/ims.recruitment.com/HomePage");
+                    }
+                    else
                     {
-                        IsPersistent = true,
-                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20)
-                    };
-
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-                    return RedirectToPage("/ims.recruitment.com/HomePage");
+                        ModelState.AddModelError(string.Empty, "This user has been banned");
+                        return Page();
+                    }
                 }
                 else
                 {
